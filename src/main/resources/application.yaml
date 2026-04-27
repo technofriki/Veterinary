@@ -1,0 +1,36 @@
+spring:
+  application:
+    # Nombre del proyecto que definieron en Spring Initializr
+    name: Veterinary
+
+  # Configuración de la conexión a la base de datos MySQL
+  datasource:
+    # URL de la base de datos - cada uno debe configurar su variable BD_URL en IntelliJ
+    url: ${BD_URL}
+    
+    # Usuario - cada uno debe configurar su variable BD_USER en IntelliJ
+    username: ${BD_USER}
+    
+    # Contraseña - cada uno debe configurar su variable BD_PASS en IntelliJ
+    password: ${BD_PASS}
+    
+    # Driver para MySQL 8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # Configuración de JPA / Hibernate
+  jpa:
+    hibernate:
+      # 'update' sincroniza tus clases Java con las tablas de MySQL.
+      # Si agregas un atributo a una clase, Spring creará la columna automáticamente.
+      ddl-auto: update
+
+    # Muestra las consultas SQL en la consola de IntelliJ.
+    show-sql: true
+
+    properties:
+      hibernate:
+        # Formatea el SQL para que sea fácil de leer en la consola.
+        format_sql: true
+        # Dialecto específico para MySQL 8
+        dialect: org.hibernate.dialect.MySQLDialect
+
