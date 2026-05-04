@@ -1,4 +1,48 @@
 package com.mokah.veterinary.features.diagnosis.service.impl;
 
-public class DiagnosisServiceImpl {
+import com.mokah.veterinary.features.diagnosis.dto.DiagnosisRequestDTO;
+import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponseDTO;
+import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
+import com.mokah.veterinary.features.diagnosis.mapper.DiagnosisMapper;
+import com.mokah.veterinary.features.diagnosis.repository.DiagnosisRepository;
+import com.mokah.veterinary.features.diagnosis.service.DiagnosisService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class DiagnosisServiceImpl implements DiagnosisService {
+
+    private final DiagnosisRepository diagnosisRepository;
+    private final DiagnosisMapper diagnosisMapper;
+
+    @Override
+    public DiagnosisResponseDTO create(DiagnosisRequestDTO request) {
+        Diagnosis diagnosis = diagnosisMapper.toEntity(request);
+        Diagnosis saved = diagnosisRepository.save(diagnosis);
+        return diagnosisMapper.toResponse(saved);
+    }
+
+    @Override
+    public List<DiagnosisResponseDTO> findAll() {
+        return diagnosisRepository.findAll().stream()
+                .map(diagnosisMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public DiagnosisResponseDTO findById(Long id) {
+        Diagnosis diagnosis = diagnosisRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Diagnosis no encontrado"));
+
+        return diagnosisMapper.toResponse(diagnosis);
+    }
+
+    @Override
+    public void delete(Long id) {
+        diagnosisRepository.deleteById(id);
+    }
 }
