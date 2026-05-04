@@ -1,4 +1,4 @@
-package com.Mokah.Veterinary.features.diagonis;
+package com.Mokah.Veterinary.features.diagonis.entity;
 
 import jakarta.persistence.Entity;
 
