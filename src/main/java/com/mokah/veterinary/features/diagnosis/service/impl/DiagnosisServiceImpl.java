@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -33,13 +34,16 @@ public class DiagnosisServiceImpl implements DiagnosisService {
     @Override
     public DiagnosisResponseDTO findById(Long id) {
         Diagnosis diagnosis = diagnosisRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Diagnosis no encontrado"));
+                .orElseThrow(() -> new NoSuchElementException("Diagnosis not found with id: " + id));
 
         return diagnosisMapper.toResponse(diagnosis);
     }
 
     @Override
     public void delete(Long id) {
+        if (!diagnosisRepository.existsById(id)) {
+            throw new NoSuchElementException("Diagnosis not found with id: " + id);
+        }
         diagnosisRepository.deleteById(id);
     }
 }
