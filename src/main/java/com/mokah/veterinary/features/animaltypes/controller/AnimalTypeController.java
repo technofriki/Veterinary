@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/animal-types") ///checkear que sea singular o plural
+@RequestMapping("/api/animal-type") ///checkear que sea singular o plural
 public class AnimalTypeController {
 
     private final AnimalTypeService animalTypeService;
@@ -25,13 +25,14 @@ public class AnimalTypeController {
         return ResponseEntity.ok(responseList);
     }
 
+
     @GetMapping("/{id}")
     public ResponseEntity<AnimalTypeResponse> getAnimalTypeById (@PathVariable Long id){
         AnimalTypeResponse response = animalTypeService.findById(id);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("/name/{name}")
     public ResponseEntity<AnimalTypeResponse> getAnimalTypeByName (@PathVariable String name){
         AnimalTypeResponse response = animalTypeService.findByName(name);
         return ResponseEntity.ok(response);
@@ -49,7 +50,7 @@ public class AnimalTypeController {
         return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public ResponseEntity<AnimalTypeResponse> deleteAnimalType (@PathVariable Long id){
         animalTypeService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

@@ -11,6 +11,7 @@ import org.mapstruct.Mapping;
 public interface AnimalTypeMapper {
 
    @Mapping(target = "id", ignore = true)
+    @Mapping(source = "name", target = "animalType")
     AnimalTypeEntity toEntity(AnimalTypeRequest request);
 
    @Mapping(source = "animalType", target = "name")
