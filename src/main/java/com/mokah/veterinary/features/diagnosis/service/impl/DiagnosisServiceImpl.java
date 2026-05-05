@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,9 +27,7 @@ public class DiagnosisServiceImpl implements DiagnosisService {
 
     @Override
     public List<DiagnosisResponseDTO> findAll() {
-        return diagnosisRepository.findAll().stream()
-                .map(diagnosisMapper::toResponse)
-                .collect(Collectors.toList());
+        return diagnosisMapper.toResponseList(diagnosisRepository.findAll());
     }
 
     @Override

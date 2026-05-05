@@ -3,25 +3,22 @@ package com.mokah.veterinary.features.diagnosis.mapper;
 import com.mokah.veterinary.features.diagnosis.dto.DiagnosisRequestDTO;
 import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponseDTO;
 import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
-@Component
-public class DiagnosisMapper {
+import java.util.List;
 
-    public Diagnosis toEntity(DiagnosisRequestDTO dto){
-        return Diagnosis.builder()
-                .descripcion(dto.getDescripcion())
-                .fechaDiagnostico(dto.getFechaDiagnostico())
-                .observaciones(dto.getObservaciones())
-                .build();
-    }
+@Mapper(componentModel = "spring")
+public interface DiagnosisMapper {
 
-    public DiagnosisResponseDTO toResponse(Diagnosis entity){
-        return DiagnosisResponseDTO.builder()
-                .id(entity.getId())
-                .descripcion(entity.getDescripcion())
-                .fechaDiagnostico(entity.getFechaDiagnostico())
-                .observaciones(entity.getObservaciones())
-                .build();
-    }
+    DiagnosisResponseDTO toResponse(Diagnosis entity);
+
+    List<DiagnosisResponseDTO> toResponseList(List<Diagnosis> entities);
+
+    @Mapping(target = "id", ignore = true)
+    Diagnosis toEntity(DiagnosisRequestDTO request);
+
+    @Mapping(target = "id",ignore = true)
+    void updateEntity(@MappingTarget Diagnosis entity, DiagnosisRequestDTO request);
 }
