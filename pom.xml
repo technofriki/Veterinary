@@ -8,8 +8,8 @@
 		<version>4.0.6</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.Mokah</groupId>
-	<artifactId>Veterinary</artifactId>
+	<groupId>com.mokah</groupId>
+	<artifactId>veterinary</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name/>
 	<description/>
@@ -28,6 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -121,6 +122,11 @@
 									<artifactId>lombok-mapstruct-binding</artifactId>
 									<version>0.2.0</version>
 								</path>
+								<path>
+									<groupId>org.mapstruct</groupId>
+									<artifactId>mapstruct-processor</artifactId>
+									<version>${org.mapstruct.version}</version>
+								</path>
 							</annotationProcessorPaths>
 						</configuration>
 					</execution>
@@ -146,6 +152,11 @@
 									<groupId>org.projectlombok</groupId>
 									<artifactId>lombok-mapstruct-binding</artifactId>
 									<version>0.2.0</version>
+								</path>
+								<path>
+									<groupId>org.mapstruct</groupId>
+									<artifactId>mapstruct-processor</artifactId>
+									<version>${org.mapstruct.version}</version>
 								</path>
 							</annotationProcessorPaths>
 						</configuration>
