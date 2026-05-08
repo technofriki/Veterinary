@@ -4,7 +4,6 @@ import com.mokah.veterinary.features.diagnosis.dto.DiagnosisRequestDTO;
 import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponseDTO;
 import com.mokah.veterinary.features.diagnosis.service.DiagnosisService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,10 +11,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/diagnosis")
-@RequiredArgsConstructor
 public class DiagnosisController {
 
     private final DiagnosisService diagnosisService;
+
+    public DiagnosisController(DiagnosisService diagnosisService) {
+        this.diagnosisService = diagnosisService;
+    }
 
     @PostMapping
     public ResponseEntity<DiagnosisResponseDTO> create(@Valid @RequestBody DiagnosisRequestDTO request) {

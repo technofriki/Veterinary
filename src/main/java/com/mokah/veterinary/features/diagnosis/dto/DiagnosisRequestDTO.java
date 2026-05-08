@@ -16,11 +16,11 @@ public class DiagnosisRequestDTO {
 
     @NotBlank
     @Size(max = 1000)
-    private String descripcion;
+    private String description;
 
     @NotNull
-    private LocalDateTime fechaDiagnostico;
+    private LocalDateTime dateDiagnosis;
 
     @Size(max = 2000)
-    private String observaciones;
+    private String observations;
 }

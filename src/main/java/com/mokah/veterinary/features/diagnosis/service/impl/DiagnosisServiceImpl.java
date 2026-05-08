@@ -6,18 +6,21 @@ import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
 import com.mokah.veterinary.features.diagnosis.mapper.DiagnosisMapper;
 import com.mokah.veterinary.features.diagnosis.repository.DiagnosisRepository;
 import com.mokah.veterinary.features.diagnosis.service.DiagnosisService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
-@Service
-@RequiredArgsConstructor
+@Service("diagnosisService")
 public class DiagnosisServiceImpl implements DiagnosisService {
 
     private final DiagnosisRepository diagnosisRepository;
     private final DiagnosisMapper diagnosisMapper;
+
+    public DiagnosisServiceImpl(DiagnosisRepository diagnosisRepository, DiagnosisMapper diagnosisMapper) {
+        this.diagnosisRepository = diagnosisRepository;
+        this.diagnosisMapper = diagnosisMapper;
+    }
 
     @Override
     public DiagnosisResponseDTO create(DiagnosisRequestDTO request) {

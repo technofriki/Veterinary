@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class DiagnosisResponseDTO {
 
     private Long id;
-    private String descripcion;
-    private LocalDateTime fechaDiagnostico;
-    private String observaciones;
+    private String description;
+    private LocalDateTime dateDiagnosis;
+    private String observations;
 }
