@@ -10,11 +10,7 @@ import org.mapstruct.Mapping;
 public interface BreedMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(source = "name", target = "breed")
-@Mapping(source = "color", target = "breed")
-BreedEntity toEntity (BreedRequest request);
+    BreedEntity toEntity(BreedRequest request);
 
-@Mapping(source = "breed", target = "name")
-@Mapping(source ="breed", target = "color")
-BreedResponse toResponse (BreedEntity entity);
+    BreedResponse toResponse(BreedEntity entity);
 }
