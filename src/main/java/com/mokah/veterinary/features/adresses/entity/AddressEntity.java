@@ -16,18 +16,18 @@ public class AddressEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "street", nullable = false)
+    @Column(name = "street", nullable = false,  length = 100)
     private String street;
 
-    @Column(name = "street_number", nullable = false)
+    @Column(name = "street_number", nullable = false, length = 50)
     private String streetNumber;
 
-    @Column(name = "city", nullable = true)
+    @Column(name = "city", nullable = true, length = 50)
     private String city;
 
-    @Column(name = "province", nullable = true)
+    @Column(name = "province", nullable = true, length = 50)
     private String province;
 
-    @Column(name = "country", nullable = true)
+    @Column(name = "country", nullable = true, length = 50)
     private String country;
 }
