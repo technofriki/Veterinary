@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DiagnosisResponseDTO {
+public class DiagnosisResponse {
 
     private Long id;
-    private String descripcion;
-    private LocalDateTime fechaDiagnostico;
-    private String observaciones;
+    private String description;
+    private LocalDateTime dateDiagnosis;
+    private String observations;
 }

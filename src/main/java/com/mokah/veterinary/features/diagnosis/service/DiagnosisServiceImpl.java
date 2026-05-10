@@ -1,38 +1,40 @@
-package com.mokah.veterinary.features.diagnosis.service.impl;
+package com.mokah.veterinary.features.diagnosis.service;
 
-import com.mokah.veterinary.features.diagnosis.dto.DiagnosisRequestDTO;
-import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponseDTO;
+import com.mokah.veterinary.features.diagnosis.dto.DiagnosisRequest;
+import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponse;
 import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
 import com.mokah.veterinary.features.diagnosis.mapper.DiagnosisMapper;
 import com.mokah.veterinary.features.diagnosis.repository.DiagnosisRepository;
-import com.mokah.veterinary.features.diagnosis.service.DiagnosisService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
-@Service
-@RequiredArgsConstructor
+@Service("diagnosisService")
 public class DiagnosisServiceImpl implements DiagnosisService {
 
     private final DiagnosisRepository diagnosisRepository;
     private final DiagnosisMapper diagnosisMapper;
 
+    public DiagnosisServiceImpl(DiagnosisRepository diagnosisRepository, DiagnosisMapper diagnosisMapper) {
+        this.diagnosisRepository = diagnosisRepository;
+        this.diagnosisMapper = diagnosisMapper;
+    }
+
     @Override
-    public DiagnosisResponseDTO create(DiagnosisRequestDTO request) {
+    public DiagnosisResponse create(DiagnosisRequest request) {
         Diagnosis diagnosis = diagnosisMapper.toEntity(request);
         Diagnosis saved = diagnosisRepository.save(diagnosis);
         return diagnosisMapper.toResponse(saved);
     }
 
     @Override
-    public List<DiagnosisResponseDTO> findAll() {
+    public List<DiagnosisResponse> findAll() {
         return diagnosisMapper.toResponseList(diagnosisRepository.findAll());
     }
 
     @Override
-    public DiagnosisResponseDTO findById(Long id) {
+    public DiagnosisResponse findById(Long id) {
         Diagnosis diagnosis = diagnosisRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Diagnosis not found with id: " + id));
 

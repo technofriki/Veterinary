@@ -18,13 +18,13 @@ public class Diagnosis {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "descripcion", nullable = false, length = 1000)
-    private String descripcion;
+    @Column(name = "description", nullable = false, length = 1000)
+    private String description;
 
-    @Column(name = "fecha_diagnostico", nullable = false)
-    private LocalDateTime fechaDiagnostico;
+    @Column(name = "date_diagnosis", nullable = false)
+    private LocalDateTime dateDiagnostic;
 
-    @Column(name = "observaciones", length = 2000)
-    private String observaciones;
+    @Column(name = "observations", length = 2000)
+    private String observations;
 
 }
