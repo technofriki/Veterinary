@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/condition")
+@RequestMapping("/api/conditions")
 public class ConditionController {
 
     private final ConditionService conditionService;
