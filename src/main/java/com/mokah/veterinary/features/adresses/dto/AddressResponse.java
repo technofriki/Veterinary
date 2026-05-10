@@ -1,7 +1,5 @@
 package com.mokah.veterinary.features.adresses.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Getter
@@ -9,22 +7,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AdressRequest {
+public class AddressResponse {
 
-    @NotBlank
-    @Size(max = 100)
+    private Long id;
     private String street;
-
-    @NotBlank
-    @Size(max = 50)
     private String streetNumber;
-
-    @Size(max = 50)
     private String city;
-
-    @Size(max = 50)
     private String province;
-
-    @Size(max = 50)
     private String country;
 }
