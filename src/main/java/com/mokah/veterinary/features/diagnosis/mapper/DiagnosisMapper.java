@@ -1,7 +1,7 @@
 package com.mokah.veterinary.features.diagnosis.mapper;
 
-import com.mokah.veterinary.features.diagnosis.dto.DiagnosisRequestDTO;
-import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponseDTO;
+import com.mokah.veterinary.features.diagnosis.dto.DiagnosisRequest;
+import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponse;
 import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,13 +12,13 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface DiagnosisMapper {
 
-    DiagnosisResponseDTO toResponse(Diagnosis entity);
+    DiagnosisResponse toResponse(Diagnosis entity);
 
-    List<DiagnosisResponseDTO> toResponseList(List<Diagnosis> entities);
+    List<DiagnosisResponse> toResponseList(List<Diagnosis> entities);
 
     @Mapping(target = "id", ignore = true)
-    Diagnosis toEntity(DiagnosisRequestDTO request);
+    Diagnosis toEntity(DiagnosisRequest request);
 
     @Mapping(target = "id",ignore = true)
-    void updateEntity(@MappingTarget Diagnosis entity, DiagnosisRequestDTO request);
+    void updateEntity(@MappingTarget Diagnosis entity, DiagnosisRequest request);
 }

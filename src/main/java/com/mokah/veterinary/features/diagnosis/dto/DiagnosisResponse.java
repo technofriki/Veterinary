@@ -1,8 +1,5 @@
 package com.mokah.veterinary.features.diagnosis.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -12,15 +9,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DiagnosisRequestDTO {
+public class DiagnosisResponse {
 
-    @NotBlank
-    @Size(max = 1000)
+    private Long id;
     private String description;
-
-    @NotNull
     private LocalDateTime dateDiagnosis;
-
-    @Size(max = 2000)
     private String observations;
 }
