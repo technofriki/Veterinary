@@ -1,5 +1,6 @@
 package com.mokah.veterinary.features.breed.service;
 
+import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.breed.dto.BreedRequest;
 import com.mokah.veterinary.features.breed.dto.BreedResponse;
 import com.mokah.veterinary.features.breed.entity.BreedEntity;
@@ -29,7 +30,7 @@ public class BreedService {
 
     public BreedResponse findById (Long id){
         BreedEntity entity = breedRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Breed not found with id: "+id));
+                .orElseThrow(()-> new ResourceNotFoundException("Breed", id));
         return breedMapper.toResponse(entity);
     }
 
@@ -37,25 +38,25 @@ public class BreedService {
         BreedEntity entity = breedRepository.findAll().stream()
                 .filter(n->n.getName().equalsIgnoreCase(name))
                 .findFirst()
-                .orElseThrow(()-> new RuntimeException("Breed name not found by name: "+name));
+                .orElseThrow(()-> new ResourceNotFoundException("Breed","name", name));
         return breedMapper.toResponse(entity);
     }
 
     public BreedResponse save (BreedRequest request){
         BreedEntity entity = breedMapper.toEntity(request);
-        BreedEntity saved = breedRepository.save(entity);
-        return breedMapper.toResponse(saved);
+        BreedEntity savedBreed = breedRepository.save(entity);
+        return breedMapper.toResponse(savedBreed);
     }
 
     public void delete (Long id){
         BreedEntity entity = breedRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Breed not found with id: "+id));
+                .orElseThrow(()-> new ResourceNotFoundException("Breed", id));
         breedRepository.delete(entity);
     }
 
     public BreedResponse update (Long id, BreedRequest request){
         BreedEntity existingEntity = breedRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Breed not found with id: "+id));
+                .orElseThrow(()-> new ResourceNotFoundException("Breed", id));
 
         existingEntity.setName(request.getName());
         existingEntity.setColor(request.getColor());
