@@ -1,5 +1,6 @@
 package com.mokah.veterinary.features.diagnosis.service;
 
+import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.diagnosis.dto.DiagnosisRequest;
 import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponse;
 import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
@@ -24,8 +25,8 @@ public class DiagnosisServiceImpl implements DiagnosisService {
     @Override
     public DiagnosisResponse create(DiagnosisRequest request) {
         Diagnosis diagnosis = diagnosisMapper.toEntity(request);
-        Diagnosis saved = diagnosisRepository.save(diagnosis);
-        return diagnosisMapper.toResponse(saved);
+        Diagnosis savedDiagnosis = diagnosisRepository.save(diagnosis);
+        return diagnosisMapper.toResponse(savedDiagnosis);
     }
 
     @Override
@@ -36,7 +37,7 @@ public class DiagnosisServiceImpl implements DiagnosisService {
     @Override
     public DiagnosisResponse findById(Long id) {
         Diagnosis diagnosis = diagnosisRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Diagnosis not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Diagnosis", id));
 
         return diagnosisMapper.toResponse(diagnosis);
     }
@@ -44,7 +45,7 @@ public class DiagnosisServiceImpl implements DiagnosisService {
     @Override
     public void delete(Long id) {
         if (!diagnosisRepository.existsById(id)) {
-            throw new NoSuchElementException("Diagnosis not found with id: " + id);
+            throw new ResourceNotFoundException("Diagnosis", id);
         }
         diagnosisRepository.deleteById(id);
     }
