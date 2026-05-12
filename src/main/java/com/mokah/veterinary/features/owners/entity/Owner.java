@@ -18,7 +18,7 @@ public class Owner {
     private Long id;
 
     @Column(name = "first_name", nullable = false, length = 30)
-    private String name;
+    private String fisrtName;
 
     @Column(name = "last_name", nullable = false, length = 30)
     private String lastName;
@@ -29,7 +29,7 @@ public class Owner {
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
-    @Column(name = "dni", nullable = false, length = 20)
+    @Column(name = "dni", nullable = false, length = 30)
     private String dni;
 
     @ManyToOne(fetch = FetchType.LAZY)
