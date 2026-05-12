@@ -1,5 +1,6 @@
 package com.mokah.veterinary.features.owners.dto;
 
+import com.mokah.veterinary.features.adresses.dto.AddressRequest;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -24,14 +25,14 @@ public class OwnerRequest {
     @Size(min = 8, max = 20)
     private String phone;
 
-    @NotBlank
+    @NotBlank(message = "Email is required")
     @Size(max = 100)
     @Email(message = "Invalid email format")
     private String email;
 
     @NotBlank(message = "DNI is required")
-    @Size(min = 5, max = 30)
+    @Size(min = 7, max = 15)
     private String dni;
 
-    private Long addressId;
+    private AddressRequest address;
 }
