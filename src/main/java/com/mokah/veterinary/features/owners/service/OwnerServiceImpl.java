@@ -63,12 +63,14 @@ public class OwnerServiceImpl implements OwnerService {
             throw new IllegalArgumentException("Owner with DNI " + request.getDni() + " already exists");
         }
 
-        existingOwner.setDni(request.getDni());
-        existingOwner.setEmail(request.getEmail());
-        existingOwner.setPhone(request.getPhone());
-        existingOwner.setFirstName(request.getFirstName());
-        existingOwner.setLastName(request.getLastName());
-        existingOwner.setAddress(ownerMapper.toEntity(request).getAddress());
+        Owner mappedOwner = ownerMapper.toEntity(request);
+
+        existingOwner.setDni(mappedOwner.getDni());
+        existingOwner.setEmail(mappedOwner.getEmail());
+        existingOwner.setPhone(mappedOwner.getPhone());
+        existingOwner.setFirstName(mappedOwner.getFirstName());
+        existingOwner.setLastName(mappedOwner.getLastName());
+        existingOwner.setAddress(mappedOwner.getAddress());
 
         Owner updatedOwner = ownerRepository.save(existingOwner);
 

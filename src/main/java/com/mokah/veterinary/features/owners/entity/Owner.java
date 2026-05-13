@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "owner")
+@Table(name = "owners")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -29,7 +29,7 @@ public class Owner {
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
-    @Column(name = "dni", nullable = false, length = 30)
+    @Column(name = "dni", nullable = false, length = 30, unique = true)
     private String dni;
 
     @ManyToOne(fetch = FetchType.LAZY)
