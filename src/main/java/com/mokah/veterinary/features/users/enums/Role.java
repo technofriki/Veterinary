@@ -3,6 +3,6 @@ package com.mokah.veterinary.features.users.enums;
 public enum Role {
     OWNER,
     ADMINISTRATOR,
-    RECEPCIONIST,
-    VETERINARY
+    RECEPTIONIST,
+    VETERINARIAN
 }

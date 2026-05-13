@@ -13,6 +13,7 @@ public class UserResponse {
 
     private Long id;
     private String username;
-    private Role role;
     private UserState userState;
+    private Role role;
+
 }

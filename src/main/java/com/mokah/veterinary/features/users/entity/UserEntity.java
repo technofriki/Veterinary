@@ -25,7 +25,7 @@ public class UserEntity {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private UserState state;
+    private UserState userState;
 
     @Enumerated(EnumType.STRING)
     private Role role;

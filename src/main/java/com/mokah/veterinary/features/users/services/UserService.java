@@ -5,11 +5,12 @@ import com.mokah.veterinary.features.users.dto.UserResponse;
 import com.mokah.veterinary.features.users.entity.UserEntity;
 import com.mokah.veterinary.features.users.mapper.UserMapper;
 import com.mokah.veterinary.features.users.repository.UserRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Service
 public class UserService implements UserServiceInterface {
 
     private final UserRepository userRepository;
@@ -64,7 +65,7 @@ public class UserService implements UserServiceInterface {
         existingEntity.setUsername(request.getUsername());
         existingEntity.setPassword(request.getPassword());
         existingEntity.setRole(request.getRole());
-        existingEntity.setState(request.getState());
+        existingEntity.setUserState(request.getUserState());
 
         UserEntity updated = userRepository.save(existingEntity);
         return userMapper.toResponse(updated);

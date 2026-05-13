@@ -22,11 +22,13 @@ public class UserRequest {
     private String password;
 
     @NotBlank
+    @Size(min = 1, max = 50)// Agregar esto
+    private UserState userState;
+
+    @NotBlank
     @Size(min = 1, max = 50)
     private Role role;
 
-    @NotBlank
-    @Size(min = 1, max = 50)// Agregar esto
-    private UserState state;
+
 
 }
