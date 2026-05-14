@@ -1,0 +1,7 @@
+package com.mokah.veterinary.features.users.repository;
+
+import com.mokah.veterinary.features.users.entity.UserEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
+}
