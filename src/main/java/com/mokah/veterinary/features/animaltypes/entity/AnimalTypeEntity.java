@@ -18,6 +18,6 @@ public class AnimalTypeEntity {
     private Long id;
 
 @Column (name = "name", nullable = true, length = 50)
-    private String animalType;
+    private String name;
 
 }
