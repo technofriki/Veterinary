@@ -58,14 +58,22 @@ public class PetService implements PetServiceInterface{
     public PetResponse update(Long id, PetRequest request){
         PetEntity existingEntity = petRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("User not found with id: "+id));
-        existingEntity.setName(request.getName());
-        existingEntity.setBirthDate(request.getBirthDate());
-        existingEntity.setAnimalType(request.getAnimalType()); /// creo que debo cambiar request de AnimalType
-        existingEntity.setBreed(request.getBreed());
+
+        PetEntity mapperPet = petMapper.toEntity(request);
+        existingEntity.setName(mapperPet.getName());
+        existingEntity.setBirthDate(mapperPet.getBirthDate());
+        existingEntity.setAnimalType(mapperPet.getAnimalType());
+        existingEntity.setBreed(mapperPet.getBreed());
+
+        PetEntity updated = petRepository.save(existingEntity);
+        return petMapper.toResponse(updated);
     }
 
     @Override
     public void delete(Long id){
+        PetEntity entity = petRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("User not found with id: "+id));
+        petRepository.delete(entity);
 
     }
 }
