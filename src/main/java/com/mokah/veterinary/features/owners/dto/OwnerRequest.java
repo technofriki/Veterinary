@@ -1,6 +1,7 @@
 package com.mokah.veterinary.features.owners.dto;
 
 import com.mokah.veterinary.features.adresses.dto.AddressRequest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -34,5 +35,6 @@ public class OwnerRequest {
     @Size(min = 7, max = 15)
     private String dni;
 
+    @Valid
     private AddressRequest address;
 }
