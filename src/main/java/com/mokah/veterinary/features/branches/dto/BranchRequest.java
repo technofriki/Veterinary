@@ -1,4 +1,4 @@
-package com.mokah.veterinary.features.owners.dto;
+package com.mokah.veterinary.features.branches.dto;
 
 import com.mokah.veterinary.features.adresses.dto.AddressRequest;
 import jakarta.validation.Valid;
@@ -12,29 +12,21 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OwnerRequest {
+public class BranchRequest {
 
-    @NotBlank(message = "First name is required")
-    @Size(min = 2, max = 30)
-    private String firstName ;
-
-    @NotBlank(message = "Last name is required")
-    @Size(min = 2, max = 30)
-    private String lastName;
+    @NotBlank(message = "Name is required")
+    @Size(max = 50)
+    private String name;
 
     @NotBlank(message = "Phone is required")
-    @Size(min = 8, max = 20)
+    @Size(max = 20)
     private String phone;
 
     @NotBlank(message = "Email is required")
-    @Size(max = 100)
-    @Email(message = "Invalid email format")
+    @Email(message = "Invalid format email")
+    @Size(max = 50)
     private String email;
 
-    @NotBlank(message = "DNI is required")
-    @Size(min = 7, max = 15)
-    private String dni;
-
-    @Valid
+    @Valid // que haria valid aca? usaria las validaciones del AddressRequest?
     private AddressRequest address;
 }
