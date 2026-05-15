@@ -2,7 +2,6 @@ package com.mokah.veterinary.features.pets.controller;
 
 import com.mokah.veterinary.features.pets.dto.PetRequest;
 import com.mokah.veterinary.features.pets.dto.PetResponse;
-import com.mokah.veterinary.features.pets.entity.PetEntity;
 import com.mokah.veterinary.features.pets.service.PetServiceInterface;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
