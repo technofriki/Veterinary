@@ -37,7 +37,7 @@ public class AnimalTypeService {
 
     public AnimalTypeResponse findByName(String name) {
         AnimalTypeEntity entity = animalTypeRepository.findAll().stream()
-                .filter(at -> at.getAnimalType().equalsIgnoreCase(name))
+                .filter(at -> at.getName().equalsIgnoreCase(name))
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("AnimalType", "name", name));
         return animalTypeMapper.toResponse(entity);
@@ -60,7 +60,7 @@ public class AnimalTypeService {
         AnimalTypeEntity existingEntity = animalTypeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("AnimalType", id));
 
-        existingEntity.setAnimalType(request.getName());
+        existingEntity.setName(request.getName());
 
         AnimalTypeEntity updated = animalTypeRepository.save(existingEntity); ///JPARepository cuando queres guardar un entity que ya tiene el mismo id que uno existente lo reemplaza
         return animalTypeMapper.toResponse(updated);
