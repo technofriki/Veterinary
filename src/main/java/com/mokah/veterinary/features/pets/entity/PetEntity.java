@@ -5,6 +5,7 @@ import com.mokah.veterinary.features.breed.entity.BreedEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -23,13 +24,13 @@ public class PetEntity {
     private String name;
 
     @Column(name = "birth_date", nullable = false)
-    private Date birthDate;
+    private LocalDate birthDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "animal_Type_id")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "animal_type_id")
     private AnimalTypeEntity animalType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "breed_id")
     private BreedEntity breed;
 }

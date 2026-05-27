@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -21,7 +22,7 @@ public class PetRequest {
     private String name;
 
     @NotBlank(message = "Birth date must be at least approximate")
-    private Date birthDate;
+    private LocalDate birthDate; ///aca tenemos que hacer excepcion que la fecha no puede ser superior a la actual
 
     private AnimalTypeRequest animalType;
     private BreedRequest breed;
