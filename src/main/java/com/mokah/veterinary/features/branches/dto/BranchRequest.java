@@ -27,6 +27,6 @@ public class BranchRequest {
     @Size(max = 50)
     private String email;
 
-    @Valid // que haria valid aca? usaria las validaciones del AddressRequest?
+    @Valid
     private AddressRequest address;
 }
