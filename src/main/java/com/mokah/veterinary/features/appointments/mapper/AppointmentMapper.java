@@ -17,7 +17,7 @@ public interface AppointmentMapper {
     @Mapping(target = "veterinarian", ignore = true)
     Appointment toEntity(AppointmentCreateDTO dto);
 
-    @Mapping(target = "status", expression = "java(entity.getStatus().name())")
+    @Mapping(target = "status", expression = "java(model.getStatus().name())")
     AppointmentResponse toResponse(Appointment entity);
 
     List<AppointmentResponse> toResponseList(List<Appointment> entities);

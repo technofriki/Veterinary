@@ -1,4 +1,4 @@
-package com.mokah.veterinary.features.pets.entity;
+package com.mokah.veterinary.features.pets.model;
 
 import com.mokah.veterinary.features.animaltypes.entity.AnimalTypeEntity;
 import com.mokah.veterinary.features.breed.entity.BreedEntity;
@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Table (name = "pets")
@@ -15,7 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PetEntity {
+public class Pet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

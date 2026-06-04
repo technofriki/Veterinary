@@ -1,6 +1,6 @@
 package com.mokah.veterinary.features.appointments.model;
 
-import com.mokah.veterinary.features.pets.entity.Pet;
+import com.mokah.veterinary.features.pets.model.Pet;
 import com.mokah.veterinary.features.veterinarians.model.Veterinarian;
 import jakarta.persistence.*;
 import lombok.*;

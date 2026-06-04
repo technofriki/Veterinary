@@ -45,7 +45,7 @@ public class AnimalTypeService {
 
     public AnimalTypeResponse save(AnimalTypeRequest request) {
         AnimalTypeEntity entity = animalTypeMapper.toEntity(request);
-        AnimalTypeEntity savedAnimalType = animalTypeRepository.save(entity); /// Aca creamos otro entity guardado para que al retornalo muestre el id
+        AnimalTypeEntity savedAnimalType = animalTypeRepository.save(entity); /// Aca creamos otro model guardado para que al retornalo muestre el id
         return animalTypeMapper.toResponse(savedAnimalType);
     }
 
@@ -62,7 +62,7 @@ public class AnimalTypeService {
 
         existingEntity.setName(request.getName());
 
-        AnimalTypeEntity updated = animalTypeRepository.save(existingEntity); ///JPARepository cuando queres guardar un entity que ya tiene el mismo id que uno existente lo reemplaza
+        AnimalTypeEntity updated = animalTypeRepository.save(existingEntity); ///JPARepository cuando queres guardar un model que ya tiene el mismo id que uno existente lo reemplaza
         return animalTypeMapper.toResponse(updated);
     }
 

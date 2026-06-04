@@ -3,7 +3,7 @@ package com.mokah.veterinary.features.pets.service;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.pets.dto.PetRequest;
 import com.mokah.veterinary.features.pets.dto.PetResponse;
-import com.mokah.veterinary.features.pets.entity.Pet;
+import com.mokah.veterinary.features.pets.model.Pet;
 import com.mokah.veterinary.features.pets.mapper.PetMapper;
 import com.mokah.veterinary.features.pets.repository.PetRepository;
 import lombok.RequiredArgsConstructor;

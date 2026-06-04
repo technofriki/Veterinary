@@ -2,7 +2,7 @@ package com.mokah.veterinary.features.pets.controller;
 
 import com.mokah.veterinary.features.pets.dto.PetRequest;
 import com.mokah.veterinary.features.pets.dto.PetResponse;
-import com.mokah.veterinary.features.pets.service.PetServiceInterface;
+import com.mokah.veterinary.features.pets.service.PetService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +13,9 @@ import java.util.List;
 @RequestMapping("/api/pet")
 public class PetController {
 
-    private final PetServiceInterface petService;
+    private final PetService petService;
 
-    public PetController(PetServiceInterface petService) {
+    public PetController(PetService petService) {
         this.petService = petService;
     }
 
