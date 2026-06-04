@@ -3,55 +3,53 @@ package com.mokah.veterinary.features.pets.controller;
 import com.mokah.veterinary.features.pets.dto.PetRequest;
 import com.mokah.veterinary.features.pets.dto.PetResponse;
 import com.mokah.veterinary.features.pets.service.PetService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/pet")
+@RequestMapping("/api/pets")
+@RequiredArgsConstructor
 public class PetController {
 
-    private final PetService petService;
+    private final PetService service;
 
-    public PetController(PetService petService) {
-        this.petService = petService;
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public PetResponse create(@Valid @RequestBody PetRequest request) {
+        return service.create(request);
     }
 
     @GetMapping
-    public ResponseEntity<List<PetResponse>> findAll(){
-        List<PetResponse> responseList = petService.findAll();
-        return ResponseEntity.ok(responseList);
+    public List<PetResponse> findAll(
+    ) {
+        return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity <PetResponse> getById(@PathVariable Long id){
-        PetResponse response = petService.findById(id);
-        return ResponseEntity.ok(response);
+    public PetResponse findById(@PathVariable Long id) {
+        return service.findById(id);
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity <PetResponse> getByName(@PathVariable String name){
-        PetResponse response = petService.findByName(name);
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping
-    public ResponseEntity <PetResponse>  createPet(@RequestBody PetRequest request){
-        PetResponse response = petService.create(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public PetResponse findByName(@PathVariable String name) {
+        return service.findByName(name);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PetResponse> updatePet(@PathVariable Long id, @RequestBody PetRequest request){
-        PetResponse response = petService.update(id,request);
-        return ResponseEntity.ok(response);
+    public PetResponse update(
+            @PathVariable Long id,
+            @Valid @RequestBody PetRequest request
+    ) {
+        return service.update(id, request);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<PetResponse> deletePet(@PathVariable Long id){
-        petService.delete(id);
-        return ResponseEntity.noContent().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
     }
 }

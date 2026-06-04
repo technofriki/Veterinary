@@ -1,29 +1,19 @@
 package com.mokah.veterinary.features.pets.dto;
 
-import com.mokah.veterinary.features.animaltypes.dto.AnimalTypeRequest;
-
-import com.mokah.veterinary.features.breed.dto.BreedRequest;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
-import java.util.Date;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class PetRequest {
+public record PetRequest(
+       @NotBlank String name,
 
-    @NotBlank(message = "Name is required")
-    @Size(min = 3, max = 50)
-    private String name;
+       @NotNull LocalDate birthDate,
 
-    @NotBlank(message = "Birth date must be at least approximate")
-    private LocalDate birthDate; ///aca tenemos que hacer excepcion que la fecha no puede ser superior a la actual
+       @NotNull @Positive Long animalTypeId,
 
-    private AnimalTypeRequest animalType;
-    private BreedRequest breed;
+       @NotNull @Positive Long breedId
+
+) {
 }

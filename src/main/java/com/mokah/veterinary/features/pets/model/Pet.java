@@ -1,6 +1,6 @@
 package com.mokah.veterinary.features.pets.model;
 
-import com.mokah.veterinary.features.animaltypes.entity.AnimalTypeEntity;
+import com.mokah.veterinary.features.animaltypes.entity.AnimalType;
 import com.mokah.veterinary.features.breed.entity.BreedEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,7 +27,7 @@ public class Pet {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "animal_type_id")
-    private AnimalTypeEntity animalType;
+    private AnimalType animalType;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "breed_id")
