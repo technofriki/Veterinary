@@ -5,17 +5,25 @@ import com.mokah.veterinary.features.appointments.dto.AppointmentResponse;
 import com.mokah.veterinary.features.appointments.dto.AppointmentUpdateDTO;
 import com.mokah.veterinary.features.appointments.model.Appointment;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import java.util.List;
-
 @Mapper(componentModel = "spring")
 public interface AppointmentMapper {
-    Appointment toEntity(AppointmentCreateDTO request);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "pet", ignore = true)
+    @Mapping(target = "veterinarian", ignore = true)
+    Appointment toEntity(AppointmentCreateDTO dto);
+
+    @Mapping(target = "status", expression = "java(entity.getStatus().name())")
     AppointmentResponse toResponse(Appointment entity);
 
     List<AppointmentResponse> toResponseList(List<Appointment> entities);
 
-    AppointmentResponse update(@MappingTarget Appointment entity, AppointmentUpdateDTO request);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "pet", ignore = true)
+    @Mapping(target = "veterinarian", ignore = true)
+    void update(@MappingTarget Appointment entity, AppointmentUpdateDTO dto);
 }
