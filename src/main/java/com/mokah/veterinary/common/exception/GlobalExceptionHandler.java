@@ -1,74 +1,62 @@
 package com.mokah.veterinary.common.exception;
 
+import com.mokah.veterinary.common.dto.ApiErrorResponse;
+import com.mokah.veterinary.features.veterinarians.exception.VeterinarianEmailExistsException;
+import com.mokah.veterinary.features.veterinarians.exception.VeterinarianLicenseExistsException;
+import com.mokah.veterinary.features.veterinarians.exception.VeterinarianPhoneExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Object> handlerResourceNotFound(ResourceNotFoundException ex, WebRequest request) {
-        Map<String, Object> body = new HashMap<>();
+    public ResponseEntity<ApiErrorResponse> handleResourceNotFound(ResourceNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
 
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.NOT_FOUND.value());
-        body.put("error", "Not Found");
-        body.put("message", ex.getMessage());
-        body.put("path", request.getDescription(false).replace("uri=", ""));
-
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, "Invalid request body");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> methodArgumentNotValidHandler(MethodArgumentNotValidException ex, WebRequest request){
+    public ResponseEntity<ApiErrorResponse> handleValidationsErrors(MethodArgumentNotValidException ex) {
+        String error = ex.getBindingResult()
+                .getFieldErrors().stream()
+                .map(fieldError ->
+                        fieldError.getField() + ": " + fieldError.getDefaultMessage())
+                .collect(Collectors.joining(", "));
 
-        Map<String, Object> body = new HashMap<>();
-        Map<String, Object> errors = new HashMap<>();
-
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage()));
-
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        body.put("error", "Validation Error");
-        body.put("message", "One or more fields are invalid");
-        body.put("validationErrors", errors);
-        body.put("path", request.getDescription(false).replace("uri=", ""));
-
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        return buildResponse(HttpStatus.BAD_REQUEST, error);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Object> handlerIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
-        Map<String, Object> body = new HashMap<>();
-
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        body.put("error", "Bad Request");
-        body.put("message", ex.getMessage());
-        body.put("path", request.getDescription(false).replace("uri=", ""));
-
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    //
+    @ExceptionHandler({
+            VeterinarianEmailExistsException.class,
+            VeterinarianLicenseExistsException.class,
+            VeterinarianPhoneExistsException.class
+    })
+    public ResponseEntity<ApiErrorResponse> handleBusinessError(RuntimeException ex) {
+        return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
+
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handlerGlobalException(Exception ex, WebRequest request) {
-        Map<String, Object> body = new HashMap<>();
+    public ResponseEntity<ApiErrorResponse> handleGlobalException(Exception ex) {
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+    }
 
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        body.put("error", "Internal Server Error");
-        body.put("message", ex.getMessage());
-        body.put("path", request.getDescription(false).replace("uri=", ""));
-
-        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+    private ResponseEntity<ApiErrorResponse> buildResponse(HttpStatus status, String message) {
+        ApiErrorResponse error = new ApiErrorResponse(
+                LocalDateTime.now(), status.value(), status.getReasonPhrase(), message);
+        return new ResponseEntity<>(error, status);
     }
 }

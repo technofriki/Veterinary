@@ -10,7 +10,7 @@ import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {AddressMapper.class})
+@Mapper(componentModel = "spring", uses = AddressMapper.class)
 public interface BranchMapper {
 
     Branch toEntity(BranchRequest request);
@@ -20,5 +20,5 @@ public interface BranchMapper {
     List<BranchResponse> toResponseList(List<Branch> entities);
 
     @Mapping(target = "id", ignore = true)
-    void updateEntity(@MappingTarget Branch entity, BranchRequest request);
+    void update(@MappingTarget Branch entity, BranchRequest request);
 }

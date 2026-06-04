@@ -1,67 +1,22 @@
 package com.mokah.veterinary.features.breed.service;
 
-import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.breed.dto.BreedRequest;
 import com.mokah.veterinary.features.breed.dto.BreedResponse;
 import com.mokah.veterinary.features.breed.entity.BreedEntity;
-import com.mokah.veterinary.features.breed.mapper.BreedMapper;
-import com.mokah.veterinary.features.breed.repository.BreedRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Service
-public class BreedService {
+public interface BreedService {
 
-    private final BreedRepository breedRepository;
-    private final BreedMapper breedMapper;
+    BreedEntity entityById(Long id);
 
-    public BreedService(BreedRepository breedRepository, BreedMapper breedMapper) {
-        this.breedRepository = breedRepository;
-        this.breedMapper = breedMapper;
-    }
+    BreedResponse findById(Long id);
 
-    public List<BreedResponse> findAll(){
-        return breedRepository.findAll().stream()
-                .map(breedMapper::toResponse)
-                .collect(Collectors.toList());
-    }
+    List<BreedResponse> findAll();
 
-    public BreedResponse findById (Long id){
-        BreedEntity entity = breedRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Breed", id));
-        return breedMapper.toResponse(entity);
-    }
+    BreedResponse create(BreedRequest request);
 
-    public BreedResponse findByName (String name){
-        BreedEntity entity = breedRepository.findAll().stream()
-                .filter(n->n.getName().equalsIgnoreCase(name))
-                .findFirst()
-                .orElseThrow(()-> new ResourceNotFoundException("Breed","name", name));
-        return breedMapper.toResponse(entity);
-    }
+    BreedResponse update(Long id, BreedRequest request);
 
-    public BreedResponse save (BreedRequest request){
-        BreedEntity entity = breedMapper.toEntity(request);
-        BreedEntity savedBreed = breedRepository.save(entity);
-        return breedMapper.toResponse(savedBreed);
-    }
-
-    public void delete (Long id){
-        BreedEntity entity = breedRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Breed", id));
-        breedRepository.delete(entity);
-    }
-
-    public BreedResponse update (Long id, BreedRequest request){
-        BreedEntity existingEntity = breedRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Breed", id));
-
-        existingEntity.setName(request.getName());
-        existingEntity.setColor(request.getColor());
-
-        BreedEntity updated = breedRepository.save(existingEntity);
-        return breedMapper.toResponse(updated);
-    }
+    void delete(Long id);
 }

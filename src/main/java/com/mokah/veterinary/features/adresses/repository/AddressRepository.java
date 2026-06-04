@@ -1,7 +1,7 @@
 package com.mokah.veterinary.features.adresses.repository;
 
-import com.mokah.veterinary.features.adresses.entity.AddressEntity;
+import com.mokah.veterinary.features.adresses.entity.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AddressRepository extends JpaRepository<AddressEntity, Long> {
+public interface AddressRepository extends JpaRepository<Address, Long> {
 }

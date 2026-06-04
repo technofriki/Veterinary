@@ -1,18 +1,11 @@
 package com.mokah.veterinary.features.adresses.dto;
 
-import lombok.*;
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class AddressResponse {
-
-    private Long id;
-    private String street;
-    private String streetNumber;
-    private String city;
-    private String province;
-    private String country;
+public record AddressResponse(
+        Long id,
+        String street,
+        String number,
+        String city,
+        String province,
+        String country
+) {
 }

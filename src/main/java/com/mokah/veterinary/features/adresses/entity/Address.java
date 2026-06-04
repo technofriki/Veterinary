@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AddressEntity {
+public class Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,8 +19,8 @@ public class AddressEntity {
     @Column(name = "street", nullable = false,  length = 100)
     private String street;
 
-    @Column(name = "street_number", nullable = false, length = 50)
-    private String streetNumber;
+    @Column(name = "number", nullable = false, length = 50)
+    private String number;
 
     @Column(name = "city", nullable = true, length = 50)
     private String city;

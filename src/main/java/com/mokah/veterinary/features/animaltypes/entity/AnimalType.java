@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AnimalTypeEntity {
+public class AnimalType {
 
 @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
