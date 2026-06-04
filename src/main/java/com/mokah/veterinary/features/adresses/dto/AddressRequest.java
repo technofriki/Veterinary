@@ -4,27 +4,24 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class AddressRequest {
+public record AddressRequest(
+        @NotBlank(message = "Street is required")
+        @Size(max = 100)
+        String street,
 
-    @NotBlank
-    @Size(max = 100)
-    private String street;
+        @NotBlank(message = "Street number is required")
+        @Size(max = 50)
+        String number,
 
-    @NotBlank
-    @Size(max = 50)
-    private String streetNumber;
+        @NotBlank(message = "City number is required")
+        @Size(max = 50)
+        String city,
 
-    @Size(max = 50)
-    private String city;
+        @NotBlank(message = "Province is required")
+        @Size(max = 50)
+        String province,
 
-    @Size(max = 50)
-    private String province;
-
-    @Size(max = 50)
-    private String country;
+        @NotBlank(message = "Country is required")
+        @Size(max = 50)
+        String country) {
 }

@@ -1,6 +1,6 @@
 package com.mokah.veterinary.features.owners.entity;
 
-import com.mokah.veterinary.features.adresses.entity.AddressEntity;
+import com.mokah.veterinary.features.adresses.entity.Address;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,6 +34,6 @@ public class Owner {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
-    private AddressEntity address;
+    private Address address;
 
 }

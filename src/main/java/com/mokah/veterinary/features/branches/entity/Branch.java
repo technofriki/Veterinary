@@ -1,6 +1,6 @@
 package com.mokah.veterinary.features.branches.entity;
 
-import com.mokah.veterinary.features.adresses.entity.AddressEntity;
+import com.mokah.veterinary.features.adresses.entity.Address;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,8 +8,8 @@ import lombok.*;
 @Table(name = "branches")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Branch {
 
@@ -17,16 +17,11 @@ public class Branch {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name",nullable = false, length = 50)
     private String name;
-
-    @Column(name = "phone", nullable = false, length = 20)
     private String phone;
-
-    @Column(name = "email", nullable = false, length = 50, unique = true)
     private String email;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "address_id")
-    private AddressEntity address;
+    private Address address;
 }
