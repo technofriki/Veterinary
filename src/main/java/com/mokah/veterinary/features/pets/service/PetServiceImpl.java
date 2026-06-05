@@ -19,20 +19,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PetServiceImpl implements PetService {
 
-    private final PetRepository petRepository;
+    private final PetRepository repository;
     private final PetMapper petMapper;
     private final AnimalTypeService animalTypeService;
     private final BreedService breedService;
 
     @Override
     public Pet entityById(Long id) {
-        return petRepository.findById(id)
+        return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pet", id));
     }
 
     @Override
     public List<PetResponse> findAll() {
-        return petMapper.toResponseList(petRepository.findAll());
+        return petMapper.toResponseList(repository.findAll());
     }
 
     @Override
@@ -42,11 +42,11 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public PetResponse findByName(String name) {
-        Pet entity = petRepository.findAll().stream()
+        Pet entity = repository.findAll().stream()
                 .filter(p -> p.getName().equalsIgnoreCase(name))
                 .findFirst()
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Pet not found with name: " + name)
+                        new ResourceNotFoundException("Pet not found with " + name + ": " + name)
                 );
 
         return petMapper.toResponse(entity);
@@ -63,7 +63,7 @@ public class PetServiceImpl implements PetService {
         entity.setAnimalType(animalType);
         entity.setBreed(breed);
 
-        return petMapper.toResponse(petRepository.save(entity));
+        return petMapper.toResponse(repository.save(entity));
     }
 
     @Override
@@ -81,12 +81,12 @@ public class PetServiceImpl implements PetService {
         entity.setAnimalType(animalType);
         entity.setBreed(breed);
 
-        return petMapper.toResponse(petRepository.save(entity));
+        return petMapper.toResponse(repository.save(entity));
     }
 
     @Override
     public void delete(Long id) {
         Pet entity = entityById(id);
-        petRepository.delete(entity);
+        repository.delete(entity);
     }
 }

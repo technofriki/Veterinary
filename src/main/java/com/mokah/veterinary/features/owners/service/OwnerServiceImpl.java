@@ -6,76 +6,77 @@ import com.mokah.veterinary.features.owners.dto.OwnerResponse;
 import com.mokah.veterinary.features.owners.entity.Owner;
 import com.mokah.veterinary.features.owners.mapper.OwnerMapper;
 import com.mokah.veterinary.features.owners.repository.OwnerRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class OwnerServiceImpl implements OwnerService {
 
-    private final OwnerRepository ownerRepository;
+    private final OwnerRepository repository;
     private final OwnerMapper ownerMapper;
-
-    public OwnerServiceImpl(OwnerRepository ownerRepository, OwnerMapper ownerMapper) {
-        this.ownerRepository = ownerRepository;
-        this.ownerMapper = ownerMapper;
-    }
 
     @Override
     public OwnerResponse create(OwnerRequest request) {
 
-        if (ownerRepository.existsByDni(request.getDni())) {
+        if (repository.existsByDni(request.getDni())) {
             throw new IllegalArgumentException("Owner with DNI " + request.getDni() + " already exists");
         }
 
         Owner owner = ownerMapper.toEntity(request);
-        Owner savedOwner = ownerRepository.save(owner);
+        Owner savedOwner = repository.save(owner);
         return ownerMapper.toResponse(savedOwner);
     }
 
     @Override
     public List<OwnerResponse> findAll() {
-        return ownerMapper.toResponseList(ownerRepository.findAll());
+        return ownerMapper.toResponseList(repository.findAll());
+    }
+
+    @Override
+    public Owner entityById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Owner", id));
     }
 
     @Override
     public OwnerResponse findById(Long id) {
-        Owner owner = ownerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Owner", id));
+        Owner owner = entityById(id);
         return ownerMapper.toResponse(owner);
     }
 
     @Override
     public OwnerResponse findByDni(String dni) {
-        Owner owner = ownerRepository.findByDni(dni)
+        Owner owner = repository.findByDni(dni)
                 .orElseThrow(() -> new ResourceNotFoundException("Owner", "DNI", dni));
         return ownerMapper.toResponse(owner);
     }
 
     @Override
     public OwnerResponse update(Long id, OwnerRequest request) {
-        Owner existingOwner = ownerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Owner", id));
+        Owner entity = entityById(id);
 
-        if (!existingOwner.getDni().equals(request.getDni())
-                && ownerRepository.existsByDni(request.getDni())) {
+        if (!entity.getDni().equals(request.getDni())
+                && repository.existsByDni(request.getDni())) {
 
             throw new IllegalArgumentException("Owner with DNI " + request.getDni() + " already exists");
         }
 
-       ownerMapper.updateEntity(existingOwner, request);
+       ownerMapper.updateEntity(entity, request);
 
-        Owner updatedOwner = ownerRepository.save(existingOwner);
+        Owner updatedOwner = repository.save(entity);
 
         return ownerMapper.toResponse(updatedOwner);
     }
 
     @Override
     public void delete(Long id) {
-        if (!ownerRepository.existsById(id)) {
+        if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("Owner", id);
         }
 
-        ownerRepository.deleteById(id);
+        repository.deleteById(id);
     }
 }
