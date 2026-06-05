@@ -19,7 +19,7 @@ public class VisitEntity {
 
     @Lob
     @Column(nullable = false)
-    private String obervations;
+    private String observations;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appoinment_id", nullable = false)
