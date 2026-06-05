@@ -10,6 +10,6 @@ import jakarta.validation.constraints.PositiveOrZero;
 public record VisitRequest(
         @NotBlank String observations,
         @NotNull @Positive Long appointmentId,
-        @NotNull @Positive Veterinarian veterinarian
+        @NotNull @Positive Long veterinarianId
 ) {
 }
