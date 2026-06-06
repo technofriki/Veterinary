@@ -22,7 +22,7 @@ public class Diagnosis {
     private String description;
 
     @Column(name = "date_diagnosis", nullable = false)
-    private LocalDateTime dateDiagnostic;
+    private LocalDateTime dateDiagnosis;
 
     @Column(name = "observations", length = 2000)
     private String observations;
