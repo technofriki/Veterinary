@@ -21,7 +21,12 @@ public class DiagnosisServiceImpl implements DiagnosisService {
 
     @Override
     public DiagnosisResponse create(DiagnosisRequest dto) {
+
+        System.out.println(dto.getDateDiagnosis());
+
         Diagnosis entity = mapper.toEntity(dto);
+
+        System.out.println(entity.getDateDiagnosis());
 
         return mapper.toResponse(repository.save(entity));
     }
