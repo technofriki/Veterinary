@@ -8,8 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class ConditionResponse {
-
-    private Long id;
     private String name;
     private String description;
 }
