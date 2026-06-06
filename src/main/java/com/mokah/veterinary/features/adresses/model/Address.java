@@ -1,4 +1,4 @@
-package com.mokah.veterinary.features.adresses.entity;
+package com.mokah.veterinary.features.adresses.model;
 
 import jakarta.persistence.*;
 import lombok.*;

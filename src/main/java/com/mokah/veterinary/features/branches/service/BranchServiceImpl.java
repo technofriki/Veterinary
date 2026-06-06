@@ -1,7 +1,6 @@
 package com.mokah.veterinary.features.branches.service;
 
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
-import com.mokah.veterinary.features.adresses.entity.Address;
 import com.mokah.veterinary.features.adresses.mapper.AddressMapper;
 import com.mokah.veterinary.features.branches.dto.BranchRequest;
 import com.mokah.veterinary.features.branches.dto.BranchResponse;
