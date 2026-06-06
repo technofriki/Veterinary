@@ -39,6 +39,11 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    public Appointment entityById(Long id){
+        return repository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Appointment not found with id " + id));
+    }
+    @Override
     public List<AppointmentResponse> findAll(
             LocalDateTime date,
             String reason,
@@ -63,10 +68,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         return mapper.toResponse(entityById(id));
     }
 
-    private Appointment entityById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Appointment", id));
-    }
 
     @Override
     public AppointmentResponse update(Long id, AppointmentUpdateDTO dto) {
