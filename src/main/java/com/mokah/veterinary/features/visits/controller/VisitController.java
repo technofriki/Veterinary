@@ -32,17 +32,17 @@ public class VisitController {
         return visitService.findAll(visitId, veterinarianName, petName);
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     public VisitResponse findById(@PathVariable Long id){
         return visitService.findById(id);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public VisitResponse update(@PathVariable Long id, @Valid @RequestBody VisitRequest request){
         return visitService.update(id, request);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id){
         visitService.delete(id);

@@ -1,10 +1,7 @@
 package com.mokah.veterinary.features.visits.service;
 
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
-import com.mokah.veterinary.features.appointments.model.Appointment;
 import com.mokah.veterinary.features.appointments.service.AppointmentServiceImpl;
-import com.mokah.veterinary.features.pets.service.PetService;
-import com.mokah.veterinary.features.veterinarians.service.VeterinarianService;
 import com.mokah.veterinary.features.veterinarians.service.VeterinarianServiceImpl;
 import com.mokah.veterinary.features.visits.dto.VisitRequest;
 import com.mokah.veterinary.features.visits.dto.VisitResponse;
@@ -27,7 +24,6 @@ public class VisitService implements VisitServiceInterface {
     private final VisitMapper visitMapper;
     private final VeterinarianServiceImpl veterinarianService;
     private final AppointmentServiceImpl appointmentService;
-    private final PetService petService;
 
 
     @Override
