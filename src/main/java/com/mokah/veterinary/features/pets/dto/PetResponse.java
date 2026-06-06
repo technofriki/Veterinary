@@ -12,7 +12,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class PetResponse {
-    private Long id;
     private String name;
     private LocalDate birthDate;
     private AnimalType animalType;
