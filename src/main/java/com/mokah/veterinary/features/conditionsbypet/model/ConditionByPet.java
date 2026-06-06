@@ -38,7 +38,7 @@ public class ConditionByPet {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "severity")
-    private ConditionSerevity severity;
+    private ConditionSeverity severity;
 
     @Column(name = "observations")
     private String observations;
