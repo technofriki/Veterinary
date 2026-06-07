@@ -18,7 +18,4 @@ public interface BranchMapper {
     BranchResponse toResponse(Branch entity);
 
     List<BranchResponse> toResponseList(List<Branch> entities);
-
-    @Mapping(target = "id", ignore = true)
-    void update(@MappingTarget Branch entity, BranchRequest request);
 }
