@@ -6,18 +6,19 @@ import com.mokah.veterinary.features.veterinarians.dto.VeterinarianUpdateDTO;
 import com.mokah.veterinary.features.veterinarians.model.Veterinarian;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface VeterinarianService {
-    VeterinarianResponse create(VeterinarianCreateDTO request);
+    VeterinarianResponse create(VeterinarianCreateDTO dto);
 
-    Veterinarian entityById(Long id);
+    Veterinarian entityByExternalId(UUID externalId);
 
-    VeterinarianResponse findById(Long id);
+    VeterinarianResponse findById(UUID externalId);
 
     List<VeterinarianResponse> findAll(
             String firstName, String lastName, String licenseNumber, Long branchId);
 
-    VeterinarianResponse update(Long id, VeterinarianUpdateDTO request);
+    VeterinarianResponse update(UUID externalId, VeterinarianUpdateDTO dto);
 
-    void delete(Long id);
+    void delete(UUID externalId);
 }

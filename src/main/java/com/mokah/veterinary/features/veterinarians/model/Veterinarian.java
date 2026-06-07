@@ -4,6 +4,8 @@ import com.mokah.veterinary.features.branches.entity.Branch;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "veterinarians")
 @Getter
@@ -16,6 +18,16 @@ public class Veterinarian {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "external_id", nullable = false, unique = true, updatable = false)
+    private UUID externalId;
+
+    @PrePersist
+    public void generateExternalId() {
+        if (externalId == null) {
+            externalId = UUID.randomUUID();
+        }
+    }
 
     @Column(name = "first_name", nullable = false)
     private String firstName;
@@ -35,5 +47,4 @@ public class Veterinarian {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id", nullable = false)
     private Branch branch;
-
 }

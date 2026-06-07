@@ -18,6 +18,7 @@ import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,43 +29,51 @@ public class VeterinarianServiceImpl implements VeterinarianService {
     private final BranchService branchService;
 
     @Override
-    public VeterinarianResponse create(VeterinarianCreateDTO request) {
-        if (veterinarianRepository.existsByEmail(request.email())) {
+    public VeterinarianResponse create(VeterinarianCreateDTO dto) {
+
+        if (veterinarianRepository.existsByEmail(dto.email())) {
             throw new VeterinarianEmailExistsException(
-                    "Veterinarian with email " + request.email() + " already exists");
-
+                    "Veterinarian with email " + dto.email() + " already exists");
         }
 
-        if (veterinarianRepository.existsByLicenseNumber(request.licenseNumber())) {
+        if (veterinarianRepository.existsByLicenseNumber(dto.licenseNumber())) {
             throw new VeterinarianLicenseExistsException(
-                    "Veterinarian with license number " + request.licenseNumber() + " Already exists.");
+                    "Veterinarian with license number " + dto.licenseNumber() + " already exists.");
         }
 
-        if (veterinarianRepository.existsByPhone(request.phone())) {
+        if (veterinarianRepository.existsByPhone(dto.phone())) {
             throw new VeterinarianPhoneExistsException(
-                    "Veterinarian with phone " + request.phone() + " already exists");
+                    "Veterinarian with phone " + dto.phone() + " already exists");
         }
 
-        Veterinarian entity = veterinarianMapper.toEntity(request);
-        Branch branch = branchService.entityById(request.branchId());
+        Veterinarian entity = veterinarianMapper.toEntity(dto);
+
+        Branch branch = branchService.entityById(dto.branchId());
         entity.setBranch(branch);
 
         return veterinarianMapper.toResponse(veterinarianRepository.save(entity));
     }
 
     @Override
-    public Veterinarian entityById(Long id) {
-        return veterinarianRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Veterinarian", id));
+    public Veterinarian entityByExternalId(UUID externalId) {
+        return veterinarianRepository.findByExternalId(externalId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Veterinarian", "externalId", externalId));
     }
 
     @Override
-    public VeterinarianResponse findById(Long id) {
-        return veterinarianMapper.toResponse(entityById(id));
+    public VeterinarianResponse findById(UUID externalId) {
+        return veterinarianMapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
-    public List<VeterinarianResponse> findAll(String firstName, String lastName, String licenseNumber, Long branchId) {
+    public List<VeterinarianResponse> findAll(
+            String firstName,
+            String lastName,
+            String licenseNumber,
+            Long branchId
+    ) {
+
         PredicateSpecification<Veterinarian> spec = PredicateSpecification.allOf(
                 VeterinarianSpecification.hasFirstName(firstName),
                 VeterinarianSpecification.hasLastName(lastName),
@@ -72,44 +81,54 @@ public class VeterinarianServiceImpl implements VeterinarianService {
                 VeterinarianSpecification.hasBranchId(branchId)
         );
 
-        return veterinarianMapper.toResponseList(veterinarianRepository.findAll(spec));
+        return veterinarianMapper.toResponseList(
+                veterinarianRepository.findAll(spec)
+        );
     }
 
     @Override
-    public VeterinarianResponse update(Long id, VeterinarianUpdateDTO request) {
-        Veterinarian entity = entityById(id);
+    public VeterinarianResponse update(UUID externalId, VeterinarianUpdateDTO dto) {
 
-        if (!request.email().equalsIgnoreCase(entity.getEmail())
-                && veterinarianRepository.existsByEmail(request.email())) {
+        Veterinarian entity = entityByExternalId(externalId);
+
+        if (dto.email() != null
+                && !dto.email().equalsIgnoreCase(entity.getEmail())
+                && veterinarianRepository.existsByEmail(dto.email())) {
+
             throw new VeterinarianEmailExistsException(
-                    "Veterinarian with email " + request.email() + " already exists");
+                    "Veterinarian with email " + dto.email() + " already exists");
         }
 
-        if (!request.phone().equalsIgnoreCase(entity.getPhone())
-                && veterinarianRepository.existsByPhone(request.phone())) {
+        if (dto.phone() != null
+                && !dto.phone().equalsIgnoreCase(entity.getPhone())
+                && veterinarianRepository.existsByPhone(dto.phone())) {
+
             throw new VeterinarianPhoneExistsException(
-                    "Veterinarian with phone " + request.phone() + " already exists");
+                    "Veterinarian with phone " + dto.phone() + " already exists");
         }
 
-        if (!request.licenseNumber().equalsIgnoreCase(entity.getLicenseNumber())
-                && veterinarianRepository.existsByLicenseNumber(request.licenseNumber())) {
+        if (dto.licenseNumber() != null
+                && !dto.licenseNumber().equalsIgnoreCase(entity.getLicenseNumber())
+                && veterinarianRepository.existsByLicenseNumber(dto.licenseNumber())) {
+
             throw new VeterinarianLicenseExistsException(
-                    "Veterinarian with license " + request.licenseNumber() + " number already exists");
+                    "Veterinarian with license " + dto.licenseNumber() + " number already exists");
         }
 
-        veterinarianMapper.update(entity, request);
+        veterinarianMapper.update(entity, dto);
 
-        if (request.branchId() != null) {
-            Branch branch = branchService.entityById(request.branchId());
+        if (dto.branchId() != null) {
+            Branch branch = branchService.entityById(dto.branchId());
             entity.setBranch(branch);
         }
 
-        return veterinarianMapper.toResponse(veterinarianRepository.save(entity));
+        return veterinarianMapper.toResponse(
+                veterinarianRepository.save(entity)
+        );
     }
 
     @Override
-    public void delete(Long id) {
-        Veterinarian entity = entityById(id);
-        veterinarianRepository.delete(entity);
+    public void delete(UUID externalId) {
+        veterinarianRepository.delete(entityByExternalId(externalId));
     }
 }

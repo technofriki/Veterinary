@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/veterinarians")
@@ -34,22 +35,22 @@ public class VeterinarianController {
         return veterinarianService.findAll(firstName, lastName, licenseNumber, branchId);
     }
 
-    @GetMapping("/{id}")
-    public VeterinarianResponse findById(@PathVariable Long id) {
-        return veterinarianService.findById(id);
+    @GetMapping("/{externalId}")
+    public VeterinarianResponse findById(@PathVariable UUID externalId) {
+        return veterinarianService.findById(externalId);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{externalId}")
     public VeterinarianResponse update(
-            @PathVariable Long id,
+            @PathVariable UUID externalId,
             @Valid @RequestBody VeterinarianUpdateDTO request) {
 
-        return veterinarianService.update(id, request);
+        return veterinarianService.update(externalId, request);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        veterinarianService.delete(id);
+    public void delete(@PathVariable UUID externalId) {
+        veterinarianService.delete(externalId);
     }
 }
