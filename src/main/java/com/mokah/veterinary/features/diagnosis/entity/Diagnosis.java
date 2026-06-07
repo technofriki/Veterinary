@@ -1,6 +1,7 @@
 package com.mokah.veterinary.features.diagnosis.entity;
 
-import com.mokah.veterinary.features.visits.entity.VisitEntity;
+
+import com.mokah.veterinary.features.visits.model.Visit;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,6 +31,6 @@ public class Diagnosis {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "visit_id", nullable = false)
-    private VisitEntity visit;
+    private Visit visit;
 
 }

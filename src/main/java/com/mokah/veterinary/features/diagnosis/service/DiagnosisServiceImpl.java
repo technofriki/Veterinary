@@ -6,6 +6,7 @@ import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponse;
 import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
 import com.mokah.veterinary.features.diagnosis.mapper.DiagnosisMapper;
 import com.mokah.veterinary.features.diagnosis.repository.DiagnosisRepository;
+import lombok.RequiredArgsConstructor;
 import com.mokah.veterinary.features.visits.service.VisitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-@Service("diagnosisService")
+@Service
 @RequiredArgsConstructor
 public class DiagnosisServiceImpl implements DiagnosisService {
 

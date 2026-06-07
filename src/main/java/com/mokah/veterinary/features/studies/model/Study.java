@@ -1,4 +1,4 @@
-package com.mokah.veterinary.features.studies.entity;
+package com.mokah.veterinary.features.studies.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,6 +19,7 @@ public class Study {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description", nullable = true)
+    @Column(name = "description")
     private String description;
+
 }

@@ -2,7 +2,7 @@ package com.mokah.veterinary.features.studies.mapper;
 
 import com.mokah.veterinary.features.studies.dto.StudyRequest;
 import com.mokah.veterinary.features.studies.dto.StudyResponse;
-import com.mokah.veterinary.features.studies.entity.Study;
+import com.mokah.veterinary.features.studies.model.Study;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 

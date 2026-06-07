@@ -10,6 +10,8 @@ public interface DiagnosisService {
 
     DiagnosisResponse create(DiagnosisRequest request);
 
+    Diagnosis entityById(Long id);
+
     List<DiagnosisResponse> findAll();
 
     DiagnosisResponse findById(Long id);
