@@ -1,5 +1,6 @@
 package com.mokah.veterinary.features.diagnosis.entity;
 
+import com.mokah.veterinary.features.visits.entity.VisitEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,9 +23,13 @@ public class Diagnosis {
     private String description;
 
     @Column(name = "date_diagnosis", nullable = false)
-    private LocalDateTime dateDiagnostic;
+    private LocalDateTime dateDiagnosis;
 
-    @Column(name = "observations", length = 2000)
+    @Column(name = "observations", columnDefinition = "TEXT")
     private String observations;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "visit_id", nullable = false)
+    private VisitEntity visit;
 
 }
