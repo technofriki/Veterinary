@@ -3,6 +3,7 @@ package com.mokah.veterinary.common.exception;
 import com.mokah.veterinary.common.dto.ApiErrorResponse;
 import com.mokah.veterinary.features.conditionsbypet.exception.ConditionByPetExistsException;
 import com.mokah.veterinary.features.diagnosisbystudies.exception.DiagnosisByStudyExistsException;
+import com.mokah.veterinary.features.studiesbyvisit.exception.StudyByVisitExistsException;
 import com.mokah.veterinary.features.veterinarians.exception.VeterinarianEmailExistsException;
 import com.mokah.veterinary.features.veterinarians.exception.VeterinarianLicenseExistsException;
 import com.mokah.veterinary.features.veterinarians.exception.VeterinarianPhoneExistsException;
@@ -40,13 +41,13 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, error);
     }
 
-    //
     @ExceptionHandler({
             VeterinarianEmailExistsException.class,
             VeterinarianLicenseExistsException.class,
             VeterinarianPhoneExistsException.class,
             DiagnosisByStudyExistsException.class,
-            ConditionByPetExistsException.class
+            ConditionByPetExistsException.class,
+            StudyByVisitExistsException.class
     })
     public ResponseEntity<ApiErrorResponse> handleBusinessError(RuntimeException ex) {
         return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
