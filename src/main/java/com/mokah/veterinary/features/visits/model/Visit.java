@@ -1,17 +1,14 @@
-package com.mokah.veterinary.features.visits.entity;
+package com.mokah.veterinary.features.visits.model;
 
 import com.mokah.veterinary.features.appointments.model.Appointment;
 import com.mokah.veterinary.features.veterinarians.model.Veterinarian;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-
 @Entity
 @Table(name = "visits")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class VisitEntity {
+public class Visit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

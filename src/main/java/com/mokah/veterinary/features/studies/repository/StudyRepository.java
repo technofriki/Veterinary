@@ -1,6 +1,6 @@
 package com.mokah.veterinary.features.studies.repository;
 
-import com.mokah.veterinary.features.studies.entity.Study;
+import com.mokah.veterinary.features.studies.model.Study;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
