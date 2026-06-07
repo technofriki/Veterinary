@@ -13,5 +13,4 @@ public record PetResponse(
         AnimalType animalType,
         Breed breed
 ) {
-
 }

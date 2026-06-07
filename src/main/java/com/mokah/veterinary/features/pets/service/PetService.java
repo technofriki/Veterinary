@@ -19,7 +19,7 @@ public interface PetService {
 
     PetResponse findByName(String name);
 
-    PetResponse update(UUID externalId, PetRequest dto);
+    PetResponse update(UUID externalId, PetRequest request);
 
     void delete(UUID externalId);
 }

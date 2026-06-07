@@ -5,15 +5,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public record PetRequest(
-       @NotBlank String name,
-
-       @NotNull LocalDate birthDate,
-
-       @NotNull @Positive Long animalTypeId,
-
-       @NotNull @Positive Long breedId
-
+        @NotBlank String name,
+        @NotNull LocalDate birthDate,
+        @NotNull UUID animalTypeExternalId,
+        @NotNull UUID breedExternalId
 ) {
 }

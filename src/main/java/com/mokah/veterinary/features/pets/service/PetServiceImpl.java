@@ -28,8 +28,8 @@ public class PetServiceImpl implements PetService {
     @Override
     public PetResponse create(PetRequest dto) {
 
-        AnimalType animalType = animalTypeService.entityById(dto.animalTypeId());
-        Breed breed = breedService.entityById(dto.breedId());
+        AnimalType animalType = animalTypeService.entityByExternalId(dto.animalTypeExternalId());
+        Breed breed = breedService.entityByExternalId(dto.breedExternalId());
 
         Pet entity = Pet.builder()
                 .name(dto.name())
@@ -55,15 +55,14 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public PetResponse findByExternalId(UUID externalId) {
-        Pet entity = entityByExternalId(externalId);
-
-        return mapper.toResponse(entity);
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
     public PetResponse findByName(String name) {
         Pet entity = repository.findByNameIgnoreCase(name)
-                .orElseThrow(() -> new ResourceNotFoundException("Pet", "name", name));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Pet", "name", name));
 
         return mapper.toResponse(entity);
     }
@@ -73,8 +72,8 @@ public class PetServiceImpl implements PetService {
 
         Pet entity = entityByExternalId(externalId);
 
-        AnimalType animalType = animalTypeService.entityById(dto.animalTypeId());
-        Breed breed = breedService.entityById(dto.breedId());
+        AnimalType animalType = animalTypeService.entityByExternalId(dto.animalTypeExternalId());
+        Breed breed = breedService.entityByExternalId(dto.breedExternalId());
 
         entity.setName(dto.name());
         entity.setBirthDate(dto.birthDate());
@@ -86,8 +85,6 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public void delete(UUID externalId) {
-        Pet entity = entityByExternalId(externalId);
-
-        repository.delete(entity);
+        repository.delete(entityByExternalId(externalId));
     }
 }

@@ -20,8 +20,8 @@ public class PetController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PetResponse create(@Valid @RequestBody PetRequest dto) {
-        return service.create(dto);
+    public PetResponse create(@Valid @RequestBody PetRequest request) {
+        return service.create(request);
     }
 
     @GetMapping
