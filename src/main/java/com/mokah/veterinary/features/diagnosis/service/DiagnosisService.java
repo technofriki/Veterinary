@@ -16,5 +16,5 @@ public interface DiagnosisService {
 
     DiagnosisResponse findById(Long id);
 
-    void delete(Long id);
+    Diagnosis entityById(Long id);
 }

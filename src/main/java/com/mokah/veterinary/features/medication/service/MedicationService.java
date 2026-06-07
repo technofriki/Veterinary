@@ -1,5 +1,6 @@
 package com.mokah.veterinary.features.medication.service;
 
+import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.medication.dto.MedicationRequest;
 import com.mokah.veterinary.features.medication.dto.MedicationResponse;
 import com.mokah.veterinary.features.medication.entity.MedicationEntity;
@@ -21,6 +22,17 @@ public class MedicationService implements MedicationServiceInterface{
         this.medicationMapper = medicationMapper;
     }
 
+
+    @Override
+    public MedicationEntity entityById(Long id){
+
+        return medicationRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Medication no found with id: ", id));
+    }
+    @Override
+    public MedicationResponse findById(Long id){
+        return medicationMapper.toResponse(entityById(id));
+    }
     @Override
     public List<MedicationResponse> findAll(){
         return medicationRepository.findAll().stream()
@@ -28,12 +40,7 @@ public class MedicationService implements MedicationServiceInterface{
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public MedicationResponse findById(Long id){
-        MedicationEntity entity = medicationRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Medication not found with ID: "+id));
-        return medicationMapper.toResponse(entity);
-    }
+
 
     @Override
     public MedicationResponse findByName(String name){

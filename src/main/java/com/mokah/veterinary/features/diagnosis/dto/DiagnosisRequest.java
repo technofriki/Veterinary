@@ -7,20 +7,14 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class DiagnosisRequest {
+public record DiagnosisRequest(@NotBlank
+                               @Size(max = 1000) String description,
 
-    @NotBlank
-    @Size(max = 1000)
-    private String description;
+                               @NotNull LocalDateTime dateDiagnosis,
 
-    @NotNull
-    private LocalDateTime dateDiagnosis;
+                               @NotBlank String observations,
 
-    @Size(max = 2000)
-    private String observations;
+                               @NotNull Long visitId) {
+
+
 }

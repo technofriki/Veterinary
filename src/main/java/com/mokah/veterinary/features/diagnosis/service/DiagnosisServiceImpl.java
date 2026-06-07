@@ -7,6 +7,8 @@ import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
 import com.mokah.veterinary.features.diagnosis.mapper.DiagnosisMapper;
 import com.mokah.veterinary.features.diagnosis.repository.DiagnosisRepository;
 import lombok.RequiredArgsConstructor;
+import com.mokah.veterinary.features.visits.service.VisitService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,42 +18,32 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class DiagnosisServiceImpl implements DiagnosisService {
 
-    private final DiagnosisRepository repository;
-    private final DiagnosisMapper mapper;
+    private final DiagnosisRepository diagnosisRepository;
+    private final DiagnosisMapper diagnosisMapper;
+    private final VisitService visitService;
 
     @Override
-    public DiagnosisResponse create(DiagnosisRequest dto) {
-
-        System.out.println(dto.getDateDiagnosis());
-
-        Diagnosis entity = mapper.toEntity(dto);
-
-        System.out.println(entity.getDateDiagnosis());
-
-        return mapper.toResponse(repository.save(entity));
-    }
-
-    @Override
-    public Diagnosis entityById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Diagnosis", id));
-    }
-
-    @Override
-    public List<DiagnosisResponse> findAll() {
-        return mapper.toResponseList(repository.findAll());
+    public Diagnosis entityById(Long id){
+        return diagnosisRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Diagnosis no found with id: ", id));
     }
 
     @Override
     public DiagnosisResponse findById(Long id) {
-        Diagnosis entity = entityById(id);
-
-        return mapper.toResponse(entity);
+        return diagnosisMapper.toResponse(entityById(id));
+    }
+    @Override
+    public DiagnosisResponse create(DiagnosisRequest request) {
+        Diagnosis diagnosis = diagnosisMapper.toEntity(request);
+        diagnosis.setVisit(visitService.entityById(request.visitId()));
+        return diagnosisMapper.toResponse(diagnosisRepository.save(diagnosis));
     }
 
     @Override
-    public void delete(Long id) {
-        Diagnosis entity = entityById(id);
-        repository.delete(entity);
+    public List<DiagnosisResponse> findAll() {
+        return diagnosisMapper.toResponseList(diagnosisRepository.findAll());
     }
+
+
+
 }

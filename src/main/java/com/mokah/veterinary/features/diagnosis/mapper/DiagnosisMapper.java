@@ -20,5 +20,6 @@ public interface DiagnosisMapper {
     Diagnosis toEntity(DiagnosisRequest request);
 
     @Mapping(target = "id",ignore = true)
+    @Mapping(target = "visit",ignore = true)
     void updateEntity(@MappingTarget Diagnosis entity, DiagnosisRequest request);
 }
