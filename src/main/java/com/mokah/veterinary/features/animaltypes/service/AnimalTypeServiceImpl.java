@@ -10,52 +10,51 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class AnimalTypeServiceImpl implements AnimalTypeService {
 
-    private final AnimalTypeRepository animalTypeRepository;
-    private final AnimalTypeMapper animalTypeMapper;
+    private final AnimalTypeRepository repository;
+    private final AnimalTypeMapper mapper;
 
     @Override
-    public AnimalType entityById(Long id) {
-        return animalTypeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("AnimalType", id));
+    public AnimalType entityByExternalId(UUID externalId) {
+        return repository.findByExternalId(externalId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("AnimalType", "externalId", externalId));
     }
 
     @Override
-    public AnimalTypeResponse findById(Long id) {
-        return animalTypeMapper.toResponse(entityById(id));
+    public AnimalTypeResponse findById(UUID externalId) {
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
     public List<AnimalTypeResponse> findAll() {
-        return animalTypeRepository.findAll()
-                .stream()
-                .map(animalTypeMapper::toResponse)
-                .collect(Collectors.toList());
+        return mapper.toResponseList(repository.findAll());
     }
 
     @Override
-    public AnimalTypeResponse create(AnimalTypeRequest request) {
-        AnimalType entity = animalTypeMapper.toEntity(request);
-        return animalTypeMapper.toResponse(animalTypeRepository.save(entity));
+    public AnimalTypeResponse create(AnimalTypeRequest dto) {
+        AnimalType entity = mapper.toEntity(dto);
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
-    public AnimalTypeResponse update(Long id, AnimalTypeRequest request) {
-        AnimalType entity = entityById(id);
+    public AnimalTypeResponse update(UUID externalId, AnimalTypeRequest dto) {
 
-        entity.setName(request.getName());
+        AnimalType entity = entityByExternalId(externalId);
 
-        return animalTypeMapper.toResponse(animalTypeRepository.save(entity));
+        entity.setName(dto.name());
+
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
-    public void delete(Long id) {
-        AnimalType entity = entityById(id);
-        animalTypeRepository.delete(entity);
+    public void delete(UUID externalId) {
+        repository.delete(entityByExternalId(externalId));
     }
 }

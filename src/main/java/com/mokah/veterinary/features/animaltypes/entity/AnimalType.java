@@ -4,6 +4,8 @@ package com.mokah.veterinary.features.animaltypes.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "animal_type")
 @Getter
@@ -13,11 +15,20 @@ import lombok.*;
 @Builder
 public class AnimalType {
 
-@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-@Column (name = "name", nullable = true, length = 50)
-    private String name;
+    @Column(name = "external_id", nullable = false, unique = true, updatable = false)
+    private UUID externalId;
 
+    @PrePersist
+    public void generateExternalId() {
+        if (externalId == null) {
+            externalId = UUID.randomUUID();
+        }
+    }
+
+    @Column(name = "name", nullable = false, length = 50)
+    private String name;
 }
