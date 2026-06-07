@@ -1,18 +1,13 @@
 package com.mokah.veterinary.features.diagnosis.dto;
 
+import com.mokah.veterinary.features.visits.entity.VisitEntity;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class DiagnosisResponse {
-
-    private Long id;
-    private String description;
-    private LocalDateTime dateDiagnosis;
-    private String observations;
+public record DiagnosisResponse(
+        String description,
+        LocalDateTime dateDiagnosis,
+        String observations,
+        VisitEntity visit) {
 }
