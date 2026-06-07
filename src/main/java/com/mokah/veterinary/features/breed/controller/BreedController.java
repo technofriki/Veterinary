@@ -3,6 +3,7 @@ package com.mokah.veterinary.features.breed.controller;
 import com.mokah.veterinary.features.breed.dto.BreedRequest;
 import com.mokah.veterinary.features.breed.dto.BreedResponse;
 import com.mokah.veterinary.features.breed.service.BreedService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class BreedController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BreedResponse create(@RequestBody BreedRequest request) {
+    public BreedResponse create(@Valid @RequestBody BreedRequest request) {
         return breedService.create(request);
     }
 

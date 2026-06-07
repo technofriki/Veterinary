@@ -5,18 +5,21 @@ import com.mokah.veterinary.features.pets.dto.PetResponse;
 import com.mokah.veterinary.features.pets.model.Pet;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface PetService {
 
-    PetResponse create (PetRequest request);
+    PetResponse create(PetRequest request);
 
     List<PetResponse> findAll();
-    Pet entityById(Long id);
-    PetResponse findById(Long id);
+
+    Pet entityByExternalId(UUID externalId);
+
+    PetResponse findByExternalId(UUID externalId);
+
     PetResponse findByName(String name);
 
-    PetResponse update(Long id, PetRequest request);
+    PetResponse update(UUID externalId, PetRequest dto);
 
-    void delete(Long id);
-
+    void delete(UUID externalId);
 }
