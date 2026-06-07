@@ -15,6 +15,4 @@ public interface DiagnosisService {
     List<DiagnosisResponse> findAll();
 
     DiagnosisResponse findById(Long id);
-
-    Diagnosis entityById(Long id);
 }

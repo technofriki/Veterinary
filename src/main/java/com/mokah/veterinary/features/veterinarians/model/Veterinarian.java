@@ -10,8 +10,8 @@ import java.util.UUID;
 @Table(name = "veterinarians")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Veterinarian {
 

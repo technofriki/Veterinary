@@ -16,7 +16,7 @@ public interface VeterinarianService {
     VeterinarianResponse findById(UUID externalId);
 
     List<VeterinarianResponse> findAll(
-            String firstName, String lastName, String licenseNumber, Long branchId);
+            String firstName, String lastName, String licenseNumber, UUID branchExternalId);
 
     VeterinarianResponse update(UUID externalId, VeterinarianUpdateDTO dto);
 

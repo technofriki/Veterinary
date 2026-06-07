@@ -21,8 +21,8 @@ public class VeterinarianController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public VeterinarianResponse create(@Valid @RequestBody VeterinarianCreateDTO request) {
-        return veterinarianService.create(request);
+    public VeterinarianResponse create(@Valid @RequestBody VeterinarianCreateDTO dto) {
+        return veterinarianService.create(dto);
     }
 
     @GetMapping
@@ -30,9 +30,9 @@ public class VeterinarianController {
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) String licenseNumber,
-            @RequestParam(required = false) Long branchId
+            @RequestParam(required = false) UUID branchExternalId
     ) {
-        return veterinarianService.findAll(firstName, lastName, licenseNumber, branchId);
+        return veterinarianService.findAll(firstName, lastName, licenseNumber, branchExternalId);
     }
 
     @GetMapping("/{externalId}")
@@ -43,9 +43,9 @@ public class VeterinarianController {
     @PutMapping("/{externalId}")
     public VeterinarianResponse update(
             @PathVariable UUID externalId,
-            @Valid @RequestBody VeterinarianUpdateDTO request) {
-
-        return veterinarianService.update(externalId, request);
+            @Valid @RequestBody VeterinarianUpdateDTO dto
+    ) {
+        return veterinarianService.update(externalId, dto);
     }
 
     @DeleteMapping("/{externalId}")

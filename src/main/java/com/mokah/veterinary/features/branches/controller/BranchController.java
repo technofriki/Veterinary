@@ -20,8 +20,8 @@ public class BranchController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BranchResponse create(@Valid @RequestBody BranchRequest request) {
-        return branchService.create(request);
+    public BranchResponse create(@Valid @RequestBody BranchRequest dto) {
+        return branchService.create(dto);
     }
 
     @GetMapping
@@ -37,8 +37,8 @@ public class BranchController {
     @PutMapping("/{externalId}")
     public BranchResponse update(
             @PathVariable UUID externalId,
-            @Valid @RequestBody BranchRequest request) {
-        return branchService.update(externalId, request);
+            @Valid @RequestBody BranchRequest dto) {
+        return branchService.update(externalId, dto);
     }
 
     @DeleteMapping("/{externalId}")

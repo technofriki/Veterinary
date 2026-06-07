@@ -24,46 +24,52 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class VeterinarianServiceImpl implements VeterinarianService {
 
-    private final VeterinarianRepository veterinarianRepository;
-    private final VeterinarianMapper veterinarianMapper;
+    private final VeterinarianRepository repository;
+    private final VeterinarianMapper mapper;
     private final BranchService branchService;
 
     @Override
     public VeterinarianResponse create(VeterinarianCreateDTO dto) {
 
-        if (veterinarianRepository.existsByEmail(dto.email())) {
+        if (repository.existsByEmail(dto.email())) {
             throw new VeterinarianEmailExistsException(
                     "Veterinarian with email " + dto.email() + " already exists");
         }
 
-        if (veterinarianRepository.existsByLicenseNumber(dto.licenseNumber())) {
+        if (repository.existsByLicenseNumber(dto.licenseNumber())) {
             throw new VeterinarianLicenseExistsException(
-                    "Veterinarian with license number " + dto.licenseNumber() + " already exists.");
+                    "Veterinarian with license number " + dto.licenseNumber() + " already exists");
         }
 
-        if (veterinarianRepository.existsByPhone(dto.phone())) {
+        if (repository.existsByPhone(dto.phone())) {
             throw new VeterinarianPhoneExistsException(
                     "Veterinarian with phone " + dto.phone() + " already exists");
         }
 
-        Veterinarian entity = veterinarianMapper.toEntity(dto);
+        Veterinarian entity = mapper.toEntity(dto);
 
-        Branch branch = branchService.entityById(dto.branchId());
+        Branch branch = branchService.entityByExternalId(dto.branchExternalId());
         entity.setBranch(branch);
 
-        return veterinarianMapper.toResponse(veterinarianRepository.save(entity));
+        return mapper.toResponse(
+                repository.save(entity)
+        );
     }
 
     @Override
     public Veterinarian entityByExternalId(UUID externalId) {
-        return veterinarianRepository.findByExternalId(externalId)
+        return repository.findByExternalId(externalId)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Veterinarian", "externalId", externalId));
+                        new ResourceNotFoundException(
+                                "Veterinarian",
+                                "externalId",
+                                externalId
+                        ));
     }
 
     @Override
     public VeterinarianResponse findById(UUID externalId) {
-        return veterinarianMapper.toResponse(entityByExternalId(externalId));
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
@@ -71,18 +77,18 @@ public class VeterinarianServiceImpl implements VeterinarianService {
             String firstName,
             String lastName,
             String licenseNumber,
-            Long branchId
+            UUID branchExternalId
     ) {
 
         PredicateSpecification<Veterinarian> spec = PredicateSpecification.allOf(
                 VeterinarianSpecification.hasFirstName(firstName),
                 VeterinarianSpecification.hasLastName(lastName),
                 VeterinarianSpecification.hasLicenseNumber(licenseNumber),
-                VeterinarianSpecification.hasBranchId(branchId)
+                VeterinarianSpecification.hasBranchExternalId(branchExternalId)
         );
 
-        return veterinarianMapper.toResponseList(
-                veterinarianRepository.findAll(spec)
+        return mapper.toResponseList(
+                repository.findAll(spec)
         );
     }
 
@@ -91,9 +97,11 @@ public class VeterinarianServiceImpl implements VeterinarianService {
 
         Veterinarian entity = entityByExternalId(externalId);
 
+        // VALIDACIONES PRIMERO (importante orden correcto)
+
         if (dto.email() != null
                 && !dto.email().equalsIgnoreCase(entity.getEmail())
-                && veterinarianRepository.existsByEmail(dto.email())) {
+                && repository.existsByEmail(dto.email())) {
 
             throw new VeterinarianEmailExistsException(
                     "Veterinarian with email " + dto.email() + " already exists");
@@ -101,7 +109,7 @@ public class VeterinarianServiceImpl implements VeterinarianService {
 
         if (dto.phone() != null
                 && !dto.phone().equalsIgnoreCase(entity.getPhone())
-                && veterinarianRepository.existsByPhone(dto.phone())) {
+                && repository.existsByPhone(dto.phone())) {
 
             throw new VeterinarianPhoneExistsException(
                     "Veterinarian with phone " + dto.phone() + " already exists");
@@ -109,26 +117,28 @@ public class VeterinarianServiceImpl implements VeterinarianService {
 
         if (dto.licenseNumber() != null
                 && !dto.licenseNumber().equalsIgnoreCase(entity.getLicenseNumber())
-                && veterinarianRepository.existsByLicenseNumber(dto.licenseNumber())) {
+                && repository.existsByLicenseNumber(dto.licenseNumber())) {
 
             throw new VeterinarianLicenseExistsException(
-                    "Veterinarian with license " + dto.licenseNumber() + " number already exists");
+                    "Veterinarian with license " + dto.licenseNumber() + " already exists");
         }
 
-        veterinarianMapper.update(entity, dto);
+        // UPDATE CAMPOS SIMPLES
+        mapper.update(entity, dto);
 
-        if (dto.branchId() != null) {
-            Branch branch = branchService.entityById(dto.branchId());
+        // RELACIÓN
+        if (dto.branchExternalId() != null) {
+            Branch branch = branchService.entityByExternalId(dto.branchExternalId());
             entity.setBranch(branch);
         }
 
-        return veterinarianMapper.toResponse(
-                veterinarianRepository.save(entity)
+        return mapper.toResponse(
+                repository.save(entity)
         );
     }
 
     @Override
     public void delete(UUID externalId) {
-        veterinarianRepository.delete(entityByExternalId(externalId));
+        repository.delete(entityByExternalId(externalId));
     }
 }

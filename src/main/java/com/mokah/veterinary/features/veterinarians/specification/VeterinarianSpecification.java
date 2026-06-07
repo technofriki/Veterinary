@@ -3,37 +3,43 @@ package com.mokah.veterinary.features.veterinarians.specification;
 import com.mokah.veterinary.features.veterinarians.model.Veterinarian;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 
+import java.util.UUID;
+
 public class VeterinarianSpecification {
 
     public static PredicateSpecification<Veterinarian> hasFirstName(String firstName) {
-        return (from, cb) -> firstName == null
+        return (root, cb) -> firstName == null
                 ? cb.conjunction()
                 : cb.like(
-                cb.lower(from.get("firstName")),
-                "%" + firstName.toLowerCase() + "%");
+                cb.lower(root.get("firstName")),
+                "%" + firstName.toLowerCase() + "%"
+        );
     }
 
     public static PredicateSpecification<Veterinarian> hasLastName(String lastName) {
-        return (from, cb) -> lastName == null
+        return (root, cb) -> lastName == null
                 ? cb.conjunction()
                 : cb.like(
-                cb.lower(from.get("lastName")),
-                "%" + lastName.toLowerCase() + "%");
+                cb.lower(root.get("lastName")),
+                "%" + lastName.toLowerCase() + "%"
+        );
     }
 
     public static PredicateSpecification<Veterinarian> hasLicenseNumber(String licenseNumber) {
-        return (from, cb) -> licenseNumber == null
+        return (root, cb) -> licenseNumber == null
                 ? cb.conjunction()
                 : cb.like(
-                cb.lower(from.get("licenseNumber")),
-                "%" + licenseNumber.toLowerCase() + "%");
+                cb.lower(root.get("licenseNumber")),
+                "%" + licenseNumber.toLowerCase() + "%"
+        );
     }
 
-    public static PredicateSpecification<Veterinarian> hasBranchId(Long branchId) {
-        return (from, cb) -> branchId == null
+    public static PredicateSpecification<Veterinarian> hasBranchExternalId(UUID branchExternalId) {
+        return (root, cb) -> branchExternalId == null
                 ? cb.conjunction()
                 : cb.equal(
-                from.get("branch").get("id"),
-                branchId);
+                root.join("branch").get("externalId"),
+                branchExternalId
+        );
     }
 }
