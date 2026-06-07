@@ -3,7 +3,7 @@ package com.mokah.veterinary.features.studies.service;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.studies.dto.StudyRequest;
 import com.mokah.veterinary.features.studies.dto.StudyResponse;
-import com.mokah.veterinary.features.studies.entity.Study;
+import com.mokah.veterinary.features.studies.model.Study;
 import com.mokah.veterinary.features.studies.mapper.StudyMapper;
 import com.mokah.veterinary.features.studies.repository.StudyRepository;
 import com.mokah.veterinary.features.studies.specification.StudySpecification;

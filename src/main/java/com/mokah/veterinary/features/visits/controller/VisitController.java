@@ -2,7 +2,7 @@ package com.mokah.veterinary.features.visits.controller;
 
 import com.mokah.veterinary.features.visits.dto.VisitRequest;
 import com.mokah.veterinary.features.visits.dto.VisitResponse;
-import com.mokah.veterinary.features.visits.service.VisitService;
+import com.mokah.veterinary.features.visits.service.VisitServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VisitController {
 
-    private final VisitService visitService;
+    private final VisitServiceImpl visitService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

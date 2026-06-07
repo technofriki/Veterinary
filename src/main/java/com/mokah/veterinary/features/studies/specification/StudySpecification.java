@@ -1,6 +1,6 @@
 package com.mokah.veterinary.features.studies.specification;
 
-import com.mokah.veterinary.features.studies.entity.Study;
+import com.mokah.veterinary.features.studies.model.Study;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 
 public class StudySpecification {

@@ -9,7 +9,7 @@ import com.mokah.veterinary.features.diagnosisbystudies.exception.DiagnosisByStu
 import com.mokah.veterinary.features.diagnosisbystudies.mapper.DiagnosisByStudyMapper;
 import com.mokah.veterinary.features.diagnosisbystudies.model.DiagnosisByStudy;
 import com.mokah.veterinary.features.diagnosisbystudies.repository.DiagnosisByStudyRepository;
-import com.mokah.veterinary.features.studies.entity.Study;
+import com.mokah.veterinary.features.studies.model.Study;
 import com.mokah.veterinary.features.studies.service.StudyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

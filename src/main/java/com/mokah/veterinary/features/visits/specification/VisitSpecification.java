@@ -1,15 +1,15 @@
 package com.mokah.veterinary.features.visits.specification;
 
-import com.mokah.veterinary.features.visits.entity.VisitEntity;
+import com.mokah.veterinary.features.visits.model.Visit;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 
 public class VisitSpecification {
-    public static PredicateSpecification<VisitEntity> hasId(Long id) {
+    public static PredicateSpecification<Visit> hasId(Long id) {
         return(root, cb) -> id == null
                 ? cb.conjunction()
                 : cb.equal(root.get("id"), id);
     }
-    public static PredicateSpecification<VisitEntity> hasVeterinarianName(String name) {
+    public static PredicateSpecification<Visit> hasVeterinarianName(String name) {
         return (root, cb) -> {
             if (name == null || name.isBlank()) {
                 return cb.conjunction();
@@ -33,7 +33,7 @@ public class VisitSpecification {
             );
         };
     }
-    public static PredicateSpecification<VisitEntity> hasPetName(String petName) {
+    public static PredicateSpecification<Visit> hasPetName(String petName) {
         return(root, cb) -> petName == null || petName.isBlank()
                 ? cb.conjunction()
                 : cb.like(
