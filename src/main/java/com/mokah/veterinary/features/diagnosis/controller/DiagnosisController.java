@@ -35,9 +35,4 @@ public class DiagnosisController {
         return ResponseEntity.status(HttpStatus.CREATED).body(diagnosisService.create(request));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
-        diagnosisService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
 }
