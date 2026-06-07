@@ -2,21 +2,22 @@ package com.mokah.veterinary.features.breed.service;
 
 import com.mokah.veterinary.features.breed.dto.BreedRequest;
 import com.mokah.veterinary.features.breed.dto.BreedResponse;
-import com.mokah.veterinary.features.breed.entity.BreedEntity;
+import com.mokah.veterinary.features.breed.model.Breed;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface BreedService {
 
-    BreedEntity entityById(Long id);
+    Breed entityByExternalId(UUID externalId);
 
-    BreedResponse findById(Long id);
+    BreedResponse findById(UUID externalId);
 
     List<BreedResponse> findAll();
 
-    BreedResponse create(BreedRequest request);
+    BreedResponse create(BreedRequest dto);
 
-    BreedResponse update(Long id, BreedRequest request);
+    BreedResponse update(UUID externalId, BreedRequest dto);
 
-    void delete(Long id);
+    void delete(UUID externalId);
 }

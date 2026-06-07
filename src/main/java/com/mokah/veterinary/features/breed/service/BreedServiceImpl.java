@@ -3,60 +3,58 @@ package com.mokah.veterinary.features.breed.service;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.breed.dto.BreedRequest;
 import com.mokah.veterinary.features.breed.dto.BreedResponse;
-import com.mokah.veterinary.features.breed.entity.BreedEntity;
+import com.mokah.veterinary.features.breed.model.Breed;
 import com.mokah.veterinary.features.breed.mapper.BreedMapper;
 import com.mokah.veterinary.features.breed.repository.BreedRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class BreedServiceImpl implements BreedService{
+public class BreedServiceImpl implements BreedService {
 
-    private final BreedRepository breedRepository;
-    private final BreedMapper breedMapper;
+    private final BreedRepository repository;
+    private final BreedMapper mapper;
 
     @Override
-    public BreedEntity entityById(Long id) {
-        return breedRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Breed", id));
+    public Breed entityByExternalId(UUID externalId) {
+        return repository.findByExternalId(externalId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Breed", "externalId", externalId));
     }
 
     @Override
-    public BreedResponse findById(Long id) {
-        return breedMapper.toResponse(entityById(id));
+    public BreedResponse findById(UUID externalId) {
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
     public List<BreedResponse> findAll() {
-        return breedRepository.findAll()
-                .stream()
-                .map(breedMapper::toResponse)
-                .collect(Collectors.toList());
+        return mapper.toResponseList(repository.findAll());
     }
 
     @Override
     public BreedResponse create(BreedRequest request) {
-        BreedEntity entity = breedMapper.toEntity(request);
-        return breedMapper.toResponse(breedRepository.save(entity));
+        Breed entity = mapper.toEntity(request);
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
-    public BreedResponse update(Long id, BreedRequest request) {
-        BreedEntity entity = entityById(id);
+    public BreedResponse update(UUID externalId, BreedRequest request) {
 
-        entity.setName(request.getName());
-        entity.setColor(request.getColor());
+        Breed entity = entityByExternalId(externalId);
 
-        return breedMapper.toResponse(breedRepository.save(entity));
+        entity.setName(request.name());
+        entity.setColor(request.color());
+
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
-    public void delete(Long id) {
-        BreedEntity entity = entityById(id);
-        breedRepository.delete(entity);
+    public void delete(UUID externalId) {
+        repository.delete(entityByExternalId(externalId));
     }
 }

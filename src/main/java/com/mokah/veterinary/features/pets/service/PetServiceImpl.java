@@ -3,7 +3,7 @@ package com.mokah.veterinary.features.pets.service;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.animaltypes.entity.AnimalType;
 import com.mokah.veterinary.features.animaltypes.service.AnimalTypeService;
-import com.mokah.veterinary.features.breed.entity.BreedEntity;
+import com.mokah.veterinary.features.breed.model.Breed;
 import com.mokah.veterinary.features.breed.service.BreedService;
 import com.mokah.veterinary.features.pets.dto.PetRequest;
 import com.mokah.veterinary.features.pets.dto.PetResponse;
@@ -29,7 +29,7 @@ public class PetServiceImpl implements PetService {
     public PetResponse create(PetRequest dto) {
 
         AnimalType animalType = animalTypeService.entityById(dto.animalTypeId());
-        BreedEntity breed = breedService.entityById(dto.breedId());
+        Breed breed = breedService.entityById(dto.breedId());
 
         Pet entity = Pet.builder()
                 .name(dto.name())
@@ -74,7 +74,7 @@ public class PetServiceImpl implements PetService {
         Pet entity = entityByExternalId(externalId);
 
         AnimalType animalType = animalTypeService.entityById(dto.animalTypeId());
-        BreedEntity breed = breedService.entityById(dto.breedId());
+        Breed breed = breedService.entityById(dto.breedId());
 
         entity.setName(dto.name());
         entity.setBirthDate(dto.birthDate());

@@ -1,14 +1,10 @@
 package com.mokah.veterinary.features.breed.dto;
 
-import lombok.*;
+import java.util.UUID;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class BreedResponse {
-    private Long id;
-    private String name;
-    private String color;
+public record BreedResponse(
+        UUID externalId,
+        String name,
+        String color
+) {
 }
