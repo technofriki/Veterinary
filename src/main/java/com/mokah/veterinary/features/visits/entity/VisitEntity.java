@@ -22,7 +22,7 @@ public class VisitEntity {
     private String observations;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "appoinment_id", nullable = false)
+    @JoinColumn(name = "appointment_id", nullable = false)
     private Appointment appointment;
 
     @ManyToOne(fetch = FetchType.LAZY)
