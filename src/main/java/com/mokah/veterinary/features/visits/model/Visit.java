@@ -5,6 +5,8 @@ import com.mokah.veterinary.features.veterinarians.model.Veterinarian;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "visits")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
@@ -13,6 +15,16 @@ public class Visit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "external_id", nullable = false, unique = true, updatable = false)
+    private UUID externalId;
+
+    @PrePersist
+    public void generateExternalId() {
+        if (externalId == null) {
+            externalId = UUID.randomUUID();
+        }
+    }
 
     @Lob
     @Column(nullable = false)

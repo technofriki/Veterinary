@@ -2,50 +2,63 @@ package com.mokah.veterinary.features.visits.controller;
 
 import com.mokah.veterinary.features.visits.dto.VisitRequest;
 import com.mokah.veterinary.features.visits.dto.VisitResponse;
-import com.mokah.veterinary.features.visits.service.VisitServiceImpl;
+import com.mokah.veterinary.features.visits.service.VisitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/visits")
 @RequiredArgsConstructor
 public class VisitController {
 
-    private final VisitServiceImpl visitService;
+    private final VisitService service;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public VisitResponse create(@Valid @RequestBody VisitRequest request) {
-        return visitService.create(request);
+    public VisitResponse create(
+            @Valid @RequestBody VisitRequest dto
+    ) {
+        return service.create(dto);
     }
 
     @GetMapping
     public List<VisitResponse> findAll(
-            @RequestParam(required = false) Long visitId,
+            @RequestParam(required = false) UUID visitExternalId,
             @RequestParam(required = false) String veterinarianName,
             @RequestParam(required = false) String petName
     ) {
-        return visitService.findAll(visitId, veterinarianName, petName);
+        return service.findAll(
+                visitExternalId,
+                veterinarianName,
+                petName
+        );
     }
 
-    @GetMapping("/{id}")
-    public VisitResponse findById(@PathVariable Long id){
-        return visitService.findById(id);
+    @GetMapping("/{externalId}")
+    public VisitResponse findById(
+            @PathVariable UUID externalId
+    ) {
+        return service.findById(externalId);
     }
 
-    @PutMapping("/{id}")
-    public VisitResponse update(@PathVariable Long id, @Valid @RequestBody VisitRequest request){
-        return visitService.update(id, request);
+    @PutMapping("/{externalId}")
+    public VisitResponse update(
+            @PathVariable UUID externalId,
+            @Valid @RequestBody VisitRequest dto
+    ) {
+        return service.update(externalId, dto);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id){
-        visitService.delete(id);
+    public void delete(
+            @PathVariable UUID externalId
+    ) {
+        service.delete(externalId);
     }
-
 }
