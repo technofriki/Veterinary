@@ -2,7 +2,7 @@ package com.mokah.veterinary.features.prescriptions.service;
 
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.diagnosis.service.DiagnosisService;
-import com.mokah.veterinary.features.medication.service.MedicationService;
+import com.mokah.veterinary.features.medication.service.MedicationServiceImpl;
 import com.mokah.veterinary.features.prescriptions.dto.PrescriptionRequest;
 import com.mokah.veterinary.features.prescriptions.dto.PrescriptionResponse;
 import com.mokah.veterinary.features.prescriptions.mapper.PrescriptionMapper;
@@ -21,7 +21,7 @@ public class PrescriptionServiceImpl implements PrescriptionService {
 
     private final PrescriptionRepository prescriptionRepository;
     private final PrescriptionMapper prescriptionMapper;
-    private final MedicationService medicationService;
+    private final MedicationServiceImpl medicationServiceImpl;
     private final DiagnosisService diagnosisService;
 
 
@@ -47,7 +47,7 @@ return prescriptionMapper.toResponse(entityById(id));
     public PrescriptionResponse create(PrescriptionRequest request){
     Prescription entity = prescriptionMapper.toEntity(request);
     entity.setDiagnosis(diagnosisService.entityById(request.diagnosisId()));
-    entity.setMedication(medicationService.entityById(request.medicationId()));
+    entity.setMedication(medicationServiceImpl.entityById(request.medicationId()));
     return  prescriptionMapper.toResponse(prescriptionRepository.save(entity));
     }
 
