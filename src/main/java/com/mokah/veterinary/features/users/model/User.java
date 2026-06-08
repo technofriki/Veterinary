@@ -1,4 +1,4 @@
-package com.mokah.veterinary.features.users.entity;
+package com.mokah.veterinary.features.users.model;
 
 import com.mokah.veterinary.features.users.enums.UserState;
 import jakarta.persistence.*;

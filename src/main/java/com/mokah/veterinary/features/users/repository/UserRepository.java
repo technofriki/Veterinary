@@ -1,6 +1,6 @@
 package com.mokah.veterinary.features.users.repository;
 
-import com.mokah.veterinary.features.users.entity.User;
+import com.mokah.veterinary.features.users.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

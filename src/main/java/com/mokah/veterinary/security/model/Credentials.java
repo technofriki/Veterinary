@@ -1,6 +1,6 @@
 package com.mokah.veterinary.security.model;
 
-import com.mokah.veterinary.features.users.entity.User;
+import com.mokah.veterinary.features.users.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
