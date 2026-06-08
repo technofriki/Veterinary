@@ -3,47 +3,66 @@ package com.mokah.veterinary.features.diagnosis.service;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.diagnosis.dto.DiagnosisRequest;
 import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponse;
-import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
+import com.mokah.veterinary.features.diagnosis.model.Diagnosis;
 import com.mokah.veterinary.features.diagnosis.mapper.DiagnosisMapper;
 import com.mokah.veterinary.features.diagnosis.repository.DiagnosisRepository;
 import lombok.RequiredArgsConstructor;
 import com.mokah.veterinary.features.visits.service.VisitService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class DiagnosisServiceImpl implements DiagnosisService {
 
-    private final DiagnosisRepository diagnosisRepository;
-    private final DiagnosisMapper diagnosisMapper;
+    private final DiagnosisRepository repository;
+    private final DiagnosisMapper mapper;
     private final VisitService visitService;
 
     @Override
-    public Diagnosis entityById(Long id){
-        return diagnosisRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Diagnosis no found with id: ", id));
+    public Diagnosis entityByExternalId(UUID externalId) {
+        return repository.findByExternalId(externalId).
+                orElseThrow(() -> new ResourceNotFoundException("Diagnosis", "externalId", externalId));
     }
 
     @Override
-    public DiagnosisResponse findById(Long id) {
-        return diagnosisMapper.toResponse(entityById(id));
+    public DiagnosisResponse findById(UUID externalId) {
+        return mapper.toResponse(entityByExternalId(externalId));
     }
+
     @Override
-    public DiagnosisResponse create(DiagnosisRequest request) {
-        Diagnosis diagnosis = diagnosisMapper.toEntity(request);
-        diagnosis.setVisit(visitService.entityById(request.visitId()));
-        return diagnosisMapper.toResponse(diagnosisRepository.save(diagnosis));
+    public DiagnosisResponse create(DiagnosisRequest dto) {
+
+        Diagnosis entity = mapper.toEntity(dto);
+
+        entity.setVisit(visitService.entityByExternalId(dto.visitExternalId()));
+
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
     public List<DiagnosisResponse> findAll() {
-        return diagnosisMapper.toResponseList(diagnosisRepository.findAll());
+        return mapper.toResponseList(repository.findAll());
     }
 
+    @Override
+    public DiagnosisResponse update(
+            UUID externalId,
+            DiagnosisRequest request) {
 
+        Diagnosis entity = entityByExternalId(externalId);
 
+        mapper.update(entity, request);
+
+        entity.setVisit(visitService.entityByExternalId(request.visitExternalId()));
+
+        return mapper.toResponse(repository.save(entity));
+    }
+
+    @Override
+    public void delete(UUID externalId) {
+        repository.delete(entityByExternalId(externalId));
+    }
 }

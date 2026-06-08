@@ -1,17 +1,23 @@
 package com.mokah.veterinary.features.branches.service;
 
-
 import com.mokah.veterinary.features.branches.dto.BranchRequest;
 import com.mokah.veterinary.features.branches.dto.BranchResponse;
-import com.mokah.veterinary.features.branches.entity.Branch;
+import com.mokah.veterinary.features.branches.model.Branch;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface BranchService {
-   BranchResponse create(BranchRequest request);
+
+   BranchResponse create(BranchRequest dto);
+
    List<BranchResponse> findAll();
-   Branch entityById(Long id);
-   BranchResponse findById(Long id);
-   BranchResponse update(Long id, BranchRequest request);
-   void delete(Long id);
+
+   Branch entityByExternalId(UUID externalId);
+
+   BranchResponse findById(UUID externalId);
+
+   BranchResponse update(UUID externalId, BranchRequest dto);
+
+   void delete(UUID externalId);
 }

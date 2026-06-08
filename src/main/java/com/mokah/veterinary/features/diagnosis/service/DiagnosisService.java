@@ -2,19 +2,22 @@ package com.mokah.veterinary.features.diagnosis.service;
 
 import com.mokah.veterinary.features.diagnosis.dto.DiagnosisRequest;
 import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponse;
-import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
+import com.mokah.veterinary.features.diagnosis.model.Diagnosis;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface DiagnosisService {
 
-    DiagnosisResponse create(DiagnosisRequest request);
+    DiagnosisResponse create(DiagnosisRequest dto);
 
-    Diagnosis entityById(Long id);
+    Diagnosis entityByExternalId(UUID externalId);
 
     List<DiagnosisResponse> findAll();
 
-    DiagnosisResponse findById(Long id);
+    DiagnosisResponse findById(UUID externalId);
 
-    Diagnosis entityById(Long id);
+    DiagnosisResponse update(UUID externalId, DiagnosisRequest dto);
+
+    void delete(UUID externalId);
 }

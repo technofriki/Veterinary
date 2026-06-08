@@ -2,15 +2,16 @@ package com.mokah.veterinary.features.breed.mapper;
 
 import com.mokah.veterinary.features.breed.dto.BreedRequest;
 import com.mokah.veterinary.features.breed.dto.BreedResponse;
-import com.mokah.veterinary.features.breed.entity.BreedEntity;
+import com.mokah.veterinary.features.breed.model.Breed;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
-@Mapper (componentModel = "spring")
+import java.util.List;
+
+@Mapper(componentModel = "spring")
 public interface BreedMapper {
 
-    @Mapping(target = "id", ignore = true)
-    BreedEntity toEntity(BreedRequest request);
+    Breed toEntity(BreedRequest request);
 
-    BreedResponse toResponse(BreedEntity entity);
+    BreedResponse toResponse(Breed entity);
+    List<BreedResponse> toResponseList(List<Breed> entities);
 }

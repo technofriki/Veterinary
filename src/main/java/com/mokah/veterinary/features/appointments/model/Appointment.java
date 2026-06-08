@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "appointments")
@@ -19,6 +20,16 @@ public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "external_id", nullable = false, unique = true, updatable = false)
+    private UUID externalId;
+
+    @PrePersist
+    public void generateExternalId() {
+        if (externalId == null) {
+            externalId = UUID.randomUUID();
+        }
+    }
 
     @Column(name = "appointment_date", nullable = false)
     private LocalDateTime appointmentDate;

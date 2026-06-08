@@ -9,9 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/owners-by-pets")
+@RequestMapping("/api/owner-by-pet")
 @RequiredArgsConstructor
 public class OwnerByPetController {
 
@@ -28,19 +29,22 @@ public class OwnerByPetController {
         return service.findAll();
     }
 
-    @GetMapping("/{id}")
-    public OwnerByPetResponse findById(@PathVariable Long id) {
-        return service.findById(id);
+    @GetMapping("/{externalId}")
+    public OwnerByPetResponse findById(@PathVariable UUID externalId) {
+        return service.findById(externalId);
     }
 
-    @PutMapping("/{id}")
-    public OwnerByPetResponse update(@PathVariable Long id, @Valid @RequestBody OwnerByPetDTO request) {
-        return service.update(id, request);
+    @PutMapping("/{externalId}")
+    public OwnerByPetResponse update(
+            @PathVariable UUID externalId,
+            @Valid @RequestBody OwnerByPetDTO request) {
+
+        return service.update(externalId, request);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        service.delete(id);
+    public void delete(@PathVariable UUID externalId) {
+        service.delete(externalId);
     }
 }

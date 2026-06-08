@@ -5,12 +5,25 @@ import com.mokah.veterinary.features.studies.dto.StudyResponse;
 import com.mokah.veterinary.features.studies.model.Study;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface StudyService {
-       StudyResponse create(StudyRequest request);
-       List<StudyResponse> findAll(String name, String description);
-       StudyResponse findById(Long id);
-       Study entityById(Long id);
-       StudyResponse update(Long id, StudyRequest request);
-       void delete(Long id) ;
+
+       StudyResponse create(StudyRequest dto);
+
+       List<StudyResponse> findAll(
+               String name,
+               String description
+       );
+
+       StudyResponse findById(UUID externalId);
+
+       Study entityByExternalId(UUID externalId);
+
+       StudyResponse update(
+               UUID externalId,
+               StudyRequest dto
+       );
+
+       void delete(UUID externalId);
 }

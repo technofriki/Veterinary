@@ -12,52 +12,61 @@ import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class StudyServiceImpl implements StudyService {
 
-    private final StudyRepository studyRepository;
-    private final StudyMapper studyMapper;
+    private final StudyRepository repository;
+    private final StudyMapper mapper;
 
     @Override
-    public StudyResponse create(StudyRequest request) {
-        Study entity = studyMapper.toEntity(request);
-        return studyMapper.toResponse(studyRepository.save(entity));
+    public StudyResponse create(StudyRequest dto) {
+        Study entity = mapper.toEntity(dto);
+
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
-    public List<StudyResponse> findAll(String name, String description) {
-        PredicateSpecification<Study> spec = PredicateSpecification.allOf(
-                StudySpecification.hasName(name),
-                StudySpecification.hasDescription(description)
-        );
-        return studyMapper.toResponseList(studyRepository.findAll(spec));
+    public List<StudyResponse> findAll(
+            String name,
+            String description) {
+
+        PredicateSpecification<Study> spec =
+                PredicateSpecification.allOf(
+                        StudySpecification.hasName(name),
+                        StudySpecification.hasDescription(description)
+                );
+
+        return mapper.toResponseList(repository.findAll(spec));
     }
 
     @Override
-    public StudyResponse findById(Long id) {
-        return studyMapper.toResponse(entityById(id));
+    public Study entityByExternalId(UUID externalId) {
+        return repository.findByExternalId(externalId)
+                .orElseThrow(() -> new ResourceNotFoundException("Study", "externalId", externalId));
     }
 
     @Override
-    public Study entityById(Long id) {
-        return studyRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Study", id));
+    public StudyResponse findById(UUID externalId) {
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
-    public StudyResponse update(Long id, StudyRequest request) {
-        Study entity = entityById(id);
-        studyMapper.updateEntity(entity, request);
+    public StudyResponse update(
+            UUID externalId,
+            StudyRequest dto) {
 
-        return studyMapper.toResponse(studyRepository.save(entity));
+        Study entity = entityByExternalId(externalId);
+
+        mapper.updateEntity(entity, dto);
+
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
-    public void delete(Long id) {
-        Study entity = entityById(id);
-        studyRepository.delete(entity);
+    public void delete(UUID externalId) {
+        repository.delete(entityByExternalId(externalId));
     }
-
 }

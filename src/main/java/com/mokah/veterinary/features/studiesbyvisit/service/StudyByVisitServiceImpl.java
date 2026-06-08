@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,30 +29,31 @@ public class StudyByVisitServiceImpl implements StudyByVisitService {
 
     @Override
     public StudyByVisitResponse create(StudyByVisitDTO dto) {
-        if (repository.existsByStudyIdAndVisitId(dto.studyId(), dto.visitId())) {
-            throw new StudyByVisitExistsException("This study is already associated with the visit");
+
+        if (repository.existsByStudyExternalIdAndVisitExternalId(dto.studyExternalId(), dto.visitExternalId())) {
+            throw new StudyByVisitExistsException(
+                    "This study is already associated with the visit"
+            );
         }
 
         StudyByVisit entity = mapper.toEntity(dto);
-        Study study = studyService.entityById(dto.studyId());
-        Visit visit = visitService.entityById(dto.visitId());
 
-        entity.setStudy(study);
-        entity.setVisit(visit);
+        entity.setStudy(studyService.entityByExternalId(dto.studyExternalId()));
+
+        entity.setVisit(visitService.entityByExternalId(dto.visitExternalId()));
 
         return mapper.toResponse(repository.save(entity));
     }
 
     @Override
-    public StudyByVisit entityById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Study by visit", id));
+    public StudyByVisit entityByExternalId(UUID externalId) {
+        return repository.findByExternalId(externalId)
+                .orElseThrow(() -> new ResourceNotFoundException("StudyByVisit", "externalId", externalId));
     }
 
     @Override
-    public StudyByVisitResponse findById(Long id) {
-        StudyByVisit entity = entityById(id);
-        return mapper.toResponse(entity);
+    public StudyByVisitResponse findById(UUID externalId) {
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
@@ -60,9 +62,11 @@ public class StudyByVisitServiceImpl implements StudyByVisitService {
     }
 
     @Override
-    public void deactivate(Long id) {
-        StudyByVisit entity = entityById(id);
+    public void deactivate(UUID externalId) {
+        StudyByVisit entity = entityByExternalId(externalId);
+
         entity.setActive(false);
+
         repository.save(entity);
     }
 }

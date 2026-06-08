@@ -2,19 +2,24 @@ package com.mokah.veterinary.features.owners.service;
 
 import com.mokah.veterinary.features.owners.dto.OwnerRequest;
 import com.mokah.veterinary.features.owners.dto.OwnerResponse;
-import com.mokah.veterinary.features.owners.entity.Owner;
+import com.mokah.veterinary.features.owners.model.Owner;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface OwnerService {
-    OwnerResponse create(OwnerRequest request);
 
-    Owner entityById(Long id);
+    OwnerResponse create(OwnerRequest dto);
+
+    Owner entityByExternalId(UUID externalId);
+
     List<OwnerResponse> findAll();
-    OwnerResponse findById(Long id);
+
+    OwnerResponse findById(UUID externalId);
+
     OwnerResponse findByDni(String dni);
 
-    OwnerResponse update(Long id, OwnerRequest request);
+    OwnerResponse update(UUID externalId, OwnerRequest dto);
 
-    void delete(Long id);
+    void delete(UUID externalId);
 }

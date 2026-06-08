@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/branches")
@@ -19,8 +20,8 @@ public class BranchController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BranchResponse create(@Valid @RequestBody BranchRequest request) {
-        return branchService.create(request);
+    public BranchResponse create(@Valid @RequestBody BranchRequest dto) {
+        return branchService.create(dto);
     }
 
     @GetMapping
@@ -28,21 +29,22 @@ public class BranchController {
         return branchService.findAll();
     }
 
-    @GetMapping("/{id}")
-    public BranchResponse findById(@PathVariable Long id) {
-        return branchService.findById(id);
+    @GetMapping("/{externalId}")
+    public BranchResponse findById(@PathVariable UUID externalId) {
+        return branchService.findById(externalId);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{externalId}")
     public BranchResponse update(
-            @PathVariable Long id,
-            @Valid @RequestBody BranchRequest request) {
-        return branchService.update(id, request);
+            @PathVariable UUID externalId,
+            @Valid @RequestBody BranchRequest dto) {
+
+        return branchService.update(externalId, dto);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        branchService.delete(id);
+    public void delete(@PathVariable UUID externalId) {
+        branchService.delete(externalId);
     }
 }

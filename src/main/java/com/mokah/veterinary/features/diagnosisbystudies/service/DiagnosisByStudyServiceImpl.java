@@ -1,7 +1,7 @@
 package com.mokah.veterinary.features.diagnosisbystudies.service;
 
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
-import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
+import com.mokah.veterinary.features.diagnosis.model.Diagnosis;
 import com.mokah.veterinary.features.diagnosis.service.DiagnosisService;
 import com.mokah.veterinary.features.diagnosisbystudies.dto.DiagnosisByStudyDTO;
 import com.mokah.veterinary.features.diagnosisbystudies.dto.DiagnosisByStudyResponse;
@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,13 +28,18 @@ public class DiagnosisByStudyServiceImpl implements DiagnosisByStudyService {
 
     @Override
     public DiagnosisByStudyResponse create(DiagnosisByStudyDTO dto) {
-        if (repository.existsByDiagnosisIdAndStudyId(dto.diagnosisId(), dto.studyId())) {
-            throw new DiagnosisByStudyExistsException("Diagnosis with that study already exists");
+
+        Diagnosis diagnosis = diagnosisService.entityByExternalId(dto.diagnosisExternalId());
+
+        Study study = studyService.entityByExternalId(dto.studyExternalId());
+
+        if (repository.existsByDiagnosisIdAndStudyId(diagnosis.getId(), study.getId())) {
+            throw new DiagnosisByStudyExistsException(
+                    "Diagnosis with that study already exists"
+            );
         }
 
         DiagnosisByStudy entity = mapper.toEntity(dto);
-        Diagnosis diagnosis = diagnosisService.entityById(dto.diagnosisId());
-        Study study = studyService.entityById(dto.studyId());
 
         entity.setDiagnosis(diagnosis);
         entity.setStudy(study);
@@ -43,15 +49,15 @@ public class DiagnosisByStudyServiceImpl implements DiagnosisByStudyService {
     }
 
     @Override
-    public DiagnosisByStudy entityById(Long id) {
-        return repository.findById(id).
-                orElseThrow(() -> new ResourceNotFoundException("Diagnosis by Study", id));
+    public DiagnosisByStudy entityByExternalId(UUID externalId) {
+
+        return repository.findByExternalId(externalId)
+                .orElseThrow(() -> new ResourceNotFoundException("DiagnosisByStudy", "externalId", externalId));
     }
 
     @Override
-    public DiagnosisByStudyResponse findById(Long id) {
-        DiagnosisByStudy entity = entityById(id);
-        return mapper.toResponse(entity);
+    public DiagnosisByStudyResponse findById(UUID externalId) {
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
@@ -60,9 +66,12 @@ public class DiagnosisByStudyServiceImpl implements DiagnosisByStudyService {
     }
 
     @Override
-    public void deactivate(Long id) {
-        DiagnosisByStudy entity = entityById(id);
+    public void deactivate(UUID externalId) {
+
+        DiagnosisByStudy entity = entityByExternalId(externalId);
+
         entity.setActive(false);
+
         repository.save(entity);
     }
 }

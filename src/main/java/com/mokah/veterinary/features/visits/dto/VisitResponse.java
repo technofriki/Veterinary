@@ -1,12 +1,14 @@
 package com.mokah.veterinary.features.visits.dto;
 
-import com.mokah.veterinary.features.appointments.model.Appointment;
-import com.mokah.veterinary.features.veterinarians.model.Veterinarian;
+import com.mokah.veterinary.features.appointments.dto.AppointmentResponse;
+import com.mokah.veterinary.features.veterinarians.dto.VeterinarianResponse;
+
+import java.util.UUID;
 
 public record VisitResponse(
+        UUID externalId,
         String observations,
-        Appointment appointment,
-        Veterinarian veterinarian
+        AppointmentResponse appointment,
+        VeterinarianResponse veterinarian
 ) {
-
 }

@@ -3,46 +3,62 @@ package com.mokah.veterinary.features.visits.specification;
 import com.mokah.veterinary.features.visits.model.Visit;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 
+import java.util.UUID;
+
 public class VisitSpecification {
-    public static PredicateSpecification<Visit> hasId(Long id) {
-        return(root, cb) -> id == null
+
+    public static PredicateSpecification<Visit> hasExternalId(UUID externalId) {
+        return (from, cb) -> externalId == null
                 ? cb.conjunction()
-                : cb.equal(root.get("id"), id);
+                : cb.equal(
+                from.get("externalId"),
+                externalId
+        );
     }
-    public static PredicateSpecification<Visit> hasVeterinarianName(String name) {
-        return (root, cb) -> {
-            if (name == null || name.isBlank()) {
+
+    public static PredicateSpecification<Visit> hasVeterinarianName(String veterinarianName) {
+        return (from, cb) -> {
+
+            if (veterinarianName == null || veterinarianName.isBlank()) {
                 return cb.conjunction();
             }
 
-            String pattern = "%" + name.toLowerCase() + "%";
+            String pattern = "%" + veterinarianName.toLowerCase() + "%";
 
             return cb.or(
                     cb.like(
                             cb.lower(
-                                    root.get("veterinarian").get("firstName")
+                                    from.get("veterinarian")
+                                            .get("firstName")
                             ),
                             pattern
                     ),
                     cb.like(
                             cb.lower(
-                                    root.get("veterinarian").get("lastName")
+                                    from.get("veterinarian")
+                                            .get("lastName")
                             ),
                             pattern
                     )
             );
         };
     }
+
     public static PredicateSpecification<Visit> hasPetName(String petName) {
-        return(root, cb) -> petName == null || petName.isBlank()
-                ? cb.conjunction()
-                : cb.like(
-                cb.lower(
-                        root.get("appointment")
-                                .get("pet")
-                                .get("name")
-                ),
-                "%" + petName.toLowerCase() + "%"
-        );
+        return (from, cb) -> {
+
+            if (petName == null || petName.isBlank()) {
+                return cb.conjunction();
+            }
+
+            return cb.like(
+                    cb.lower(
+                            from.get("appointment")
+                                    .get("pet")
+                                    .get("name")
+                    ),
+                    "%" + petName.toLowerCase() + "%"
+            );
+        };
     }
 }

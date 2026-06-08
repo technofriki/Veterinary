@@ -14,5 +14,6 @@ public interface AddressMapper {
     Address toEntity(AddressRequest request);
 
     AddressResponse toResponse(Address entity);
+
     void update(@MappingTarget Address entity, AddressRequest request);
 }

@@ -12,11 +12,11 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface VeterinarianMapper {
-    VeterinarianResponse toResponse(Veterinarian entity);
 
+    VeterinarianResponse toResponse(Veterinarian entity);
     List<VeterinarianResponse> toResponseList(List<Veterinarian> entities);
 
-    Veterinarian toEntity(VeterinarianCreateDTO request);
+    Veterinarian toEntity(VeterinarianCreateDTO dto);
 
-    void update(@MappingTarget Veterinarian entity, VeterinarianUpdateDTO request);
+    void update(@MappingTarget Veterinarian entity, VeterinarianUpdateDTO dto);
 }

@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/veterinarians")
@@ -20,8 +21,8 @@ public class VeterinarianController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public VeterinarianResponse create(@Valid @RequestBody VeterinarianCreateDTO request) {
-        return veterinarianService.create(request);
+    public VeterinarianResponse create(@Valid @RequestBody VeterinarianCreateDTO dto) {
+        return veterinarianService.create(dto);
     }
 
     @GetMapping
@@ -29,27 +30,27 @@ public class VeterinarianController {
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) String licenseNumber,
-            @RequestParam(required = false) Long branchId
-    ) {
-        return veterinarianService.findAll(firstName, lastName, licenseNumber, branchId);
+            @RequestParam(required = false) UUID branchExternalId) {
+
+        return veterinarianService.findAll(firstName, lastName, licenseNumber, branchExternalId);
     }
 
-    @GetMapping("/{id}")
-    public VeterinarianResponse findById(@PathVariable Long id) {
-        return veterinarianService.findById(id);
+    @GetMapping("/{externalId}")
+    public VeterinarianResponse findById(@PathVariable UUID externalId) {
+        return veterinarianService.findById(externalId);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{externalId}")
     public VeterinarianResponse update(
-            @PathVariable Long id,
-            @Valid @RequestBody VeterinarianUpdateDTO request) {
+            @PathVariable UUID externalId,
+            @Valid @RequestBody VeterinarianUpdateDTO dto) {
 
-        return veterinarianService.update(id, request);
+        return veterinarianService.update(externalId, dto);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        veterinarianService.delete(id);
+    public void delete(@PathVariable UUID externalId) {
+        veterinarianService.delete(externalId);
     }
 }

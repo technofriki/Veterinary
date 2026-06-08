@@ -5,11 +5,17 @@ import com.mokah.veterinary.features.diagnosisbystudies.dto.DiagnosisByStudyResp
 import com.mokah.veterinary.features.diagnosisbystudies.model.DiagnosisByStudy;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface DiagnosisByStudyService {
+
     DiagnosisByStudyResponse create(DiagnosisByStudyDTO dto);
-    DiagnosisByStudy entityById(Long id);
-    DiagnosisByStudyResponse findById(Long id);
+
+    DiagnosisByStudy entityByExternalId(UUID externalId);
+
+    DiagnosisByStudyResponse findById(UUID externalId);
+
     List<DiagnosisByStudyResponse> findAll();
-    void deactivate(Long id);
+
+    void deactivate(UUID externalId);
 }

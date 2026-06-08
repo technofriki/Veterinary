@@ -1,9 +1,9 @@
 package com.mokah.veterinary.features.pets.service;
 
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
-import com.mokah.veterinary.features.animaltypes.entity.AnimalType;
+import com.mokah.veterinary.features.animaltypes.model.AnimalType;
 import com.mokah.veterinary.features.animaltypes.service.AnimalTypeService;
-import com.mokah.veterinary.features.breed.entity.BreedEntity;
+import com.mokah.veterinary.features.breed.model.Breed;
 import com.mokah.veterinary.features.breed.service.BreedService;
 import com.mokah.veterinary.features.pets.dto.PetRequest;
 import com.mokah.veterinary.features.pets.dto.PetResponse;
@@ -14,79 +14,75 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class PetServiceImpl implements PetService {
 
     private final PetRepository repository;
-    private final PetMapper petMapper;
+    private final PetMapper mapper;
     private final AnimalTypeService animalTypeService;
     private final BreedService breedService;
 
     @Override
-    public Pet entityById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Pet", id));
+    public PetResponse create(PetRequest dto) {
+
+        AnimalType animalType = animalTypeService.entityByExternalId(dto.animalTypeExternalId());
+        Breed breed = breedService.entityByExternalId(dto.breedExternalId());
+
+        Pet entity = Pet.builder()
+                .name(dto.name())
+                .birthDate(dto.birthDate())
+                .animalType(animalType)
+                .breed(breed)
+                .build();
+
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
     public List<PetResponse> findAll() {
-        return petMapper.toResponseList(repository.findAll());
+        return mapper.toResponseList(repository.findAll());
     }
 
     @Override
-    public PetResponse findById(Long id) {
-        return petMapper.toResponse(entityById(id));
+    public Pet entityByExternalId(UUID externalId) {
+        return repository.findByExternalId(externalId)
+                .orElseThrow(() -> new ResourceNotFoundException("Pet", "externalId", externalId));
+    }
+
+    @Override
+    public PetResponse findByExternalId(UUID externalId) {
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
     public PetResponse findByName(String name) {
-        Pet entity = repository.findAll().stream()
-                .filter(p -> p.getName().equalsIgnoreCase(name))
-                .findFirst()
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Pet not found with " + name + ": " + name)
-                );
+        Pet entity = repository.findByNameIgnoreCase(name)
+                .orElseThrow(() -> new ResourceNotFoundException("Pet", "name", name));
 
-        return petMapper.toResponse(entity);
+        return mapper.toResponse(entity);
     }
 
     @Override
-    public PetResponse create(PetRequest request) {
+    public PetResponse update(UUID externalId, PetRequest dto) {
 
-        AnimalType animalType = animalTypeService.entityById(request.animalTypeId());
-        BreedEntity breed = breedService.entityById(request.breedId());
+        Pet entity = entityByExternalId(externalId);
 
-        Pet entity = petMapper.toEntity(request);
+        AnimalType animalType = animalTypeService.entityByExternalId(dto.animalTypeExternalId());
+        Breed breed = breedService.entityByExternalId(dto.breedExternalId());
 
+        entity.setName(dto.name());
+        entity.setBirthDate(dto.birthDate());
         entity.setAnimalType(animalType);
         entity.setBreed(breed);
 
-        return petMapper.toResponse(repository.save(entity));
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
-    public PetResponse update(Long id, PetRequest request) {
-
-        Pet entity = entityById(id);
-
-        AnimalType animalType = animalTypeService.entityById(request.animalTypeId());
-        BreedEntity breed = breedService.entityById(request.breedId());
-
-        Pet mapped = petMapper.toEntity(request);
-
-        entity.setName(mapped.getName());
-        entity.setBirthDate(mapped.getBirthDate());
-        entity.setAnimalType(animalType);
-        entity.setBreed(breed);
-
-        return petMapper.toResponse(repository.save(entity));
-    }
-
-    @Override
-    public void delete(Long id) {
-        Pet entity = entityById(id);
-        repository.delete(entity);
+    public void delete(UUID externalId) {
+        repository.delete(entityByExternalId(externalId));
     }
 }

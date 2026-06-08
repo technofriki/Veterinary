@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -31,28 +32,28 @@ public class AppointmentController {
             @RequestParam(required = false) LocalDateTime date,
             @RequestParam(required = false) String reason,
             @RequestParam(required = false) AppointmentStatus status,
-            @RequestParam(required = false) Long petId,
-            @RequestParam(required = false) Long veterinarianId
-    ) {
-        return service.findAll(date, reason, status, petId, veterinarianId);
+            @RequestParam(required = false) UUID petExternalId,
+            @RequestParam(required = false) UUID veterinarianExternalId) {
+
+        return service.findAll(date, reason, status, petExternalId, veterinarianExternalId);
     }
 
-    @GetMapping("/{id}")
-    public AppointmentResponse findById(@PathVariable Long id) {
-        return service.findById(id);
+    @GetMapping("/{externalId}")
+    public AppointmentResponse findById(@PathVariable UUID externalId) {
+        return service.findById(externalId);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{externalId}")
     public AppointmentResponse update(
-            @PathVariable Long id,
-            @Valid @RequestBody AppointmentUpdateDTO dto
-    ) {
-        return service.update(id, dto);
+            @PathVariable UUID externalId,
+            @Valid @RequestBody AppointmentUpdateDTO dto) {
+
+        return service.update(externalId, dto);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        service.delete(id);
+    public void delete(@PathVariable UUID externalId) {
+        service.delete(externalId);
     }
 }

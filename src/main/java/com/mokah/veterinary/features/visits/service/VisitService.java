@@ -5,15 +5,26 @@ import com.mokah.veterinary.features.visits.dto.VisitResponse;
 import com.mokah.veterinary.features.visits.model.Visit;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface VisitService {
 
+    VisitResponse create(VisitRequest dto);
 
-    VisitResponse create(VisitRequest visitRequest);
+    List<VisitResponse> findAll(
+            UUID visitExternalId,
+            String veterinarianName,
+            String petName
+    );
 
-    List<VisitResponse> findAll(Long visitId, String veterinarianName, String petName);
-    VisitResponse update(Long id, VisitRequest visitRequest);
-    VisitResponse findById(Long id);
-    void delete(Long id);
-    Visit entityById(Long id);
+    Visit entityByExternalId(UUID externalId);
+
+    VisitResponse findById(UUID externalId);
+
+    VisitResponse update(
+            UUID externalId,
+            VisitRequest dto
+    );
+
+    void delete(UUID externalId);
 }

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/diagnosis-by-studies")
@@ -23,9 +24,9 @@ public class DiagnosisByStudyController {
         return service.create(dto);
     }
 
-    @GetMapping("/{id}")
-    public DiagnosisByStudyResponse findById(@PathVariable Long id) {
-        return service.findById(id);
+    @GetMapping("/{externalId}")
+    public DiagnosisByStudyResponse findById(@PathVariable UUID externalId) {
+        return service.findById(externalId);
     }
 
     @GetMapping
@@ -33,9 +34,9 @@ public class DiagnosisByStudyController {
         return service.findAll();
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deactivate(@PathVariable Long id) {
-        service.deactivate(id);
+    public void deactivate(@PathVariable UUID externalId) {
+        service.deactivate(externalId);
     }
 }

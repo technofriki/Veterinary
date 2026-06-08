@@ -2,7 +2,7 @@ package com.mokah.veterinary.features.diagnosis.mapper;
 
 import com.mokah.veterinary.features.diagnosis.dto.DiagnosisRequest;
 import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponse;
-import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
+import com.mokah.veterinary.features.diagnosis.model.Diagnosis;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -17,9 +17,15 @@ public interface DiagnosisMapper {
     List<DiagnosisResponse> toResponseList(List<Diagnosis> entities);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "externalId", ignore = true)
+    @Mapping(target = "visit", ignore = true)
     Diagnosis toEntity(DiagnosisRequest request);
 
-    @Mapping(target = "id",ignore = true)
-    @Mapping(target = "visit",ignore = true)
-    void updateEntity(@MappingTarget Diagnosis entity, DiagnosisRequest request);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "externalId", ignore = true)
+    @Mapping(target = "visit", ignore = true)
+    void update(
+            @MappingTarget Diagnosis entity,
+            DiagnosisRequest request
+    );
 }

@@ -1,8 +1,14 @@
 package com.mokah.veterinary.features.medication.repository;
 
-import com.mokah.veterinary.features.medication.entity.MedicationEntity;
+import com.mokah.veterinary.features.medication.model.Medication;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface MedicationRepository extends JpaRepository<MedicationEntity, Long> {
+import java.util.Optional;
+import java.util.UUID;
 
+@Repository
+public interface MedicationRepository extends JpaRepository<Medication, Long> {
+    Optional<Medication> findByExternalId(UUID externalId);
+    Optional<Medication> findByNameIgnoreCase(String name);
 }

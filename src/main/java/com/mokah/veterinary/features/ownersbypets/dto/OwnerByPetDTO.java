@@ -1,10 +1,11 @@
 package com.mokah.veterinary.features.ownersbypets.dto;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+
+import java.util.UUID;
 
 public record OwnerByPetDTO(
-        @NotNull @Positive Long ownerId,
-        @NotNull @Positive Long petId
+        @NotNull UUID ownerExternalId,
+        @NotNull UUID petExternalId
 ) {
 }

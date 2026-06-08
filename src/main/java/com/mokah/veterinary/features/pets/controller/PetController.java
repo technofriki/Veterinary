@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/pets")
@@ -24,14 +25,13 @@ public class PetController {
     }
 
     @GetMapping
-    public List<PetResponse> findAll(
-    ) {
+    public List<PetResponse> findAll() {
         return service.findAll();
     }
 
-    @GetMapping("/{id}")
-    public PetResponse findById(@PathVariable Long id) {
-        return service.findById(id);
+    @GetMapping("/{externalId}")
+    public PetResponse findByExternalId(@PathVariable UUID externalId) {
+        return service.findByExternalId(externalId);
     }
 
     @GetMapping("/name/{name}")
@@ -39,17 +39,17 @@ public class PetController {
         return service.findByName(name);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{externalId}")
     public PetResponse update(
-            @PathVariable Long id,
-            @Valid @RequestBody PetRequest request
-    ) {
-        return service.update(id, request);
+            @PathVariable UUID externalId,
+            @Valid @RequestBody PetRequest request) {
+
+        return service.update(externalId, request);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        service.delete(id);
+    public void delete(@PathVariable UUID externalId) {
+        service.delete(externalId);
     }
 }

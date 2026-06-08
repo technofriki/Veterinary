@@ -4,35 +4,47 @@ import com.mokah.veterinary.features.diagnosis.dto.DiagnosisRequest;
 import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponse;
 import com.mokah.veterinary.features.diagnosis.service.DiagnosisService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/diagnosis")
+@RequiredArgsConstructor
 public class DiagnosisController {
 
-    private final DiagnosisService diagnosisService;
+    private final DiagnosisService service;
 
-    public DiagnosisController(DiagnosisService diagnosisService) {
-        this.diagnosisService = diagnosisService;
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public DiagnosisResponse create(@Valid @RequestBody DiagnosisRequest dto) {
+        return service.create(dto);
     }
 
     @GetMapping
-    public ResponseEntity<List<DiagnosisResponse>> findAll() {
-        return ResponseEntity.ok(diagnosisService.findAll());
+    public List<DiagnosisResponse> findAll() {
+        return service.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<DiagnosisResponse> findById(@PathVariable Long id){
-        return ResponseEntity.ok(diagnosisService.findById(id));
+    @GetMapping("/{externalId}")
+    public DiagnosisResponse findById(@PathVariable UUID externalId) {
+        return service.findById(externalId);
     }
 
-    @PostMapping
-    public ResponseEntity<DiagnosisResponse> create(@Valid @RequestBody DiagnosisRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(diagnosisService.create(request));
+    @PutMapping("/{externalId}")
+    public DiagnosisResponse update(
+            @PathVariable UUID externalId,
+            @Valid @RequestBody DiagnosisRequest dto) {
+
+        return service.update(externalId, dto);
     }
 
+    @DeleteMapping("/{externalId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable UUID externalId) {
+        service.delete(externalId);
+    }
 }
