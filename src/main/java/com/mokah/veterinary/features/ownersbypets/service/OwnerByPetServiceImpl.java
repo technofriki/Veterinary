@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,34 +26,35 @@ public class OwnerByPetServiceImpl implements OwnerByPetService {
     private final PetService petService;
 
     @Override
-    public OwnerByPetResponse create(OwnerByPetDTO request) {
+    public OwnerByPetResponse create(OwnerByPetDTO dto) {
 
+        Owner owner = ownerService.entityByExternalId(dto.ownerExternalId());
+        Pet pet = petService.entityByExternalId(dto.petExternalId());
 
-        if (repository.existsByOwnerIdAndPetId(
-                request.ownerId(),
-                request.petId())) {
-
+        if (repository.existsByOwnerIdAndPetId(owner.getId(), pet.getId())) {
             throw new IllegalArgumentException(
-                    "This owner is already associated with this pet");
+                    "This owner is already associated with this pet"
+            );
         }
 
-        OwnerByPet entity = mapper.toEntity(request);
+        OwnerByPet entity = mapper.toEntity(dto);
 
-        entity.setOwner(ownerService.entityById(request.ownerId()));
-        entity.setPet(petService.entityById(request.petId()));
+        entity.setOwner(owner);
+        entity.setPet(pet);
 
         return mapper.toResponse(repository.save(entity));
     }
 
     @Override
-    public OwnerByPet entityById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Owner by Pet", id));
+    public OwnerByPet entityByExternalId(UUID externalId) {
+        return repository.findByExternalId(externalId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("OwnerByPet", "externalId", externalId));
     }
 
     @Override
-    public OwnerByPetResponse findById(Long id) {
-        return mapper.toResponse(entityById(id));
+    public OwnerByPetResponse findById(UUID externalId) {
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
@@ -61,29 +63,31 @@ public class OwnerByPetServiceImpl implements OwnerByPetService {
     }
 
     @Override
-    public OwnerByPetResponse update(Long id, OwnerByPetDTO request) {
+    public OwnerByPetResponse update(UUID externalId, OwnerByPetDTO dto) {
 
-        OwnerByPet entity = entityById(id);
+        OwnerByPet entity = entityByExternalId(externalId);
+
+        Owner owner = ownerService.entityByExternalId(dto.ownerExternalId());
+        Pet pet = petService.entityByExternalId(dto.petExternalId());
 
         if (repository.existsByOwnerIdAndPetIdAndIdNot(
-
-                request.ownerId(),
-                request.petId(),
-                id)) {
+                owner.getId(),
+                pet.getId(),
+                entity.getId())) {
 
             throw new IllegalArgumentException(
-                    "This owner is already associated with this pet");
+                    "This owner is already associated with this pet"
+            );
         }
 
-        entity.setOwner(ownerService.entityById(request.ownerId()));
-        entity.setPet(petService.entityById(request.petId()));
+        entity.setOwner(owner);
+        entity.setPet(pet);
 
         return mapper.toResponse(repository.save(entity));
     }
 
     @Override
-    public void delete(Long id) {
-        OwnerByPet entity = entityById(id);
-        repository.delete(entity);
+    public void delete(UUID externalId) {
+        repository.delete(entityByExternalId(externalId));
     }
 }
