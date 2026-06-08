@@ -1,13 +1,10 @@
 package com.mokah.veterinary.features.conditions.dto;
 
-import lombok.*;
+import java.util.UUID;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class ConditionResponse {
-    private String name;
-    private String description;
+public record ConditionResponse(
+        UUID externalId,
+        String name,
+        String description
+) {
 }

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -19,15 +20,13 @@ public class ConditionServiceImpl implements ConditionService {
     private final ConditionMapper mapper;
 
     @Override
-    public Condition entityById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Condition", id));
-    }
+    public ConditionResponse create(ConditionRequest request) {
 
-    @Override
-    public ConditionResponse create(ConditionRequest dto) {
-        Condition entity = mapper.toEntity(dto);
-        return mapper.toResponse(repository.save(entity));
+        Condition entity = mapper.toEntity(request);
+
+        return mapper.toResponse(
+                repository.save(entity)
+        );
     }
 
     @Override
@@ -36,14 +35,42 @@ public class ConditionServiceImpl implements ConditionService {
     }
 
     @Override
-    public ConditionResponse findById(Long id) {
-        Condition entity = entityById(id);
-        return mapper.toResponse(entity);
+    public Condition entityByExternalId(UUID externalId) {
+        return repository.findByExternalId(externalId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Condition",
+                                "externalId",
+                                externalId
+                        ));
     }
 
     @Override
-    public void delete(Long id) {
-        Condition entity = entityById(id);
-        repository.delete(entity);
+    public ConditionResponse findById(UUID externalId) {
+        return mapper.toResponse(
+                entityByExternalId(externalId)
+        );
+    }
+
+    @Override
+    public ConditionResponse update(
+            UUID externalId,
+            ConditionRequest request
+    ) {
+
+        Condition entity = entityByExternalId(externalId);
+
+        mapper.update(entity, request);
+
+        return mapper.toResponse(
+                repository.save(entity)
+        );
+    }
+
+    @Override
+    public void delete(UUID externalId) {
+        repository.delete(
+                entityByExternalId(externalId)
+        );
     }
 }

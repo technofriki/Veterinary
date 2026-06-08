@@ -4,39 +4,53 @@ import com.mokah.veterinary.features.conditions.dto.ConditionRequest;
 import com.mokah.veterinary.features.conditions.dto.ConditionResponse;
 import com.mokah.veterinary.features.conditions.service.ConditionService;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/conditions")
+@RequiredArgsConstructor
 public class ConditionController {
 
-    private final ConditionService conditionService;
+    private final ConditionService service;
 
-    public ConditionController(ConditionService conditionService) {
-        this.conditionService = conditionService;
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ConditionResponse create(
+            @Valid @RequestBody ConditionRequest dto
+    ) {
+        return service.create(dto);
     }
 
     @GetMapping
-    public ResponseEntity<List<ConditionResponse>> findAll(){
-        return ResponseEntity.ok(conditionService.findAll());
+    public List<ConditionResponse> findAll() {
+        return service.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ConditionResponse> findById(@PathVariable Long id){
-        return ResponseEntity.ok(conditionService.findById(id));
+    @GetMapping("/{externalId}")
+    public ConditionResponse findById(
+            @PathVariable UUID externalId
+    ) {
+        return service.findById(externalId);
     }
 
-    @PostMapping
-    public ResponseEntity<ConditionResponse> create(@Valid @RequestBody ConditionRequest request){
-        return ResponseEntity.ok(conditionService.create(request));
+    @PutMapping("/{externalId}")
+    public ConditionResponse update(
+            @PathVariable UUID externalId,
+            @Valid @RequestBody ConditionRequest dto
+    ) {
+        return service.update(externalId, dto);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
-        conditionService.delete(id);
-        return ResponseEntity.noContent().build();
+    @DeleteMapping("/{externalId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(
+            @PathVariable UUID externalId
+    ) {
+        service.delete(externalId);
     }
 }
