@@ -5,13 +5,17 @@ import com.mokah.veterinary.features.studiesbyvisit.dto.StudyByVisitResponse;
 import com.mokah.veterinary.features.studiesbyvisit.model.StudyByVisit;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface StudyByVisitService {
+
     StudyByVisitResponse create(StudyByVisitDTO dto);
 
-    StudyByVisit entityById(Long id);
-    StudyByVisitResponse findById(Long id);
+    StudyByVisit entityByExternalId(UUID externalId);
+
+    StudyByVisitResponse findById(UUID externalId);
+
     List<StudyByVisitResponse> findAll();
 
-    void deactivate(Long id);
+    void deactivate(UUID externalId);
 }

@@ -11,10 +11,13 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface StudyByVisitMapper {
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "externalId", ignore = true)
     @Mapping(target = "study", ignore = true)
     @Mapping(target = "visit", ignore = true)
-   StudyByVisit toEntity(StudyByVisitDTO dto);
+    StudyByVisit toEntity(StudyByVisitDTO dto);
 
-   StudyByVisitResponse toResponse(StudyByVisit entity);
-   List<StudyByVisitResponse> toResponseList(List<StudyByVisit> entities);
+    StudyByVisitResponse toResponse(StudyByVisit entity);
+
+    List<StudyByVisitResponse> toResponseList(List<StudyByVisit> entities);
 }

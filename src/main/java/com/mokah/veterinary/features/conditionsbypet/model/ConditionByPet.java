@@ -9,9 +9,7 @@ import java.time.LocalDateTime;
 
 
 @Entity
-// no permitir dos filas con la misma combinacion de condition_id y pet_id por base de datos
-@Table(name = "condition_by_pet", uniqueConstraints =
-        {@UniqueConstraint(columnNames = {"condition_id", "pet_id"})})
+@Table(name = "condition_by_pet", uniqueConstraints = {@UniqueConstraint(columnNames = {"condition_id", "pet_id"})})
 @Getter
 @Setter
 @AllArgsConstructor
