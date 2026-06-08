@@ -5,14 +5,19 @@ import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponse;
 import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface DiagnosisService {
 
-    DiagnosisResponse create(DiagnosisRequest request);
+    DiagnosisResponse create(DiagnosisRequest dto);
 
-    Diagnosis entityById(Long id);
+    Diagnosis entityByExternalId(UUID externalId);
 
     List<DiagnosisResponse> findAll();
 
-    DiagnosisResponse findById(Long id);
+    DiagnosisResponse findById(UUID externalId);
+
+    DiagnosisResponse update(UUID externalId, DiagnosisRequest dto);
+
+    void delete(UUID externalId);
 }

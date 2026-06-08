@@ -14,12 +14,20 @@ public interface DiagnosisMapper {
 
     DiagnosisResponse toResponse(Diagnosis entity);
 
-    List<DiagnosisResponse> toResponseList(List<Diagnosis> entities);
+    List<DiagnosisResponse> toResponseList(
+            List<Diagnosis> entities
+    );
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "externalId", ignore = true)
+    @Mapping(target = "visit", ignore = true)
     Diagnosis toEntity(DiagnosisRequest request);
 
-    @Mapping(target = "id",ignore = true)
-    @Mapping(target = "visit",ignore = true)
-    void updateEntity(@MappingTarget Diagnosis entity, DiagnosisRequest request);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "externalId", ignore = true)
+    @Mapping(target = "visit", ignore = true)
+    void update(
+            @MappingTarget Diagnosis entity,
+            DiagnosisRequest request
+    );
 }
