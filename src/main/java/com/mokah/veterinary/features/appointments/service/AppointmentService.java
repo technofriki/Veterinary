@@ -8,6 +8,7 @@ import com.mokah.veterinary.features.appointments.model.AppointmentStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public interface AppointmentService {
 
@@ -17,12 +18,18 @@ public interface AppointmentService {
             LocalDateTime date,
             String reason,
             AppointmentStatus status,
-            Long petId,
-            Long veterinarianId
+            UUID petExternalId,
+            UUID veterinarianExternalId
     );
-    Appointment entityById(Long id);
-    AppointmentResponse findById(Long id);
-    AppointmentResponse update(Long id, AppointmentUpdateDTO dto);
 
-    void delete(Long id);
+    Appointment entityByExternalId(UUID externalId);
+
+    AppointmentResponse findById(UUID externalId);
+
+    AppointmentResponse update(
+            UUID externalId,
+            AppointmentUpdateDTO dto
+    );
+
+    void delete(UUID externalId);
 }

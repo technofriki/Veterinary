@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,58 +33,86 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         Appointment entity = mapper.toEntity(dto);
 
-        entity.setPet(petService.entityById(dto.petId()));
-        entity.setVeterinarian(veterinarianService.entityById(dto.veterinarianId()));
+        entity.setPet(
+                petService.entityByExternalId(dto.petExternalId())
+        );
 
-        return mapper.toResponse(repository.save(entity));
+        entity.setVeterinarian(
+                veterinarianService.entityByExternalId(dto.veterinarianExternalId())
+        );
+
+        return mapper.toResponse(
+                repository.save(entity)
+        );
     }
 
     @Override
-    public Appointment entityById(Long id){
-        return repository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Appointment not found with id " + id));
+    public Appointment entityByExternalId(UUID externalId) {
+        return repository.findByExternalId(externalId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Appointment",
+                                "externalId",
+                                externalId
+                        ));
     }
+
+    @Override
+    public AppointmentResponse findById(UUID externalId) {
+        return mapper.toResponse(
+                entityByExternalId(externalId)
+        );
+    }
+
     @Override
     public List<AppointmentResponse> findAll(
-            LocalDateTime date,
+            LocalDateTime appointmentDate,
             String reason,
             AppointmentStatus status,
-            Long petId,
-            Long veterinarianId
+            UUID petExternalId,
+            UUID veterinarianExternalId
     ) {
 
         PredicateSpecification<Appointment> spec = PredicateSpecification.allOf(
-                AppointmentSpecification.hasDate(date),
+                AppointmentSpecification.hasAppointmentDate(appointmentDate),
                 AppointmentSpecification.hasReason(reason),
                 AppointmentSpecification.hasStatus(status),
-                AppointmentSpecification.hasPetId(petId),
-                AppointmentSpecification.hasVeterinarianId(veterinarianId)
+                AppointmentSpecification.hasPetExternalId(petExternalId),
+                AppointmentSpecification.hasVeterinarianExternalId(veterinarianExternalId)
         );
 
-        return mapper.toResponseList(repository.findAll(spec));
+        return mapper.toResponseList(
+                repository.findAll(spec)
+        );
     }
 
     @Override
-    public AppointmentResponse findById(Long id) {
-        return mapper.toResponse(entityById(id));
-    }
+    public AppointmentResponse update(
+            UUID externalId,
+            AppointmentUpdateDTO dto
+    ) {
 
-
-    @Override
-    public AppointmentResponse update(Long id, AppointmentUpdateDTO dto) {
-
-        Appointment entity = entityById(id);
+        Appointment entity = entityByExternalId(externalId);
 
         mapper.update(entity, dto);
 
-        entity.setPet(petService.entityById(dto.petId()));
-        entity.setVeterinarian(veterinarianService.entityById(dto.veterinarianId()));
+        entity.setPet(
+                petService.entityByExternalId(dto.petExternalId())
+        );
 
-        return mapper.toResponse(repository.save(entity));
+        entity.setVeterinarian(
+                veterinarianService.entityByExternalId(dto.veterinarianExternalId())
+        );
+
+        return mapper.toResponse(
+                repository.save(entity)
+        );
     }
 
     @Override
-    public void delete(Long id) {
-        repository.delete(entityById(id));
+    public void delete(UUID externalId) {
+        repository.delete(
+                entityByExternalId(externalId)
+        );
     }
 }

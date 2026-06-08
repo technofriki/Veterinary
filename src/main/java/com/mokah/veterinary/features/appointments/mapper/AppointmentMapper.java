@@ -13,6 +13,7 @@ import java.util.List;
 public interface AppointmentMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "externalId", ignore = true)
     @Mapping(target = "pet", ignore = true)
     @Mapping(target = "veterinarian", ignore = true)
     Appointment toEntity(AppointmentCreateDTO dto);
@@ -22,6 +23,7 @@ public interface AppointmentMapper {
     List<AppointmentResponse> toResponseList(List<Appointment> entities);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "externalId", ignore = true)
     @Mapping(target = "pet", ignore = true)
     @Mapping(target = "veterinarian", ignore = true)
     void update(@MappingTarget Appointment entity, AppointmentUpdateDTO dto);
