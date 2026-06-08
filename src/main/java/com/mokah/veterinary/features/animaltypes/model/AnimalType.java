@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "animal_type")
+@Table(name = "animal_types")
 @Getter
 @Setter
 @NoArgsConstructor

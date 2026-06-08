@@ -2,7 +2,7 @@ package com.mokah.veterinary.security.config;
 
 import org.springframework.boot.CommandLineRunner;
 
-import com.mokah.veterinary.features.users.entity.User;
+import com.mokah.veterinary.features.users.model.User;
 import com.mokah.veterinary.features.users.enums.UserState;
 import com.mokah.veterinary.features.users.repository.UserRepository;
 import com.mokah.veterinary.security.enums.Permits;

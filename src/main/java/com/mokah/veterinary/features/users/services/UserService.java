@@ -1,7 +1,7 @@
 package com.mokah.veterinary.features.users.services;
 
 import com.mokah.veterinary.features.users.dto.UserResponse;
-import com.mokah.veterinary.features.users.entity.User;
+import com.mokah.veterinary.features.users.model.User;
 import com.mokah.veterinary.features.users.mapper.UserMapper;
 import com.mokah.veterinary.features.users.repository.UserRepository;
 import org.springframework.stereotype.Service;
