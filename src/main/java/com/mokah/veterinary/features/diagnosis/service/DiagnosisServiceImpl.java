@@ -3,7 +3,7 @@ package com.mokah.veterinary.features.diagnosis.service;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.diagnosis.dto.DiagnosisRequest;
 import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponse;
-import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
+import com.mokah.veterinary.features.diagnosis.model.Diagnosis;
 import com.mokah.veterinary.features.diagnosis.mapper.DiagnosisMapper;
 import com.mokah.veterinary.features.diagnosis.repository.DiagnosisRepository;
 import lombok.RequiredArgsConstructor;

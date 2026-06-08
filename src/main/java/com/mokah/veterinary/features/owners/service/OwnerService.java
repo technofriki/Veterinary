@@ -2,7 +2,7 @@ package com.mokah.veterinary.features.owners.service;
 
 import com.mokah.veterinary.features.owners.dto.OwnerRequest;
 import com.mokah.veterinary.features.owners.dto.OwnerResponse;
-import com.mokah.veterinary.features.owners.entity.Owner;
+import com.mokah.veterinary.features.owners.model.Owner;
 
 import java.util.List;
 import java.util.UUID;

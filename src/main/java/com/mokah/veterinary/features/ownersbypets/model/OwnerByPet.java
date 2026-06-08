@@ -1,6 +1,6 @@
 package com.mokah.veterinary.features.ownersbypets.model;
 
-import com.mokah.veterinary.features.owners.entity.Owner;
+import com.mokah.veterinary.features.owners.model.Owner;
 import com.mokah.veterinary.features.pets.model.Pet;
 import jakarta.persistence.*;
 import lombok.*;

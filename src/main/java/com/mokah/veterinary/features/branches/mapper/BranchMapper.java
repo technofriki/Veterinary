@@ -3,10 +3,8 @@ package com.mokah.veterinary.features.branches.mapper;
 import com.mokah.veterinary.features.adresses.mapper.AddressMapper;
 import com.mokah.veterinary.features.branches.dto.BranchRequest;
 import com.mokah.veterinary.features.branches.dto.BranchResponse;
-import com.mokah.veterinary.features.branches.entity.Branch;
+import com.mokah.veterinary.features.branches.model.Branch;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 
 import java.util.List;
 

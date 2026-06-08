@@ -2,7 +2,7 @@ package com.mokah.veterinary.features.diagnosis.mapper;
 
 import com.mokah.veterinary.features.diagnosis.dto.DiagnosisRequest;
 import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponse;
-import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
+import com.mokah.veterinary.features.diagnosis.model.Diagnosis;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

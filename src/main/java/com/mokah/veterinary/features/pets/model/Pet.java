@@ -1,6 +1,6 @@
 package com.mokah.veterinary.features.pets.model;
 
-import com.mokah.veterinary.features.animaltypes.entity.AnimalType;
+import com.mokah.veterinary.features.animaltypes.model.AnimalType;
 import com.mokah.veterinary.features.breed.model.Breed;
 import jakarta.persistence.*;
 import lombok.*;

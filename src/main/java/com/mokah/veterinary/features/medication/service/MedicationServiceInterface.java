@@ -1,10 +1,8 @@
 package com.mokah.veterinary.features.medication.service;
 
-import com.mokah.veterinary.features.branches.dto.BranchRequest;
-import com.mokah.veterinary.features.branches.dto.BranchResponse;
 import com.mokah.veterinary.features.medication.dto.MedicationRequest;
 import com.mokah.veterinary.features.medication.dto.MedicationResponse;
-import com.mokah.veterinary.features.medication.entity.MedicationEntity;
+import com.mokah.veterinary.features.medication.model.Medication;
 
 import java.util.List;
 
@@ -15,5 +13,5 @@ public interface MedicationServiceInterface {
     MedicationResponse findByName(String name);
     MedicationResponse update(Long id, MedicationRequest request);
     void delete(Long id);
-    MedicationEntity entityById(Long id);
+    Medication entityById(Long id);
 }

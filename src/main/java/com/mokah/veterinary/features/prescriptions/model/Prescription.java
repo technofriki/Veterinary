@@ -1,7 +1,7 @@
 package com.mokah.veterinary.features.prescriptions.model;
 
-import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
-import com.mokah.veterinary.features.medication.entity.MedicationEntity;
+import com.mokah.veterinary.features.diagnosis.model.Diagnosis;
+import com.mokah.veterinary.features.medication.model.Medication;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,7 +21,7 @@ public class Prescription {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "medication_id", nullable = false)
-    private MedicationEntity medication;
+    private Medication medication;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "diagnosis_id", nullable = false)

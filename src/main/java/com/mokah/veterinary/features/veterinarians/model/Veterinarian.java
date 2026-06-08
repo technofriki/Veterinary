@@ -1,6 +1,6 @@
 package com.mokah.veterinary.features.veterinarians.model;
 
-import com.mokah.veterinary.features.branches.entity.Branch;
+import com.mokah.veterinary.features.branches.model.Branch;
 import jakarta.persistence.*;
 import lombok.*;
 

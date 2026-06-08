@@ -3,7 +3,7 @@ package com.mokah.veterinary.features.animaltypes.service;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.animaltypes.dto.AnimalTypeRequest;
 import com.mokah.veterinary.features.animaltypes.dto.AnimalTypeResponse;
-import com.mokah.veterinary.features.animaltypes.entity.AnimalType;
+import com.mokah.veterinary.features.animaltypes.model.AnimalType;
 import com.mokah.veterinary.features.animaltypes.mapper.AnimalTypeMapper;
 import com.mokah.veterinary.features.animaltypes.repository.AnimalTypeRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

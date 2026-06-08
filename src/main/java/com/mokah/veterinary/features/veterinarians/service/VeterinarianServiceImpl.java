@@ -1,7 +1,7 @@
 package com.mokah.veterinary.features.veterinarians.service;
 
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
-import com.mokah.veterinary.features.branches.entity.Branch;
+import com.mokah.veterinary.features.branches.model.Branch;
 import com.mokah.veterinary.features.branches.service.BranchService;
 import com.mokah.veterinary.features.veterinarians.dto.VeterinarianCreateDTO;
 import com.mokah.veterinary.features.veterinarians.dto.VeterinarianResponse;

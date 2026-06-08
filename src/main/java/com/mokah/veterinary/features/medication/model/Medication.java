@@ -1,4 +1,4 @@
-package com.mokah.veterinary.features.medication.entity;
+package com.mokah.veterinary.features.medication.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,7 +6,7 @@ import lombok.*;
 @Entity
 @Table(name = "medications")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class MedicationEntity {
+public class Medication {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

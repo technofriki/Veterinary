@@ -1,7 +1,7 @@
 package com.mokah.veterinary.features.diagnosisbystudies.service;
 
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
-import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
+import com.mokah.veterinary.features.diagnosis.model.Diagnosis;
 import com.mokah.veterinary.features.diagnosis.service.DiagnosisService;
 import com.mokah.veterinary.features.diagnosisbystudies.dto.DiagnosisByStudyDTO;
 import com.mokah.veterinary.features.diagnosisbystudies.dto.DiagnosisByStudyResponse;

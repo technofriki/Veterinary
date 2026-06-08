@@ -3,7 +3,7 @@ package com.mokah.veterinary.features.owners.mapper;
 import com.mokah.veterinary.features.adresses.mapper.AddressMapper;
 import com.mokah.veterinary.features.owners.dto.OwnerRequest;
 import com.mokah.veterinary.features.owners.dto.OwnerResponse;
-import com.mokah.veterinary.features.owners.entity.Owner;
+import com.mokah.veterinary.features.owners.model.Owner;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 

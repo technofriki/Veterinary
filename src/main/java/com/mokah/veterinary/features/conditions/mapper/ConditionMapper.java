@@ -2,7 +2,7 @@ package com.mokah.veterinary.features.conditions.mapper;
 
 import com.mokah.veterinary.features.conditions.dto.ConditionRequest;
 import com.mokah.veterinary.features.conditions.dto.ConditionResponse;
-import com.mokah.veterinary.features.conditions.entity.Condition;
+import com.mokah.veterinary.features.conditions.model.Condition;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

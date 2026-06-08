@@ -4,7 +4,7 @@ import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.adresses.mapper.AddressMapper;
 import com.mokah.veterinary.features.branches.dto.BranchRequest;
 import com.mokah.veterinary.features.branches.dto.BranchResponse;
-import com.mokah.veterinary.features.branches.entity.Branch;
+import com.mokah.veterinary.features.branches.model.Branch;
 import com.mokah.veterinary.features.branches.mapper.BranchMapper;
 import com.mokah.veterinary.features.branches.repository.BranchRepository;
 import lombok.RequiredArgsConstructor;

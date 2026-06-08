@@ -3,7 +3,7 @@ package com.mokah.veterinary.features.conditions.service;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.conditions.dto.ConditionRequest;
 import com.mokah.veterinary.features.conditions.dto.ConditionResponse;
-import com.mokah.veterinary.features.conditions.entity.Condition;
+import com.mokah.veterinary.features.conditions.model.Condition;
 import com.mokah.veterinary.features.conditions.mapper.ConditionMapper;
 import com.mokah.veterinary.features.conditions.repository.ConditionRepository;
 import lombok.RequiredArgsConstructor;

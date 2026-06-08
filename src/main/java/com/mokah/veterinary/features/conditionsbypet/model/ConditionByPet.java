@@ -1,6 +1,6 @@
 package com.mokah.veterinary.features.conditionsbypet.model;
 
-import com.mokah.veterinary.features.conditions.entity.Condition;
+import com.mokah.veterinary.features.conditions.model.Condition;
 import com.mokah.veterinary.features.pets.model.Pet;
 import jakarta.persistence.*;
 import lombok.*;

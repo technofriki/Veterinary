@@ -1,4 +1,4 @@
-package com.mokah.veterinary.features.diagnosis.entity;
+package com.mokah.veterinary.features.diagnosis.model;
 
 import com.mokah.veterinary.features.visits.model.Visit;
 import jakarta.persistence.*;

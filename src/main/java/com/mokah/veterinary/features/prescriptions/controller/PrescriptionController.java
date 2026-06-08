@@ -2,7 +2,7 @@ package com.mokah.veterinary.features.prescriptions.controller;
 
 import com.mokah.veterinary.features.prescriptions.dto.PrescriptionRequest;
 import com.mokah.veterinary.features.prescriptions.dto.PrescriptionResponse;
-import com.mokah.veterinary.features.prescriptions.service.PrescriptionService;
+import com.mokah.veterinary.features.prescriptions.service.PrescriptionServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -13,18 +13,18 @@ import java.util.List;
 @RequestMapping("/api/prescriptions")
 @RequiredArgsConstructor
 public class PrescriptionController {
-    private final PrescriptionService prescriptionService;
+    private final PrescriptionServiceImpl prescriptionServiceImpl;
 
 
     @GetMapping("/{id}")
     public PrescriptionResponse findById(@PathVariable Long id){
-        return prescriptionService.findById(id);
+        return prescriptionServiceImpl.findById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public PrescriptionResponse create(@RequestBody PrescriptionRequest request){
-        return prescriptionService.create(request);
+        return prescriptionServiceImpl.create(request);
     }
 
     @GetMapping
@@ -32,7 +32,7 @@ public class PrescriptionController {
             @RequestParam(required = false) Long diagnosisId,
             @RequestParam(required = false) Long petId
     ){
-    return prescriptionService.findAll(diagnosisId, petId);
+    return prescriptionServiceImpl.findAll(diagnosisId, petId);
     }
 
 

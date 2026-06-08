@@ -1,4 +1,5 @@
-package com.mokah.veterinary.features.conditions.entity;
+package com.mokah.veterinary.features.animaltypes.model;
+
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,13 +7,13 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "conditions")
+@Table(name = "animal_type")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class Condition {
+public class AnimalType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +31,4 @@ public class Condition {
 
     @Column(name = "name", nullable = false, length = 50)
     private String name;
-
-    @Column(name = "description", nullable = false, length = 255)
-    private String description;
 }

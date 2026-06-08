@@ -1,6 +1,6 @@
 package com.mokah.veterinary.features.diagnosisbystudies.model;
 
-import com.mokah.veterinary.features.diagnosis.entity.Diagnosis;
+import com.mokah.veterinary.features.diagnosis.model.Diagnosis;
 import com.mokah.veterinary.features.studies.model.Study;
 import jakarta.persistence.*;
 import lombok.*;

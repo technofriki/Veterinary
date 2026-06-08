@@ -1,7 +1,7 @@
 package com.mokah.veterinary.features.ownersbypets.service;
 
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
-import com.mokah.veterinary.features.owners.entity.Owner;
+import com.mokah.veterinary.features.owners.model.Owner;
 import com.mokah.veterinary.features.owners.service.OwnerService;
 import com.mokah.veterinary.features.ownersbypets.dto.OwnerByPetDTO;
 import com.mokah.veterinary.features.ownersbypets.dto.OwnerByPetResponse;

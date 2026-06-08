@@ -2,7 +2,7 @@ package com.mokah.veterinary.features.animaltypes.service;
 
 import com.mokah.veterinary.features.animaltypes.dto.AnimalTypeRequest;
 import com.mokah.veterinary.features.animaltypes.dto.AnimalTypeResponse;
-import com.mokah.veterinary.features.animaltypes.entity.AnimalType;
+import com.mokah.veterinary.features.animaltypes.model.AnimalType;
 
 import java.util.List;
 import java.util.UUID;

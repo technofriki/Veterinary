@@ -1,7 +1,7 @@
 package com.mokah.veterinary.features.conditionsbypet.service;
 
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
-import com.mokah.veterinary.features.conditions.entity.Condition;
+import com.mokah.veterinary.features.conditions.model.Condition;
 import com.mokah.veterinary.features.conditions.service.ConditionService;
 import com.mokah.veterinary.features.conditionsbypet.dto.ConditionByPetDTO;
 import com.mokah.veterinary.features.conditionsbypet.dto.ConditionByPetResponse;

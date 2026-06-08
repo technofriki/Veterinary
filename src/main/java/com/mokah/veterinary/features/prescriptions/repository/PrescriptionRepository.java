@@ -1,6 +1,5 @@
 package com.mokah.veterinary.features.prescriptions.repository;
 
-import com.mokah.veterinary.features.prescriptions.dto.PrescriptionResponse;
 import com.mokah.veterinary.features.prescriptions.model.Prescription;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

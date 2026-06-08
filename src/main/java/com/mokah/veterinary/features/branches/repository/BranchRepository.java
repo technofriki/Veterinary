@@ -1,6 +1,6 @@
 package com.mokah.veterinary.features.branches.repository;
 
-import com.mokah.veterinary.features.branches.entity.Branch;
+import com.mokah.veterinary.features.branches.model.Branch;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

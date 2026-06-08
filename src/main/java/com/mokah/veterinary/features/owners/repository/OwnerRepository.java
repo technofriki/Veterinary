@@ -1,6 +1,6 @@
 package com.mokah.veterinary.features.owners.repository;
 
-import com.mokah.veterinary.features.owners.entity.Owner;
+import com.mokah.veterinary.features.owners.model.Owner;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
