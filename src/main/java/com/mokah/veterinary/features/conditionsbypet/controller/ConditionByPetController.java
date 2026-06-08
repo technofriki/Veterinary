@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/conditions-by-pets")
@@ -20,28 +21,37 @@ public class ConditionByPetController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ConditionByPetResponse create(@Valid @RequestBody ConditionByPetDTO dto){
+    public ConditionByPetResponse create(
+            @Valid @RequestBody ConditionByPetDTO dto
+    ) {
         return service.create(dto);
     }
 
-    @GetMapping("/{id}")
-    public ConditionByPetResponse findById(@PathVariable Long id){
-        return service.findById(id);
+    @GetMapping("/{externalId}")
+    public ConditionByPetResponse findById(
+            @PathVariable UUID externalId
+    ) {
+        return service.findById(externalId);
     }
 
     @GetMapping
-    public List<ConditionByPetResponse> findAll(){
+    public List<ConditionByPetResponse> findAll() {
         return service.findAll();
     }
 
-    @PutMapping("/{id}")
-    public ConditionByPetResponse update (@PathVariable Long id, @Valid @RequestBody ConditionByPetUpdateDTO dto){
-        return service.update(id, dto);
+    @PutMapping("/{externalId}")
+    public ConditionByPetResponse update(
+            @PathVariable UUID externalId,
+            @Valid @RequestBody ConditionByPetUpdateDTO dto
+    ) {
+        return service.update(externalId, dto);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deactivate(@PathVariable Long id){
-        service.deactivate(id);
+    public void deactivate(
+            @PathVariable UUID externalId
+    ) {
+        service.deactivate(externalId);
     }
 }

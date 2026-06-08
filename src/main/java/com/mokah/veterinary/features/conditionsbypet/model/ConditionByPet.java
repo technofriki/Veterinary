@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 
 @Entity
@@ -21,8 +22,18 @@ public class ConditionByPet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "external_id", nullable = false, unique = true, updatable = false)
+    private UUID externalId;
+
+    @PrePersist
+    public void generateExternalId() {
+        if (externalId == null) {
+            externalId = UUID.randomUUID();
+        }
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "condition_id")
+    @JoinColumn(name = "condition_id", nullable = false)
     private Condition condition;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,13 +44,13 @@ public class ConditionByPet {
     private LocalDateTime diagnosisDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "severity")
+    @Column(name = "severity", nullable = false)
     private ConditionSeverity severity;
 
     @Column(name = "observations")
     private String observations;
 
+    @Builder.Default
     @Column(name = "active", nullable = false)
-    private Boolean active;
-
+    private Boolean active = true;
 }

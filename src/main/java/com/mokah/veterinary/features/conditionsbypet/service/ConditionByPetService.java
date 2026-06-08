@@ -6,12 +6,22 @@ import com.mokah.veterinary.features.conditionsbypet.dto.ConditionByPetUpdateDTO
 import com.mokah.veterinary.features.conditionsbypet.model.ConditionByPet;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ConditionByPetService {
+
     ConditionByPetResponse create(ConditionByPetDTO dto);
-    ConditionByPet entityById(Long id);
-    ConditionByPetResponse findById(Long id);
+
+    ConditionByPet entityByExternalId(UUID externalId);
+
+    ConditionByPetResponse findById(UUID externalId);
+
     List<ConditionByPetResponse> findAll();
-    ConditionByPetResponse update(Long id, ConditionByPetUpdateDTO dto);
-    void deactivate(Long id);
+
+    ConditionByPetResponse update(
+            UUID externalId,
+            ConditionByPetUpdateDTO dto
+    );
+
+    void deactivate(UUID externalId);
 }
