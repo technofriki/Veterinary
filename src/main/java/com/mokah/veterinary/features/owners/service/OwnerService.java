@@ -5,16 +5,21 @@ import com.mokah.veterinary.features.owners.dto.OwnerResponse;
 import com.mokah.veterinary.features.owners.entity.Owner;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface OwnerService {
+
     OwnerResponse create(OwnerRequest request);
 
-    Owner entityById(Long id);
+    Owner entityByExternalId(UUID externalId);
+
     List<OwnerResponse> findAll();
-    OwnerResponse findById(Long id);
+
+    OwnerResponse findById(UUID externalId);
+
     OwnerResponse findByDni(String dni);
 
-    OwnerResponse update(Long id, OwnerRequest request);
+    OwnerResponse update(UUID externalId, OwnerRequest request);
 
-    void delete(Long id);
+    void delete(UUID externalId);
 }

@@ -10,73 +10,68 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class OwnerServiceImpl implements OwnerService {
 
     private final OwnerRepository repository;
-    private final OwnerMapper ownerMapper;
+    private final OwnerMapper mapper;
 
     @Override
-    public OwnerResponse create(OwnerRequest request) {
+    public OwnerResponse create(OwnerRequest dto) {
 
-        if (repository.existsByDni(request.getDni())) {
-            throw new IllegalArgumentException("Owner with DNI " + request.getDni() + " already exists");
+        if (repository.existsByDni(dto.dni())) {
+            throw new IllegalArgumentException("Owner with DNI " + dto.dni() + " already exists");
         }
 
-        Owner owner = ownerMapper.toEntity(request);
-        Owner savedOwner = repository.save(owner);
-        return ownerMapper.toResponse(savedOwner);
+        Owner owner = mapper.toEntity(dto);
+        return mapper.toResponse(repository.save(owner));
+    }
+
+    @Override
+    public Owner entityByExternalId(UUID externalId) {
+        return repository.findByExternalId(externalId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Owner", "externalId", externalId));
+    }
+
+    @Override
+    public OwnerResponse findById(UUID externalId) {
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
     public List<OwnerResponse> findAll() {
-        return ownerMapper.toResponseList(repository.findAll());
-    }
-
-    @Override
-    public Owner entityById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Owner", id));
-    }
-
-    @Override
-    public OwnerResponse findById(Long id) {
-        Owner owner = entityById(id);
-        return ownerMapper.toResponse(owner);
+        return mapper.toResponseList(repository.findAll());
     }
 
     @Override
     public OwnerResponse findByDni(String dni) {
         Owner owner = repository.findByDni(dni)
-                .orElseThrow(() -> new ResourceNotFoundException("Owner", "DNI", dni));
-        return ownerMapper.toResponse(owner);
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Owner", "dni", dni));
+        return mapper.toResponse(owner);
     }
 
     @Override
-    public OwnerResponse update(Long id, OwnerRequest request) {
-        Owner entity = entityById(id);
+    public OwnerResponse update(UUID externalId, OwnerRequest dto) {
 
-        if (!entity.getDni().equals(request.getDni())
-                && repository.existsByDni(request.getDni())) {
+        Owner entity = entityByExternalId(externalId);
 
-            throw new IllegalArgumentException("Owner with DNI " + request.getDni() + " already exists");
+        if (!entity.getDni().equals(dto.dni())
+                && repository.existsByDni(dto.dni())) {
+            throw new IllegalArgumentException("Owner with DNI already exists");
         }
 
-       ownerMapper.updateEntity(entity, request);
+        mapper.updateEntity(entity, dto);
 
-        Owner updatedOwner = repository.save(entity);
-
-        return ownerMapper.toResponse(updatedOwner);
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
-    public void delete(Long id) {
-        if (!repository.existsById(id)) {
-            throw new ResourceNotFoundException("Owner", id);
-        }
-
-        repository.deleteById(id);
+    public void delete(UUID externalId) {
+        repository.delete(entityByExternalId(externalId));
     }
 }

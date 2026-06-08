@@ -27,20 +27,12 @@ public class OwnerByPetServiceImpl implements OwnerByPetService {
     @Override
     public OwnerByPetResponse create(OwnerByPetDTO request) {
 
-//        repository.existsByOwnerIdAndPetId
-//        ES IGUAL A
-//        SELECT EXISTS(
-//                SELECT *
-//                FROM owner_by_pet
-//                WHERE owner_id = ?
-//                AND pet_id = ?
-//        )
 
         if (repository.existsByOwnerIdAndPetId(
                 request.ownerId(),
                 request.petId())) {
 
-            throw new IllegalArgumentException( // crear exception personalizada
+            throw new IllegalArgumentException(
                     "This owner is already associated with this pet");
         }
 
@@ -73,19 +65,6 @@ public class OwnerByPetServiceImpl implements OwnerByPetService {
 
         OwnerByPet entity = entityById(id);
 
-
-
-
-
-//        repository.existsByOwnerIdAndPetIdAndIdNo
-//        ES IGUAL A
-//        SELECT EXISTS(
-//                SELECT *
-//                FROM owner_by_pet
-//                WHERE owner_id = ?
-//                AND pet_id = ?
-//                AND id <> ?
-//        )
         if (repository.existsByOwnerIdAndPetIdAndIdNot(
 
                 request.ownerId(),
