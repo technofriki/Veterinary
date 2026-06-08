@@ -30,11 +30,7 @@ public interface ConditionByPetMapper {
             ConditionByPetUpdateDTO dto
     );
 
-    ConditionByPetResponse toResponse(
-            ConditionByPet entity
-    );
+    ConditionByPetResponse toResponse(ConditionByPet entity);
 
-    List<ConditionByPetResponse> toResponseList(
-            List<ConditionByPet> entities
-    );
+    List<ConditionByPetResponse> toResponseList(List<ConditionByPet> entities);
 }

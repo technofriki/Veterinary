@@ -21,16 +21,12 @@ public class ConditionByPetController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ConditionByPetResponse create(
-            @Valid @RequestBody ConditionByPetDTO dto
-    ) {
+    public ConditionByPetResponse create(@Valid @RequestBody ConditionByPetDTO dto) {
         return service.create(dto);
     }
 
     @GetMapping("/{externalId}")
-    public ConditionByPetResponse findById(
-            @PathVariable UUID externalId
-    ) {
+    public ConditionByPetResponse findById(@PathVariable UUID externalId) {
         return service.findById(externalId);
     }
 
@@ -42,16 +38,14 @@ public class ConditionByPetController {
     @PutMapping("/{externalId}")
     public ConditionByPetResponse update(
             @PathVariable UUID externalId,
-            @Valid @RequestBody ConditionByPetUpdateDTO dto
-    ) {
+            @Valid @RequestBody ConditionByPetUpdateDTO dto) {
+
         return service.update(externalId, dto);
     }
 
     @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deactivate(
-            @PathVariable UUID externalId
-    ) {
+    public void deactivate(@PathVariable UUID externalId) {
         service.deactivate(externalId);
     }
 }

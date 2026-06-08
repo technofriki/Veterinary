@@ -33,8 +33,7 @@ public class OwnerServiceImpl implements OwnerService {
     @Override
     public Owner entityByExternalId(UUID externalId) {
         return repository.findByExternalId(externalId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Owner", "externalId", externalId));
+                .orElseThrow(() -> new ResourceNotFoundException("Owner", "externalId", externalId));
     }
 
     @Override
@@ -50,8 +49,8 @@ public class OwnerServiceImpl implements OwnerService {
     @Override
     public OwnerResponse findByDni(String dni) {
         Owner owner = repository.findByDni(dni)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Owner", "dni", dni));
+                .orElseThrow(() -> new ResourceNotFoundException("Owner", "dni", dni));
+
         return mapper.toResponse(owner);
     }
 

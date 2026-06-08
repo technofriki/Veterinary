@@ -37,9 +37,9 @@ public class AnimalTypeController {
     @PutMapping("/{externalId}")
     public AnimalTypeResponse update(
             @PathVariable UUID externalId,
-            @Valid @RequestBody AnimalTypeRequest request
-    ) {
-        return service.update(externalId, request);
+            @Valid @RequestBody AnimalTypeRequest dto) {
+
+        return service.update(externalId, dto);
     }
 
     @DeleteMapping("/{externalId}")

@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface PetService {
 
-    PetResponse create(PetRequest request);
+    PetResponse create(PetRequest dto);
 
     List<PetResponse> findAll();
 
@@ -19,7 +19,7 @@ public interface PetService {
 
     PetResponse findByName(String name);
 
-    PetResponse update(UUID externalId, PetRequest request);
+    PetResponse update(UUID externalId, PetRequest dto);
 
     void delete(UUID externalId);
 }

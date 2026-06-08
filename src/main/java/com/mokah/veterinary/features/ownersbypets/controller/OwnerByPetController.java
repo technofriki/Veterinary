@@ -38,6 +38,7 @@ public class OwnerByPetController {
     public OwnerByPetResponse update(
             @PathVariable UUID externalId,
             @Valid @RequestBody OwnerByPetDTO request) {
+
         return service.update(externalId, request);
     }
 

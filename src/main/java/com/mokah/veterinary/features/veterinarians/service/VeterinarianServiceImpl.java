@@ -51,20 +51,13 @@ public class VeterinarianServiceImpl implements VeterinarianService {
         Branch branch = branchService.entityByExternalId(dto.branchExternalId());
         entity.setBranch(branch);
 
-        return mapper.toResponse(
-                repository.save(entity)
-        );
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
     public Veterinarian entityByExternalId(UUID externalId) {
         return repository.findByExternalId(externalId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Veterinarian",
-                                "externalId",
-                                externalId
-                        ));
+                .orElseThrow(() -> new ResourceNotFoundException("Veterinarian", "externalId", externalId));
     }
 
     @Override
@@ -77,8 +70,7 @@ public class VeterinarianServiceImpl implements VeterinarianService {
             String firstName,
             String lastName,
             String licenseNumber,
-            UUID branchExternalId
-    ) {
+            UUID branchExternalId) {
 
         PredicateSpecification<Veterinarian> spec = PredicateSpecification.allOf(
                 VeterinarianSpecification.hasFirstName(firstName),
@@ -87,17 +79,13 @@ public class VeterinarianServiceImpl implements VeterinarianService {
                 VeterinarianSpecification.hasBranchExternalId(branchExternalId)
         );
 
-        return mapper.toResponseList(
-                repository.findAll(spec)
-        );
+        return mapper.toResponseList(repository.findAll(spec));
     }
 
     @Override
     public VeterinarianResponse update(UUID externalId, VeterinarianUpdateDTO dto) {
 
         Veterinarian entity = entityByExternalId(externalId);
-
-        // VALIDACIONES PRIMERO (importante orden correcto)
 
         if (dto.email() != null
                 && !dto.email().equalsIgnoreCase(entity.getEmail())
@@ -123,18 +111,14 @@ public class VeterinarianServiceImpl implements VeterinarianService {
                     "Veterinarian with license " + dto.licenseNumber() + " already exists");
         }
 
-        // UPDATE CAMPOS SIMPLES
         mapper.update(entity, dto);
 
-        // RELACIÓN
         if (dto.branchExternalId() != null) {
             Branch branch = branchService.entityByExternalId(dto.branchExternalId());
             entity.setBranch(branch);
         }
 
-        return mapper.toResponse(
-                repository.save(entity)
-        );
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override

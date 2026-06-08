@@ -20,17 +20,13 @@ public class MedicationServiceImpl implements MedicationService {
     private final MedicationMapper mapper;
 
     @Override
-    public Medication entityByExternalId(
-            UUID externalId) {
-
+    public Medication entityByExternalId(UUID externalId) {
         return repository.findByExternalId(externalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Medication", "externalId", externalId));
     }
 
     @Override
-    public MedicationResponse findById(
-            UUID externalId) {
-
+    public MedicationResponse findById(UUID externalId) {
         return mapper.toResponse(entityByExternalId(externalId));
     }
 
@@ -40,9 +36,7 @@ public class MedicationServiceImpl implements MedicationService {
     }
 
     @Override
-    public MedicationResponse findByName(
-            String name) {
-
+    public MedicationResponse findByName(String name) {
         Medication entity = repository.findByNameIgnoreCase(name)
                         .orElseThrow(() -> new ResourceNotFoundException("Medication", "name", name));
 
@@ -50,11 +44,8 @@ public class MedicationServiceImpl implements MedicationService {
     }
 
     @Override
-    public MedicationResponse create(
-            MedicationRequest request) {
-
-        Medication entity =
-                mapper.toEntity(request);
+    public MedicationResponse create(MedicationRequest dto) {
+        Medication entity = mapper.toEntity(dto);
 
         return mapper.toResponse(repository.save(entity));
     }
@@ -62,14 +53,14 @@ public class MedicationServiceImpl implements MedicationService {
     @Override
     public MedicationResponse update(
             UUID externalId,
-            MedicationRequest request) {
+            MedicationRequest dto) {
 
         Medication entity =
                 entityByExternalId(externalId);
 
-        entity.setName(request.name());
-        entity.setDosage(request.dosage());
-        entity.setDosageUnit(request.dosageUnit());
+        entity.setName(dto.name());
+        entity.setDosage(dto.dosage());
+        entity.setDosageUnit(dto.dosageUnit());
 
         return mapper.toResponse(repository.save(entity));
     }

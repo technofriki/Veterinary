@@ -9,10 +9,7 @@ import java.util.UUID;
 
 @Repository
 public interface BranchRepository extends JpaRepository<Branch, Long> {
-
     Optional<Branch> findByExternalId(UUID externalId);
-
     Optional<Branch> findByName(String name);
-
     boolean existsByName(String name);
 }

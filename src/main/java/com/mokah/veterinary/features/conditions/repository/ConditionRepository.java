@@ -9,6 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface ConditionRepository extends JpaRepository<Condition, Long> {
-
     Optional<Condition> findByExternalId(UUID externalId);
 }

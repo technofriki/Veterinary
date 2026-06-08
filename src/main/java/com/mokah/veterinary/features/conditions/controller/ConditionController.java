@@ -20,9 +20,7 @@ public class ConditionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ConditionResponse create(
-            @Valid @RequestBody ConditionRequest dto
-    ) {
+    public ConditionResponse create(@Valid @RequestBody ConditionRequest dto) {
         return service.create(dto);
     }
 
@@ -32,25 +30,21 @@ public class ConditionController {
     }
 
     @GetMapping("/{externalId}")
-    public ConditionResponse findById(
-            @PathVariable UUID externalId
-    ) {
+    public ConditionResponse findById(@PathVariable UUID externalId) {
         return service.findById(externalId);
     }
 
     @PutMapping("/{externalId}")
     public ConditionResponse update(
             @PathVariable UUID externalId,
-            @Valid @RequestBody ConditionRequest dto
-    ) {
+            @Valid @RequestBody ConditionRequest dto) {
+
         return service.update(externalId, dto);
     }
 
     @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(
-            @PathVariable UUID externalId
-    ) {
+    public void delete(@PathVariable UUID externalId) {
         service.delete(externalId);
     }
 }

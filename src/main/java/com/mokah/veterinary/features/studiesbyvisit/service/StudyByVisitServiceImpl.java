@@ -30,11 +30,7 @@ public class StudyByVisitServiceImpl implements StudyByVisitService {
     @Override
     public StudyByVisitResponse create(StudyByVisitDTO dto) {
 
-        if (repository.existsByStudyExternalIdAndVisitExternalId(
-                dto.studyExternalId(),
-                dto.visitExternalId()
-        )) {
-
+        if (repository.existsByStudyExternalIdAndVisitExternalId(dto.studyExternalId(), dto.visitExternalId())) {
             throw new StudyByVisitExistsException(
                     "This study is already associated with the visit"
             );
@@ -42,53 +38,32 @@ public class StudyByVisitServiceImpl implements StudyByVisitService {
 
         StudyByVisit entity = mapper.toEntity(dto);
 
-        entity.setStudy(
-                studyService.entityByExternalId(
-                        dto.studyExternalId()
-                )
-        );
+        entity.setStudy(studyService.entityByExternalId(dto.studyExternalId()));
 
-        entity.setVisit(
-                visitService.entityByExternalId(
-                        dto.visitExternalId()
-                )
-        );
+        entity.setVisit(visitService.entityByExternalId(dto.visitExternalId()));
 
-        return mapper.toResponse(
-                repository.save(entity)
-        );
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
     public StudyByVisit entityByExternalId(UUID externalId) {
         return repository.findByExternalId(externalId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "StudyByVisit",
-                                "externalId",
-                                externalId
-                        ));
+                .orElseThrow(() -> new ResourceNotFoundException("StudyByVisit", "externalId", externalId));
     }
 
     @Override
     public StudyByVisitResponse findById(UUID externalId) {
-        return mapper.toResponse(
-                entityByExternalId(externalId)
-        );
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
     public List<StudyByVisitResponse> findAll() {
-        return mapper.toResponseList(
-                repository.findAll()
-        );
+        return mapper.toResponseList(repository.findAll());
     }
 
     @Override
     public void deactivate(UUID externalId) {
-
-        StudyByVisit entity =
-                entityByExternalId(externalId);
+        StudyByVisit entity = entityByExternalId(externalId);
 
         entity.setActive(false);
 

@@ -14,9 +14,7 @@ public interface DiagnosisMapper {
 
     DiagnosisResponse toResponse(Diagnosis entity);
 
-    List<DiagnosisResponse> toResponseList(
-            List<Diagnosis> entities
-    );
+    List<DiagnosisResponse> toResponseList(List<Diagnosis> entities);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "externalId", ignore = true)

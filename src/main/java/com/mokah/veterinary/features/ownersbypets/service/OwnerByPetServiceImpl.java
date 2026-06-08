@@ -48,8 +48,7 @@ public class OwnerByPetServiceImpl implements OwnerByPetService {
     @Override
     public OwnerByPet entityByExternalId(UUID externalId) {
         return repository.findByExternalId(externalId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("OwnerByPet", "externalId", externalId));
+                .orElseThrow(() -> new ResourceNotFoundException("OwnerByPet", "externalId", externalId));
     }
 
     @Override

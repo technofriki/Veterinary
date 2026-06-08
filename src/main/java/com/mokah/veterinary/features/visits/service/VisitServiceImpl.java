@@ -26,51 +26,33 @@ public class VisitServiceImpl implements VisitService {
     private final AppointmentService appointmentService;
 
     @Override
-    public VisitResponse create(VisitRequest request) {
+    public VisitResponse create(VisitRequest dto) {
 
-        Visit entity = mapper.toEntity(request);
+        Visit entity = mapper.toEntity(dto);
 
-        entity.setVeterinarian(
-                veterinarianService.entityByExternalId(
-                        request.veterinarianExternalId()
-                )
-        );
+        entity.setVeterinarian(veterinarianService.entityByExternalId(dto.veterinarianExternalId()));
 
-        entity.setAppointment(
-                appointmentService.entityByExternalId(
-                        request.appointmentExternalId()
-                )
-        );
+        entity.setAppointment(appointmentService.entityByExternalId(dto.appointmentExternalId()));
 
-        return mapper.toResponse(
-                repository.save(entity)
-        );
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
     public Visit entityByExternalId(UUID externalId) {
         return repository.findByExternalId(externalId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Visit",
-                                "externalId",
-                                externalId
-                        ));
+                .orElseThrow(() -> new ResourceNotFoundException("Visit", "externalId", externalId));
     }
 
     @Override
     public VisitResponse findById(UUID externalId) {
-        return mapper.toResponse(
-                entityByExternalId(externalId)
-        );
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
     public List<VisitResponse> findAll(
             UUID visitExternalId,
             String veterinarianName,
-            String petName
-    ) {
+            String petName) {
 
         PredicateSpecification<Visit> spec = PredicateSpecification.allOf(
                 VisitSpecification.hasExternalId(visitExternalId),
@@ -78,42 +60,27 @@ public class VisitServiceImpl implements VisitService {
                 VisitSpecification.hasPetName(petName)
         );
 
-        return mapper.toResponseList(
-                repository.findAll(spec)
-        );
+        return mapper.toResponseList(repository.findAll(spec));
     }
 
     @Override
     public VisitResponse update(
             UUID externalId,
-            VisitRequest request
-    ) {
+            VisitRequest dto) {
 
         Visit entity = entityByExternalId(externalId);
 
-        mapper.update(entity, request);
+        mapper.update(entity, dto);
 
-        entity.setVeterinarian(
-                veterinarianService.entityByExternalId(
-                        request.veterinarianExternalId()
-                )
-        );
+        entity.setVeterinarian(veterinarianService.entityByExternalId(dto.veterinarianExternalId()));
 
-        entity.setAppointment(
-                appointmentService.entityByExternalId(
-                        request.appointmentExternalId()
-                )
-        );
+        entity.setAppointment(appointmentService.entityByExternalId(dto.appointmentExternalId()));
 
-        return mapper.toResponse(
-                repository.save(entity)
-        );
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
     public void delete(UUID externalId) {
-        repository.delete(
-                entityByExternalId(externalId)
-        );
+        repository.delete(entityByExternalId(externalId));
     }
 }

@@ -26,17 +26,13 @@ public class PrescriptionServiceImpl implements PrescriptionService {
     private final DiagnosisService diagnosisService;
 
     @Override
-    public Prescription entityByExternalId(
-            UUID externalId) {
-
+    public Prescription entityByExternalId(UUID externalId) {
         return repository.findByExternalId(externalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Prescription", "externalId", externalId));
     }
 
     @Override
-    public PrescriptionResponse findById(
-            UUID externalId) {
-
+    public PrescriptionResponse findById(UUID externalId) {
         return mapper.toResponse(entityByExternalId(externalId));
     }
 
@@ -59,23 +55,12 @@ public class PrescriptionServiceImpl implements PrescriptionService {
     }
 
     @Override
-    public PrescriptionResponse create(
-            PrescriptionRequest request) {
+    public PrescriptionResponse create(PrescriptionRequest request) {
+        Prescription entity = mapper.toEntity(request);
 
-        Prescription entity =
-                mapper.toEntity(request);
+        entity.setDiagnosis(diagnosisService.entityByExternalId(request.diagnosisExternalId()));
 
-        entity.setDiagnosis(
-                diagnosisService.entityByExternalId(
-                        request.diagnosisExternalId()
-                )
-        );
-
-        entity.setMedication(
-                medicationService.entityByExternalId(
-                        request.medicationExternalId()
-                )
-        );
+        entity.setMedication(medicationService.entityByExternalId(request.medicationExternalId()));
 
         return mapper.toResponse(repository.save(entity));
     }

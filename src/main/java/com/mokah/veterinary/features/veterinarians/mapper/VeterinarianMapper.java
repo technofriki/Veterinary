@@ -14,7 +14,6 @@ import java.util.List;
 public interface VeterinarianMapper {
 
     VeterinarianResponse toResponse(Veterinarian entity);
-
     List<VeterinarianResponse> toResponseList(List<Veterinarian> entities);
 
     Veterinarian toEntity(VeterinarianCreateDTO dto);

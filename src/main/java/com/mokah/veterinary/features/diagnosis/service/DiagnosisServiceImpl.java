@@ -22,84 +22,47 @@ public class DiagnosisServiceImpl implements DiagnosisService {
     private final VisitService visitService;
 
     @Override
-    public Diagnosis entityByExternalId(
-            UUID externalId
-    ) {
-
-        return repository.findByExternalId(externalId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Diagnosis",
-                                "externalId",
-                                externalId
-                        ));
+    public Diagnosis entityByExternalId(UUID externalId) {
+        return repository.findByExternalId(externalId).
+                orElseThrow(() -> new ResourceNotFoundException("Diagnosis", "externalId", externalId));
     }
 
     @Override
-    public DiagnosisResponse findById(
-            UUID externalId
-    ) {
-
-        return mapper.toResponse(
-                entityByExternalId(externalId)
-        );
+    public DiagnosisResponse findById(UUID externalId) {
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
-    public DiagnosisResponse create(
-            DiagnosisRequest request
-    ) {
+    public DiagnosisResponse create(DiagnosisRequest dto) {
 
-        Diagnosis entity =
-                mapper.toEntity(request);
+        Diagnosis entity = mapper.toEntity(dto);
 
-        entity.setVisit(
-                visitService.entityByExternalId(
-                        request.visitExternalId()
-                )
-        );
+        entity.setVisit(visitService.entityByExternalId(dto.visitExternalId()));
 
-        return mapper.toResponse(
-                repository.save(entity)
-        );
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
     public List<DiagnosisResponse> findAll() {
-        return mapper.toResponseList(
-                repository.findAll()
-        );
+        return mapper.toResponseList(repository.findAll());
     }
 
     @Override
     public DiagnosisResponse update(
             UUID externalId,
-            DiagnosisRequest request
-    ) {
+            DiagnosisRequest request) {
 
-        Diagnosis entity =
-                entityByExternalId(externalId);
+        Diagnosis entity = entityByExternalId(externalId);
 
         mapper.update(entity, request);
 
-        entity.setVisit(
-                visitService.entityByExternalId(
-                        request.visitExternalId()
-                )
-        );
+        entity.setVisit(visitService.entityByExternalId(request.visitExternalId()));
 
-        return mapper.toResponse(
-                repository.save(entity)
-        );
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
-    public void delete(
-            UUID externalId
-    ) {
-
-        repository.delete(
-                entityByExternalId(externalId)
-        );
+    public void delete(UUID externalId) {
+        repository.delete(entityByExternalId(externalId));
     }
 }

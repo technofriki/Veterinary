@@ -9,6 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface AnimalTypeRepository extends JpaRepository<AnimalType, Long> {
-
     Optional<AnimalType> findByExternalId(UUID externalId);
 }

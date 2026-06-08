@@ -20,16 +20,12 @@ public class DiagnosisByStudyController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DiagnosisByStudyResponse create(
-            @Valid @RequestBody DiagnosisByStudyDTO dto
-    ) {
+    public DiagnosisByStudyResponse create(@Valid @RequestBody DiagnosisByStudyDTO dto) {
         return service.create(dto);
     }
 
     @GetMapping("/{externalId}")
-    public DiagnosisByStudyResponse findById(
-            @PathVariable UUID externalId
-    ) {
+    public DiagnosisByStudyResponse findById(@PathVariable UUID externalId) {
         return service.findById(externalId);
     }
 
@@ -40,9 +36,7 @@ public class DiagnosisByStudyController {
 
     @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deactivate(
-            @PathVariable UUID externalId
-    ) {
+    public void deactivate(@PathVariable UUID externalId) {
         service.deactivate(externalId);
     }
 }

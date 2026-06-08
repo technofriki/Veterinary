@@ -20,8 +20,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ConditionByPetServiceImpl
-        implements ConditionByPetService {
+public class ConditionByPetServiceImpl implements ConditionByPetService {
 
     private final ConditionByPetRepository repository;
     private final ConditionByPetMapper mapper;
@@ -29,25 +28,12 @@ public class ConditionByPetServiceImpl
     private final PetService petService;
 
     @Override
-    public ConditionByPetResponse create(
-            ConditionByPetDTO dto
-    ) {
+    public ConditionByPetResponse create(ConditionByPetDTO dto) {
+        Condition condition = conditionService.entityByExternalId(dto.conditionExternalId());
 
-        Condition condition =
-                conditionService.entityByExternalId(
-                        dto.conditionExternalId()
-                );
+        Pet pet = petService.entityByExternalId(dto.petExternalId());
 
-        Pet pet =
-                petService.entityByExternalId(
-                        dto.petExternalId()
-                );
-
-        if (repository.existsByConditionIdAndPetId(
-                condition.getId(),
-                pet.getId()
-        )) {
-
+        if (repository.existsByConditionIdAndPetId(condition.getId(), pet.getId())) {
             throw new ConditionByPetExistsException(
                     "Pet with that condition already exists"
             );
@@ -59,65 +45,41 @@ public class ConditionByPetServiceImpl
         entity.setPet(pet);
         entity.setActive(true);
 
-        return mapper.toResponse(
-                repository.save(entity)
-        );
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
-    public ConditionByPet entityByExternalId(
-            UUID externalId
-    ) {
-
+    public ConditionByPet entityByExternalId(UUID externalId) {
         return repository.findByExternalId(externalId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "ConditionByPet",
-                                "externalId",
-                                externalId
-                        ));
+                .orElseThrow(() -> new ResourceNotFoundException("ConditionByPet", "externalId", externalId));
     }
 
     @Override
-    public ConditionByPetResponse findById(
-            UUID externalId
-    ) {
-
-        return mapper.toResponse(
-                entityByExternalId(externalId)
-        );
+    public ConditionByPetResponse findById(UUID externalId) {
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
     public List<ConditionByPetResponse> findAll() {
-        return mapper.toResponseList(
-                repository.findAll()
-        );
+        return mapper.toResponseList(repository.findAll());
     }
 
     @Override
     public ConditionByPetResponse update(
             UUID externalId,
-            ConditionByPetUpdateDTO dto
-    ) {
+            ConditionByPetUpdateDTO dto) {
 
-        ConditionByPet entity =
-                entityByExternalId(externalId);
+        ConditionByPet entity = entityByExternalId(externalId);
 
         mapper.update(entity, dto);
 
-        return mapper.toResponse(
-                repository.save(entity)
-        );
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
-    public void deactivate(
-            UUID externalId
-    ) {
+    public void deactivate(UUID externalId) {
 
-        ConditionByPet entity =
-                entityByExternalId(externalId);
+        ConditionByPet entity = entityByExternalId(externalId);
 
         entity.setActive(false);
 
