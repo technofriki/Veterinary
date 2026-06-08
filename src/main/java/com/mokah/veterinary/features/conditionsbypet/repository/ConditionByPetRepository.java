@@ -8,8 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface ConditionByPetRepository
-        extends JpaRepository<ConditionByPet, Long> {
+public interface ConditionByPetRepository extends JpaRepository<ConditionByPet, Long> {
 
     Optional<ConditionByPet> findByExternalId(UUID externalId);
 

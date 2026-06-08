@@ -49,8 +49,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public Pet entityByExternalId(UUID externalId) {
         return repository.findByExternalId(externalId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Pet", "externalId", externalId));
+                .orElseThrow(() -> new ResourceNotFoundException("Pet", "externalId", externalId));
     }
 
     @Override
@@ -61,8 +60,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public PetResponse findByName(String name) {
         Pet entity = repository.findByNameIgnoreCase(name)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Pet", "name", name));
+                .orElseThrow(() -> new ResourceNotFoundException("Pet", "name", name));
 
         return mapper.toResponse(entity);
     }

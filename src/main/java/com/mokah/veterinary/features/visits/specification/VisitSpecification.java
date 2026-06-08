@@ -7,9 +7,7 @@ import java.util.UUID;
 
 public class VisitSpecification {
 
-    public static PredicateSpecification<Visit> hasExternalId(
-            UUID externalId
-    ) {
+    public static PredicateSpecification<Visit> hasExternalId(UUID externalId) {
         return (from, cb) -> externalId == null
                 ? cb.conjunction()
                 : cb.equal(
@@ -18,10 +16,7 @@ public class VisitSpecification {
         );
     }
 
-    public static PredicateSpecification<Visit> hasVeterinarianName(
-            String veterinarianName
-    ) {
-
+    public static PredicateSpecification<Visit> hasVeterinarianName(String veterinarianName) {
         return (from, cb) -> {
 
             if (veterinarianName == null || veterinarianName.isBlank()) {
@@ -49,10 +44,7 @@ public class VisitSpecification {
         };
     }
 
-    public static PredicateSpecification<Visit> hasPetName(
-            String petName
-    ) {
-
+    public static PredicateSpecification<Visit> hasPetName(String petName) {
         return (from, cb) -> {
 
             if (petName == null || petName.isBlank()) {

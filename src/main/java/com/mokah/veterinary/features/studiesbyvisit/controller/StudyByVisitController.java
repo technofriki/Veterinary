@@ -20,16 +20,12 @@ public class StudyByVisitController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public StudyByVisitResponse create(
-            @Valid @RequestBody StudyByVisitDTO dto
-    ) {
+    public StudyByVisitResponse create(@Valid @RequestBody StudyByVisitDTO dto) {
         return service.create(dto);
     }
 
     @GetMapping("/{externalId}")
-    public StudyByVisitResponse findById(
-            @PathVariable UUID externalId
-    ) {
+    public StudyByVisitResponse findById(@PathVariable UUID externalId) {
         return service.findById(externalId);
     }
 
@@ -40,9 +36,7 @@ public class StudyByVisitController {
 
     @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deactivate(
-            @PathVariable UUID externalId
-    ) {
+    public void deactivate(@PathVariable UUID externalId) {
         service.deactivate(externalId);
     }
 }

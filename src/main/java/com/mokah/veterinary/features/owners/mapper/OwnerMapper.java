@@ -12,11 +12,11 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = AddressMapper.class)
 public interface OwnerMapper {
 
-   Owner toEntity(OwnerRequest request);
+   Owner toEntity(OwnerRequest dto);
 
    OwnerResponse toResponse(Owner entity);
 
    List<OwnerResponse> toResponseList(List<Owner> entities);
 
-   void updateEntity(@MappingTarget Owner entity, OwnerRequest request);
+   void updateEntity(@MappingTarget Owner entity, OwnerRequest dto);
 }

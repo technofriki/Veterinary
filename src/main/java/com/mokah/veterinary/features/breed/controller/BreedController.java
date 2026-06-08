@@ -37,8 +37,8 @@ public class BreedController {
     @PutMapping("/{externalId}")
     public BreedResponse update(
             @PathVariable UUID externalId,
-            @Valid @RequestBody BreedRequest dto
-    ) {
+            @Valid @RequestBody BreedRequest dto) {
+
         return service.update(externalId, dto);
     }
 

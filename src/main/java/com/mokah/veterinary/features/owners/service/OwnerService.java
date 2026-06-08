@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface OwnerService {
 
-    OwnerResponse create(OwnerRequest request);
+    OwnerResponse create(OwnerRequest dto);
 
     Owner entityByExternalId(UUID externalId);
 
@@ -19,7 +19,7 @@ public interface OwnerService {
 
     OwnerResponse findByDni(String dni);
 
-    OwnerResponse update(UUID externalId, OwnerRequest request);
+    OwnerResponse update(UUID externalId, OwnerRequest dto);
 
     void delete(UUID externalId);
 }

@@ -20,13 +20,10 @@ public class ConditionServiceImpl implements ConditionService {
     private final ConditionMapper mapper;
 
     @Override
-    public ConditionResponse create(ConditionRequest request) {
+    public ConditionResponse create(ConditionRequest dto) {
+        Condition entity = mapper.toEntity(dto);
 
-        Condition entity = mapper.toEntity(request);
-
-        return mapper.toResponse(
-                repository.save(entity)
-        );
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
@@ -37,40 +34,28 @@ public class ConditionServiceImpl implements ConditionService {
     @Override
     public Condition entityByExternalId(UUID externalId) {
         return repository.findByExternalId(externalId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Condition",
-                                "externalId",
-                                externalId
-                        ));
+                .orElseThrow(() -> new ResourceNotFoundException("Condition", "externalId", externalId));
     }
 
     @Override
     public ConditionResponse findById(UUID externalId) {
-        return mapper.toResponse(
-                entityByExternalId(externalId)
-        );
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
     public ConditionResponse update(
             UUID externalId,
-            ConditionRequest request
-    ) {
+            ConditionRequest dto) {
 
         Condition entity = entityByExternalId(externalId);
 
-        mapper.update(entity, request);
+        mapper.update(entity, dto);
 
-        return mapper.toResponse(
-                repository.save(entity)
-        );
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
     public void delete(UUID externalId) {
-        repository.delete(
-                entityByExternalId(externalId)
-        );
+        repository.delete(entityByExternalId(externalId));
     }
 }

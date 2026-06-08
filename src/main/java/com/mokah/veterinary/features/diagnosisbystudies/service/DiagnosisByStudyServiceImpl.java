@@ -27,25 +27,13 @@ public class DiagnosisByStudyServiceImpl implements DiagnosisByStudyService {
     private final StudyService studyService;
 
     @Override
-    public DiagnosisByStudyResponse create(
-            DiagnosisByStudyDTO dto
-    ) {
+    public DiagnosisByStudyResponse create(DiagnosisByStudyDTO dto) {
 
-        Diagnosis diagnosis =
-                diagnosisService.entityByExternalId(
-                        dto.diagnosisExternalId()
-                );
+        Diagnosis diagnosis = diagnosisService.entityByExternalId(dto.diagnosisExternalId());
 
-        Study study =
-                studyService.entityByExternalId(
-                        dto.studyExternalId()
-                );
+        Study study = studyService.entityByExternalId(dto.studyExternalId());
 
-        if (repository.existsByDiagnosisIdAndStudyId(
-                diagnosis.getId(),
-                study.getId()
-        )) {
-
+        if (repository.existsByDiagnosisIdAndStudyId(diagnosis.getId(), study.getId())) {
             throw new DiagnosisByStudyExistsException(
                     "Diagnosis with that study already exists"
             );
@@ -57,50 +45,30 @@ public class DiagnosisByStudyServiceImpl implements DiagnosisByStudyService {
         entity.setStudy(study);
         entity.setActive(true);
 
-        return mapper.toResponse(
-                repository.save(entity)
-        );
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
-    public DiagnosisByStudy entityByExternalId(
-            UUID externalId
-    ) {
+    public DiagnosisByStudy entityByExternalId(UUID externalId) {
 
         return repository.findByExternalId(externalId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "DiagnosisByStudy",
-                                "externalId",
-                                externalId
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("DiagnosisByStudy", "externalId", externalId));
     }
 
     @Override
-    public DiagnosisByStudyResponse findById(
-            UUID externalId
-    ) {
-
-        return mapper.toResponse(
-                entityByExternalId(externalId)
-        );
+    public DiagnosisByStudyResponse findById(UUID externalId) {
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
     public List<DiagnosisByStudyResponse> findAll() {
-        return mapper.toResponseList(
-                repository.findAll()
-        );
+        return mapper.toResponseList(repository.findAll());
     }
 
     @Override
-    public void deactivate(
-            UUID externalId
-    ) {
+    public void deactivate(UUID externalId) {
 
-        DiagnosisByStudy entity =
-                entityByExternalId(externalId);
+        DiagnosisByStudy entity = entityByExternalId(externalId);
 
         entity.setActive(false);
 

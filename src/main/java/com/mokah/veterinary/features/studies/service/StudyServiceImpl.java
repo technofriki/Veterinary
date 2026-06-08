@@ -23,19 +23,15 @@ public class StudyServiceImpl implements StudyService {
 
     @Override
     public StudyResponse create(StudyRequest dto) {
-
         Study entity = mapper.toEntity(dto);
 
-        return mapper.toResponse(
-                repository.save(entity)
-        );
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
     public List<StudyResponse> findAll(
             String name,
-            String description
-    ) {
+            String description) {
 
         PredicateSpecification<Study> spec =
                 PredicateSpecification.allOf(
@@ -43,48 +39,34 @@ public class StudyServiceImpl implements StudyService {
                         StudySpecification.hasDescription(description)
                 );
 
-        return mapper.toResponseList(
-                repository.findAll(spec)
-        );
+        return mapper.toResponseList(repository.findAll(spec));
     }
 
     @Override
     public Study entityByExternalId(UUID externalId) {
         return repository.findByExternalId(externalId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Study",
-                                "externalId",
-                                externalId
-                        ));
+                .orElseThrow(() -> new ResourceNotFoundException("Study", "externalId", externalId));
     }
 
     @Override
     public StudyResponse findById(UUID externalId) {
-        return mapper.toResponse(
-                entityByExternalId(externalId)
-        );
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
     public StudyResponse update(
             UUID externalId,
-            StudyRequest dto
-    ) {
+            StudyRequest dto) {
 
         Study entity = entityByExternalId(externalId);
 
         mapper.updateEntity(entity, dto);
 
-        return mapper.toResponse(
-                repository.save(entity)
-        );
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
     public void delete(UUID externalId) {
-        repository.delete(
-                entityByExternalId(externalId)
-        );
+        repository.delete(entityByExternalId(externalId));
     }
 }

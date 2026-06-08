@@ -11,7 +11,6 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {AnimalTypeMapper.class, BreedMapper.class})
 public interface PetMapper {
-
     PetResponse toResponse(Pet entity);
 
     List<PetResponse> toResponseList(List<Pet> entities);

@@ -21,40 +21,34 @@ public class StudyController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public StudyResponse create(
-            @Valid @RequestBody StudyRequest request
-    ) {
-        return service.create(request);
+    public StudyResponse create(@Valid @RequestBody StudyRequest dto) {
+        return service.create(dto);
     }
 
     @GetMapping
     public List<StudyResponse> findAll(
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) String description
-    ) {
+            @RequestParam(required = false) String description) {
+
         return service.findAll(name, description);
     }
 
     @GetMapping("/{externalId}")
-    public StudyResponse findById(
-            @PathVariable UUID externalId
-    ) {
+    public StudyResponse findById(@PathVariable UUID externalId) {
         return service.findById(externalId);
     }
 
     @PutMapping("/{externalId}")
     public StudyResponse update(
             @PathVariable UUID externalId,
-            @Valid @RequestBody StudyRequest request
-    ) {
-        return service.update(externalId, request);
+            @Valid @RequestBody StudyRequest dto) {
+
+        return service.update(externalId, dto);
     }
 
     @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(
-            @PathVariable UUID externalId
-    ) {
+    public void delete(@PathVariable UUID externalId) {
         service.delete(externalId);
     }
 }

@@ -42,8 +42,8 @@ public class PetController {
     @PutMapping("/{externalId}")
     public PetResponse update(
             @PathVariable UUID externalId,
-            @Valid @RequestBody PetRequest request
-    ) {
+            @Valid @RequestBody PetRequest request) {
+
         return service.update(externalId, request);
     }
 

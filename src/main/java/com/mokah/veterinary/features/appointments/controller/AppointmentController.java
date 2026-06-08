@@ -23,9 +23,7 @@ public class AppointmentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AppointmentResponse create(
-            @Valid @RequestBody AppointmentCreateDTO dto
-    ) {
+    public AppointmentResponse create(@Valid @RequestBody AppointmentCreateDTO dto) {
         return service.create(dto);
     }
 
@@ -35,37 +33,27 @@ public class AppointmentController {
             @RequestParam(required = false) String reason,
             @RequestParam(required = false) AppointmentStatus status,
             @RequestParam(required = false) UUID petExternalId,
-            @RequestParam(required = false) UUID veterinarianExternalId
-    ) {
-        return service.findAll(
-                date,
-                reason,
-                status,
-                petExternalId,
-                veterinarianExternalId
-        );
+            @RequestParam(required = false) UUID veterinarianExternalId) {
+
+        return service.findAll(date, reason, status, petExternalId, veterinarianExternalId);
     }
 
     @GetMapping("/{externalId}")
-    public AppointmentResponse findById(
-            @PathVariable UUID externalId
-    ) {
+    public AppointmentResponse findById(@PathVariable UUID externalId) {
         return service.findById(externalId);
     }
 
     @PutMapping("/{externalId}")
     public AppointmentResponse update(
             @PathVariable UUID externalId,
-            @Valid @RequestBody AppointmentUpdateDTO dto
-    ) {
+            @Valid @RequestBody AppointmentUpdateDTO dto) {
+
         return service.update(externalId, dto);
     }
 
     @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(
-            @PathVariable UUID externalId
-    ) {
+    public void delete(@PathVariable UUID externalId) {
         service.delete(externalId);
     }
 }

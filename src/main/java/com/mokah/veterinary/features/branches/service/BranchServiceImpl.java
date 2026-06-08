@@ -30,34 +30,23 @@ public class BranchServiceImpl implements BranchService {
 
         Branch branch = branchMapper.toEntity(dto);
 
-        return branchMapper.toResponse(
-                branchRepository.save(branch)
-        );
+        return branchMapper.toResponse(branchRepository.save(branch));
     }
 
     @Override
     public List<BranchResponse> findAll() {
-        return branchMapper.toResponseList(
-                branchRepository.findAll()
-        );
+        return branchMapper.toResponseList(branchRepository.findAll());
     }
 
     @Override
     public Branch entityByExternalId(UUID externalId) {
         return branchRepository.findByExternalId(externalId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Branch",
-                                "externalId",
-                                externalId
-                        ));
+                .orElseThrow(() -> new ResourceNotFoundException("Branch", "externalId", externalId));
     }
 
     @Override
     public BranchResponse findById(UUID externalId) {
-        return branchMapper.toResponse(
-                entityByExternalId(externalId)
-        );
+        return branchMapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
@@ -83,15 +72,11 @@ public class BranchServiceImpl implements BranchService {
             }
         }
 
-        return branchMapper.toResponse(
-                branchRepository.save(branch)
-        );
+        return branchMapper.toResponse(branchRepository.save(branch));
     }
 
     @Override
     public void delete(UUID externalId) {
-        branchRepository.delete(
-                entityByExternalId(externalId)
-        );
+        branchRepository.delete(entityByExternalId(externalId));
     }
 }

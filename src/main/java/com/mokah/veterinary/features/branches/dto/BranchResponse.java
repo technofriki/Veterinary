@@ -1,7 +1,6 @@
 package com.mokah.veterinary.features.branches.dto;
 
 import com.mokah.veterinary.features.adresses.dto.AddressResponse;
-import lombok.*;
 
 import java.util.UUID;
 

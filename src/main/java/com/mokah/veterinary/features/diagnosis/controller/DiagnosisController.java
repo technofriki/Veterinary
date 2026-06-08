@@ -20,11 +20,8 @@ public class DiagnosisController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DiagnosisResponse create(
-            @Valid @RequestBody DiagnosisRequest request
-    ) {
-
-        return service.create(request);
+    public DiagnosisResponse create(@Valid @RequestBody DiagnosisRequest dto) {
+        return service.create(dto);
     }
 
     @GetMapping
@@ -33,31 +30,21 @@ public class DiagnosisController {
     }
 
     @GetMapping("/{externalId}")
-    public DiagnosisResponse findById(
-            @PathVariable UUID externalId
-    ) {
-
+    public DiagnosisResponse findById(@PathVariable UUID externalId) {
         return service.findById(externalId);
     }
 
     @PutMapping("/{externalId}")
     public DiagnosisResponse update(
             @PathVariable UUID externalId,
-            @Valid @RequestBody DiagnosisRequest request
-    ) {
+            @Valid @RequestBody DiagnosisRequest dto) {
 
-        return service.update(
-                externalId,
-                request
-        );
+        return service.update(externalId, dto);
     }
 
     @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(
-            @PathVariable UUID externalId
-    ) {
-
+    public void delete(@PathVariable UUID externalId) {
         service.delete(externalId);
     }
 }

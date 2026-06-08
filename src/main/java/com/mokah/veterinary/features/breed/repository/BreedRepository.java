@@ -9,6 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface BreedRepository extends JpaRepository<Breed, Long> {
-
     Optional<Breed> findByExternalId(UUID externalId);
 }

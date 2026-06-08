@@ -30,8 +30,8 @@ public class VeterinarianController {
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) String licenseNumber,
-            @RequestParam(required = false) UUID branchExternalId
-    ) {
+            @RequestParam(required = false) UUID branchExternalId) {
+
         return veterinarianService.findAll(firstName, lastName, licenseNumber, branchExternalId);
     }
 
@@ -43,8 +43,8 @@ public class VeterinarianController {
     @PutMapping("/{externalId}")
     public VeterinarianResponse update(
             @PathVariable UUID externalId,
-            @Valid @RequestBody VeterinarianUpdateDTO dto
-    ) {
+            @Valid @RequestBody VeterinarianUpdateDTO dto) {
+
         return veterinarianService.update(externalId, dto);
     }
 

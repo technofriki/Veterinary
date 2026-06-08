@@ -9,8 +9,6 @@ import java.util.UUID;
 
 @Repository
 public interface PetRepository extends JpaRepository<Pet, Long> {
-
     Optional<Pet> findByExternalId(UUID externalId);
-
     Optional<Pet> findByNameIgnoreCase(String name);
 }

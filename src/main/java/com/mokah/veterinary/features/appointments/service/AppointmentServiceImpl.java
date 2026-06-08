@@ -33,35 +33,22 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         Appointment entity = mapper.toEntity(dto);
 
-        entity.setPet(
-                petService.entityByExternalId(dto.petExternalId())
-        );
+        entity.setPet(petService.entityByExternalId(dto.petExternalId()));
 
-        entity.setVeterinarian(
-                veterinarianService.entityByExternalId(dto.veterinarianExternalId())
-        );
+        entity.setVeterinarian(veterinarianService.entityByExternalId(dto.veterinarianExternalId()));
 
-        return mapper.toResponse(
-                repository.save(entity)
-        );
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
     public Appointment entityByExternalId(UUID externalId) {
         return repository.findByExternalId(externalId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Appointment",
-                                "externalId",
-                                externalId
-                        ));
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment", "externalId", externalId));
     }
 
     @Override
     public AppointmentResponse findById(UUID externalId) {
-        return mapper.toResponse(
-                entityByExternalId(externalId)
-        );
+        return mapper.toResponse(entityByExternalId(externalId));
     }
 
     @Override
@@ -70,8 +57,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             String reason,
             AppointmentStatus status,
             UUID petExternalId,
-            UUID veterinarianExternalId
-    ) {
+            UUID veterinarianExternalId) {
 
         PredicateSpecification<Appointment> spec = PredicateSpecification.allOf(
                 AppointmentSpecification.hasAppointmentDate(appointmentDate),
@@ -81,38 +67,27 @@ public class AppointmentServiceImpl implements AppointmentService {
                 AppointmentSpecification.hasVeterinarianExternalId(veterinarianExternalId)
         );
 
-        return mapper.toResponseList(
-                repository.findAll(spec)
-        );
+        return mapper.toResponseList(repository.findAll(spec));
     }
 
     @Override
     public AppointmentResponse update(
             UUID externalId,
-            AppointmentUpdateDTO dto
-    ) {
+            AppointmentUpdateDTO dto) {
 
         Appointment entity = entityByExternalId(externalId);
 
         mapper.update(entity, dto);
 
-        entity.setPet(
-                petService.entityByExternalId(dto.petExternalId())
-        );
+        entity.setPet(petService.entityByExternalId(dto.petExternalId()));
 
-        entity.setVeterinarian(
-                veterinarianService.entityByExternalId(dto.veterinarianExternalId())
-        );
+        entity.setVeterinarian(veterinarianService.entityByExternalId(dto.veterinarianExternalId()));
 
-        return mapper.toResponse(
-                repository.save(entity)
-        );
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override
     public void delete(UUID externalId) {
-        repository.delete(
-                entityByExternalId(externalId)
-        );
+        repository.delete(entityByExternalId(externalId));
     }
 }

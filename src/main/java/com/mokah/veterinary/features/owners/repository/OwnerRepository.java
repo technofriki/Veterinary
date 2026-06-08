@@ -9,10 +9,7 @@ import java.util.UUID;
 
 @Repository
 public interface OwnerRepository extends JpaRepository<Owner, Long> {
-
     Optional<Owner> findByExternalId(UUID externalId);
-
     Optional<Owner> findByDni(String dni);
-
     boolean existsByDni(String dni);
 }

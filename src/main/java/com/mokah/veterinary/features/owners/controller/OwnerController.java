@@ -43,8 +43,8 @@ public class OwnerController {
     @PutMapping("/{externalId}")
     public OwnerResponse update(
             @PathVariable UUID externalId,
-            @Valid @RequestBody OwnerRequest request
-    ) {
+            @Valid @RequestBody OwnerRequest request) {
+
         return ownerService.update(externalId, request);
     }
 

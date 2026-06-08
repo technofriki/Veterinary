@@ -22,8 +22,7 @@ public class BreedServiceImpl implements BreedService {
     @Override
     public Breed entityByExternalId(UUID externalId) {
         return repository.findByExternalId(externalId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Breed", "externalId", externalId));
+                .orElseThrow(() -> new ResourceNotFoundException("Breed", "externalId", externalId));
     }
 
     @Override

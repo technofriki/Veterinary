@@ -7,9 +7,7 @@ import java.util.UUID;
 
 public class PrescriptionSpecification {
 
-    public static PredicateSpecification<Prescription>
-    hasDiagnosisExternalId(UUID externalId) {
-
+    public static PredicateSpecification<Prescription> hasDiagnosisExternalId(UUID externalId) {
         return (root, cb) -> externalId == null
                 ? cb.conjunction()
                 : cb.equal(
@@ -19,9 +17,7 @@ public class PrescriptionSpecification {
         );
     }
 
-    public static PredicateSpecification<Prescription>
-    hasPetExternalId(UUID externalId) {
-
+    public static PredicateSpecification<Prescription> hasPetExternalId(UUID externalId) {
         return (root, cb) -> externalId == null
                 ? cb.conjunction()
                 : cb.equal(

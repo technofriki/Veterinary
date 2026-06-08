@@ -7,10 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface OwnerByPetRepository extends JpaRepository<OwnerByPet, Long> {
-
     boolean existsByOwnerIdAndPetId(Long ownerId, Long petId);
-
     boolean existsByOwnerIdAndPetIdAndIdNot(Long ownerId, Long petId, Long id);
-
     Optional<OwnerByPet> findByExternalId(UUID externalId);
 }

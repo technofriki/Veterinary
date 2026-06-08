@@ -8,9 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface StudyByVisitRepository
-        extends JpaRepository<StudyByVisit, Long> {
-
+public interface StudyByVisitRepository extends JpaRepository<StudyByVisit, Long> {
     Optional<StudyByVisit> findByExternalId(UUID externalId);
 
     boolean existsByStudyExternalIdAndVisitExternalId(

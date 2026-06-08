@@ -38,6 +38,7 @@ public class BranchController {
     public BranchResponse update(
             @PathVariable UUID externalId,
             @Valid @RequestBody BranchRequest dto) {
+
         return branchService.update(externalId, dto);
     }
 

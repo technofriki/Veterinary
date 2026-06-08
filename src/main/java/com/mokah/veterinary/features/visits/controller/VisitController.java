@@ -20,9 +20,7 @@ public class VisitController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public VisitResponse create(
-            @Valid @RequestBody VisitRequest dto
-    ) {
+    public VisitResponse create(@Valid @RequestBody VisitRequest dto) {
         return service.create(dto);
     }
 
@@ -30,35 +28,27 @@ public class VisitController {
     public List<VisitResponse> findAll(
             @RequestParam(required = false) UUID visitExternalId,
             @RequestParam(required = false) String veterinarianName,
-            @RequestParam(required = false) String petName
-    ) {
-        return service.findAll(
-                visitExternalId,
-                veterinarianName,
-                petName
-        );
+            @RequestParam(required = false) String petName) {
+
+        return service.findAll(visitExternalId, veterinarianName, petName);
     }
 
     @GetMapping("/{externalId}")
-    public VisitResponse findById(
-            @PathVariable UUID externalId
-    ) {
+    public VisitResponse findById(@PathVariable UUID externalId) {
         return service.findById(externalId);
     }
 
     @PutMapping("/{externalId}")
     public VisitResponse update(
             @PathVariable UUID externalId,
-            @Valid @RequestBody VisitRequest dto
-    ) {
+            @Valid @RequestBody VisitRequest dto) {
+
         return service.update(externalId, dto);
     }
 
     @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(
-            @PathVariable UUID externalId
-    ) {
+    public void delete(@PathVariable UUID externalId) {
         service.delete(externalId);
     }
 }

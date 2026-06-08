@@ -10,8 +10,7 @@ import java.util.UUID;
 public class AppointmentSpecification {
 
     public static PredicateSpecification<Appointment> hasAppointmentDate(
-            LocalDateTime appointmentDate
-    ) {
+            LocalDateTime appointmentDate) {
         return (from, cb) -> appointmentDate == null
                 ? cb.conjunction()
                 : cb.equal(
@@ -21,8 +20,7 @@ public class AppointmentSpecification {
     }
 
     public static PredicateSpecification<Appointment> hasReason(
-            String reason
-    ) {
+            String reason) {
         return (from, cb) -> reason == null
                 ? cb.conjunction()
                 : cb.like(
@@ -32,8 +30,7 @@ public class AppointmentSpecification {
     }
 
     public static PredicateSpecification<Appointment> hasStatus(
-            AppointmentStatus status
-    ) {
+            AppointmentStatus status) {
         return (from, cb) -> status == null
                 ? cb.conjunction()
                 : cb.equal(
@@ -43,8 +40,7 @@ public class AppointmentSpecification {
     }
 
     public static PredicateSpecification<Appointment> hasPetExternalId(
-            UUID petExternalId
-    ) {
+            UUID petExternalId) {
         return (from, cb) -> petExternalId == null
                 ? cb.conjunction()
                 : cb.equal(
@@ -54,8 +50,7 @@ public class AppointmentSpecification {
     }
 
     public static PredicateSpecification<Appointment> hasVeterinarianExternalId(
-            UUID veterinarianExternalId
-    ) {
+            UUID veterinarianExternalId) {
         return (from, cb) -> veterinarianExternalId == null
                 ? cb.conjunction()
                 : cb.equal(

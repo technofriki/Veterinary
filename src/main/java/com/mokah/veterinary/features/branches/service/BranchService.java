@@ -1,6 +1,5 @@
 package com.mokah.veterinary.features.branches.service;
 
-
 import com.mokah.veterinary.features.branches.dto.BranchRequest;
 import com.mokah.veterinary.features.branches.dto.BranchResponse;
 import com.mokah.veterinary.features.branches.model.Branch;
@@ -10,7 +9,7 @@ import java.util.UUID;
 
 public interface BranchService {
 
-   BranchResponse create(BranchRequest request);
+   BranchResponse create(BranchRequest dto);
 
    List<BranchResponse> findAll();
 
@@ -18,7 +17,7 @@ public interface BranchService {
 
    BranchResponse findById(UUID externalId);
 
-   BranchResponse update(UUID externalId, BranchRequest request);
+   BranchResponse update(UUID externalId, BranchRequest dto);
 
    void delete(UUID externalId);
 }
