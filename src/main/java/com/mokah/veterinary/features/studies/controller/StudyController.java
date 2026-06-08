@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/studies")
@@ -19,31 +20,41 @@ public class StudyController {
     private final StudyService service;
 
     @PostMapping
-    public ResponseEntity<StudyResponse> create(@Valid @RequestBody StudyRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
+    @ResponseStatus(HttpStatus.CREATED)
+    public StudyResponse create(
+            @Valid @RequestBody StudyRequest request
+    ) {
+        return service.create(request);
     }
 
     @GetMapping
-    public ResponseEntity<List<StudyResponse>> findAll(
+    public List<StudyResponse> findAll(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String description
     ) {
-        return ResponseEntity.ok(service.findAll(name, description));
+        return service.findAll(name, description);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<StudyResponse> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.findById(id));
+    @GetMapping("/{externalId}")
+    public StudyResponse findById(
+            @PathVariable UUID externalId
+    ) {
+        return service.findById(externalId);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<StudyResponse> update(@PathVariable Long id, @Valid @RequestBody StudyRequest request) {
-        return ResponseEntity.ok(service.update(id, request));
+    @PutMapping("/{externalId}")
+    public StudyResponse update(
+            @PathVariable UUID externalId,
+            @Valid @RequestBody StudyRequest request
+    ) {
+        return service.update(externalId, request);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.delete(id);
-        return ResponseEntity.noContent().build();
+    @DeleteMapping("/{externalId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(
+            @PathVariable UUID externalId
+    ) {
+        service.delete(externalId);
     }
 }

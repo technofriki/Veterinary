@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 public record StudyRequest(
-       @NotBlank String name,
-       @NotBlank String description
+        @NotBlank String name,
+        @NotBlank String description
 ) {
 }
