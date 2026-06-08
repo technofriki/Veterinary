@@ -1,7 +1,11 @@
 package com.mokah.veterinary.features.users.repository;
 
-import com.mokah.veterinary.features.users.entity.UserEntity;
+import com.mokah.veterinary.features.users.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+import java.util.Optional;
+import java.util.UUID;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByExternalId(UUID externalId);
 }
