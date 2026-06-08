@@ -1,12 +1,15 @@
 package com.mokah.veterinary.features.prescriptions.dto;
 
-import com.mokah.veterinary.features.diagnosis.model.Diagnosis;
-import com.mokah.veterinary.features.medication.model.Medication;
+import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponse;
+import com.mokah.veterinary.features.medication.dto.MedicationResponse;
+
+import java.util.UUID;
 
 public record PrescriptionResponse(
+        UUID externalId,
         Long quantity,
         String indication,
-        Medication medication,
-        Diagnosis diagnosis
+        MedicationResponse medication,
+        DiagnosisResponse diagnosis
 ) {
 }

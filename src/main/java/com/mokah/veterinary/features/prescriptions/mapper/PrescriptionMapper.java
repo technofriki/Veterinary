@@ -13,17 +13,21 @@ import java.util.List;
 public interface PrescriptionMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "externalId", ignore = true)
     @Mapping(target = "medication", ignore = true)
     @Mapping(target = "diagnosis", ignore = true)
-    Prescription toEntity(PrescriptionRequest request);
+    Prescription toEntity(PrescriptionRequest dto);
 
     PrescriptionResponse toResponse(Prescription entity);
 
     List<PrescriptionResponse> toResponseList(List<Prescription> entities);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "externalId", ignore = true)
     @Mapping(target = "medication", ignore = true)
     @Mapping(target = "diagnosis", ignore = true)
-    void update(@MappingTarget Prescription entity, PrescriptionRequest request);
-
+    void update(
+            @MappingTarget Prescription entity,
+            PrescriptionRequest dto
+    );
 }

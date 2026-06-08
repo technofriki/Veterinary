@@ -5,12 +5,19 @@ import com.mokah.veterinary.features.prescriptions.dto.PrescriptionResponse;
 import com.mokah.veterinary.features.prescriptions.model.Prescription;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface PrescriptionService {
 
     PrescriptionResponse create(PrescriptionRequest request);
-    Prescription entityById(Long id);
-    PrescriptionResponse findById(Long id);
-    List<PrescriptionResponse> findAll(Long diagnosisId, Long petId);
+
+    Prescription entityByExternalId(UUID externalId);
+
+    PrescriptionResponse findById(UUID externalId);
+
+    List<PrescriptionResponse> findAll(
+            UUID diagnosisExternalId,
+            UUID petExternalId
+    );
 
 }

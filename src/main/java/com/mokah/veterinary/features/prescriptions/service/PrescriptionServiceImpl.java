@@ -2,7 +2,7 @@ package com.mokah.veterinary.features.prescriptions.service;
 
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.diagnosis.service.DiagnosisService;
-import com.mokah.veterinary.features.medication.service.MedicationServiceImpl;
+import com.mokah.veterinary.features.medication.service.MedicationService;
 import com.mokah.veterinary.features.prescriptions.dto.PrescriptionRequest;
 import com.mokah.veterinary.features.prescriptions.dto.PrescriptionResponse;
 import com.mokah.veterinary.features.prescriptions.mapper.PrescriptionMapper;
@@ -14,42 +14,69 @@ import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class PrescriptionServiceImpl implements PrescriptionService {
 
-    private final PrescriptionRepository prescriptionRepository;
-    private final PrescriptionMapper prescriptionMapper;
-    private final MedicationServiceImpl medicationServiceImpl;
+    private final PrescriptionRepository repository;
+    private final PrescriptionMapper mapper;
+    private final MedicationService medicationService;
     private final DiagnosisService diagnosisService;
 
+    @Override
+    public Prescription entityByExternalId(
+            UUID externalId) {
 
-    @Override
-    public  Prescription entityById(Long id){
-    return  prescriptionRepository.findById(id)
-            .orElseThrow(()-> new ResourceNotFoundException("Prescription not found with id: "+id));
-    }
-    @Override
-    public PrescriptionResponse findById(Long id){
-return prescriptionMapper.toResponse(entityById(id));
+        return repository.findByExternalId(externalId)
+                .orElseThrow(() -> new ResourceNotFoundException("Prescription", "externalId", externalId));
     }
 
     @Override
-    public List<PrescriptionResponse> findAll(Long diagnosisId, Long petId){
-        PredicateSpecification<Prescription> specification = PredicateSpecification.allOf(
-                PrescriptionSpecification.hasDiagnosisId(diagnosisId),
-                PrescriptionSpecification.hasPetId(petId)
+    public PrescriptionResponse findById(
+            UUID externalId) {
+
+        return mapper.toResponse(entityByExternalId(externalId));
+    }
+
+    @Override
+    public List<PrescriptionResponse> findAll(
+            UUID diagnosisExternalId,
+            UUID petExternalId) {
+
+        PredicateSpecification<Prescription> spec =
+                PredicateSpecification.allOf(
+                        PrescriptionSpecification.hasDiagnosisExternalId(
+                                diagnosisExternalId
+                        ),
+                        PrescriptionSpecification.hasPetExternalId(
+                                petExternalId
+                        )
+                );
+
+        return mapper.toResponseList(repository.findAll(spec));
+    }
+
+    @Override
+    public PrescriptionResponse create(
+            PrescriptionRequest request) {
+
+        Prescription entity =
+                mapper.toEntity(request);
+
+        entity.setDiagnosis(
+                diagnosisService.entityByExternalId(
+                        request.diagnosisExternalId()
+                )
         );
-        return prescriptionMapper.toResponseList(prescriptionRepository.findAll(specification));
-    }
-    @Override
-    public PrescriptionResponse create(PrescriptionRequest request){
-    Prescription entity = prescriptionMapper.toEntity(request);
-    entity.setDiagnosis(diagnosisService.entityById(request.diagnosisId()));
-    entity.setMedication(medicationServiceImpl.entityById(request.medicationId()));
-    return  prescriptionMapper.toResponse(prescriptionRepository.save(entity));
-    }
 
+        entity.setMedication(
+                medicationService.entityByExternalId(
+                        request.medicationExternalId()
+                )
+        );
 
+        return mapper.toResponse(repository.save(entity));
+    }
 }
