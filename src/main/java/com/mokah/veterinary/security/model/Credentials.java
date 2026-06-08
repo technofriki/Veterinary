@@ -33,6 +33,14 @@ public class Credentials implements UserDetails {
     @Column(nullable = false, columnDefinition = "boolean default true")
     private Boolean enabled;
 
+    @Column(
+            name = "refresh_token",
+            length = 2048,
+            unique = true,
+            nullable = false
+    )
+    private String refreshToken;
+
     @OneToOne
     @JoinColumn(
             name = "user_id",
@@ -54,16 +62,19 @@ public class Credentials implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
         Set<GrantedAuthority> authorities = new HashSet<>();
 
-        roles.forEach(role ->
-                authorities.add(
-                        new SimpleGrantedAuthority(
-                                role.getRole().name()
-                        )
-                )
-        );
+        if (roles != null) {
+            roles.forEach(role -> {
+                authorities.add(new SimpleGrantedAuthority(role.getRole().name()));
+
+                if (role.getPermits() != null) {
+                    role.getPermits().forEach(permit ->
+                            authorities.add(new SimpleGrantedAuthority(permit.getPermit().name()))
+                    );
+                }
+            });
+        }
 
         return authorities;
     }
