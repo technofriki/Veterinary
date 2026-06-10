@@ -1,5 +1,6 @@
 package com.mokah.veterinary.features.appointments.model;
 
+import com.mokah.veterinary.features.branches.model.Branch;
 import com.mokah.veterinary.features.pets.model.Pet;
 import com.mokah.veterinary.features.veterinarians.model.Veterinarian;
 import jakarta.persistence.*;
@@ -48,4 +49,8 @@ public class Appointment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "veterinarian_id", nullable = false)
     private Veterinarian veterinarian;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_id", nullable = false)
+    private Branch branch;
 }
