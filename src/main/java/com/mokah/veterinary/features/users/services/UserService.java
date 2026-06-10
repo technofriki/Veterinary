@@ -1,6 +1,10 @@
 package com.mokah.veterinary.features.users.services;
 
+import com.mokah.veterinary.common.exception.BusinessRuleException;
+import com.mokah.veterinary.common.exception.ResourceNotFoundException;
+import com.mokah.veterinary.features.pets.model.Pet;
 import com.mokah.veterinary.features.users.dto.UserResponse;
+import com.mokah.veterinary.features.users.enums.UserState;
 import com.mokah.veterinary.features.users.model.User;
 import com.mokah.veterinary.features.users.mapper.UserMapper;
 import com.mokah.veterinary.features.users.repository.UserRepository;
@@ -24,6 +28,11 @@ public class UserService implements UserServiceInterface {
     }
 
     @Override
+    public User entityByExternalId(UUID externalId) {
+        return userRepository.findByExternalId(externalId)
+                .orElseThrow(() -> new ResourceNotFoundException("User with externalId"+ externalId +"not found"));
+    }
+    @Override
     public List<UserResponse> findAll() {
         return userRepository.findAll().stream()
                 .map(userMapper::toResponse)
@@ -32,17 +41,19 @@ public class UserService implements UserServiceInterface {
 
     @Override
     public UserResponse findByExternalId(UUID externalId){
-        User entity = userRepository.findByExternalId(externalId)
-                .orElseThrow(()-> new RuntimeException("User not found with id: "+id));
+        User entity = entityByExternalId(externalId);
         return userMapper.toResponse(entity);
     }
 
 
     @Override
     public void delete(UUID externalId){
-        User entity = userRepository.findByExternalId(externalId)
-                .orElseThrow(()-> new RuntimeException("User not found with id: "+id));
-        userRepository.delete(entity);
+        User entity = entityByExternalId(externalId);
+        if(entity.getUserState() == UserState.INACTIVE){
+            throw new BusinessRuleException("User with externalId"+ externalId +" has been deleted already");
+        }
+        entity.setUserState(UserState.INACTIVE);
+        userRepository.save(entity);
     }
 
 

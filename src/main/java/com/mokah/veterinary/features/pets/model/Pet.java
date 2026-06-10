@@ -34,8 +34,11 @@ public class Pet {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "birth_date", nullable = false)
+    @Column(name = "birth_date", nullable = true)
     private LocalDate birthDate;
+
+    @Column(nullable = false)
+    private Boolean active;
 
     @ManyToOne
     @JoinColumn(name = "animal_type_id")

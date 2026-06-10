@@ -12,6 +12,7 @@ public record AppointmentUpdateDTO(
         @NotBlank String reason,
         @NotNull AppointmentStatus status,
         @NotNull UUID petExternalId,
-        @NotNull UUID veterinarianExternalId
+        @NotNull UUID veterinarianExternalId,
+        @NotNull UUID branchExternalId
 ) {
 }

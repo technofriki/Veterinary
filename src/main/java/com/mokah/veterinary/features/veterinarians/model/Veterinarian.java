@@ -38,11 +38,14 @@ public class Veterinarian {
     @Column(name = "license_number", nullable = false, unique = true)
     private String licenseNumber;
 
-    @Column(name = "phone", nullable = false)
+    @Column(nullable = false)
     private String phone;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
+    private Boolean active;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id", nullable = false)

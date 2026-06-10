@@ -1,5 +1,6 @@
 package com.mokah.veterinary.features.veterinarians.service;
 
+import com.mokah.veterinary.common.exception.BusinessRuleException;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.branches.model.Branch;
 import com.mokah.veterinary.features.branches.service.BranchService;
@@ -50,6 +51,7 @@ public class VeterinarianServiceImpl implements VeterinarianService {
 
         Branch branch = branchService.entityByExternalId(dto.branchExternalId());
         entity.setBranch(branch);
+        entity.setActive(true);
 
         return mapper.toResponse(repository.save(entity));
     }
@@ -123,6 +125,11 @@ public class VeterinarianServiceImpl implements VeterinarianService {
 
     @Override
     public void delete(UUID externalId) {
-        repository.delete(entityByExternalId(externalId));
+        Veterinarian entity = entityByExternalId(externalId);
+        if(!entity.getActive()){
+            throw new BusinessRuleException("The selected veterinarian is no longer active in the system.");
+        }
+        entity.setActive(false);
+        repository.save(entity);
     }
 }

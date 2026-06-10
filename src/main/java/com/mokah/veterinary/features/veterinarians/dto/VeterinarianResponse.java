@@ -11,6 +11,7 @@ public record VeterinarianResponse(
         String licenseNumber,
         String phone,
         String email,
+        Boolean active,
         BranchResponse branch
 ) {
 }

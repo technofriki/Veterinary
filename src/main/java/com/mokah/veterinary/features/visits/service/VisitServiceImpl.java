@@ -1,6 +1,10 @@
 package com.mokah.veterinary.features.visits.service;
 
+import com.mokah.veterinary.common.exception.AppointmentNotConfirmedException;
+import com.mokah.veterinary.common.exception.BusinessRuleException;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
+import com.mokah.veterinary.features.appointments.model.Appointment;
+import com.mokah.veterinary.features.appointments.model.AppointmentStatus;
 import com.mokah.veterinary.features.appointments.service.AppointmentService;
 import com.mokah.veterinary.features.veterinarians.service.VeterinarianService;
 import com.mokah.veterinary.features.visits.dto.VisitRequest;
@@ -12,6 +16,7 @@ import com.mokah.veterinary.features.visits.specification.VisitSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,14 +30,22 @@ public class VisitServiceImpl implements VisitService {
     private final VeterinarianService veterinarianService;
     private final AppointmentService appointmentService;
 
+    @Transactional
     @Override
     public VisitResponse create(VisitRequest dto) {
+
+        Appointment appointment = appointmentService.entityByExternalId(dto.appointmentExternalId());
+        if (appointment.getStatus() != AppointmentStatus.CONFIRMED) {
+            throw new AppointmentNotConfirmedException("The visit can not be created. Appointment must be confirmed. Appointment Status: " + appointment.getStatus());
+        }
+        appointment.setStatus(AppointmentStatus.COMPLETED);
 
         Visit entity = mapper.toEntity(dto);
 
         entity.setVeterinarian(veterinarianService.entityByExternalId(dto.veterinarianExternalId()));
 
-        entity.setAppointment(appointmentService.entityByExternalId(dto.appointmentExternalId()));
+        entity.setAppointment(appointment);
+
 
         return mapper.toResponse(repository.save(entity));
     }
@@ -64,6 +77,7 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
+    @Transactional
     public VisitResponse update(
             UUID externalId,
             VisitRequest dto) {
@@ -74,13 +88,12 @@ public class VisitServiceImpl implements VisitService {
 
         entity.setVeterinarian(veterinarianService.entityByExternalId(dto.veterinarianExternalId()));
 
-        entity.setAppointment(appointmentService.entityByExternalId(dto.appointmentExternalId()));
+        if (!entity.getAppointment().getExternalId().equals(dto.appointmentExternalId())) {
+            throw new BusinessRuleException("Cannot reassign a clinical visit to a different appointment.");
+        }
 
         return mapper.toResponse(repository.save(entity));
     }
 
-    @Override
-    public void delete(UUID externalId) {
-        repository.delete(entityByExternalId(externalId));
-    }
+
 }

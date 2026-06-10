@@ -1,5 +1,6 @@
 package com.mokah.veterinary.features.appointments.dto;
 
+import com.mokah.veterinary.features.branches.dto.BranchResponse;
 import com.mokah.veterinary.features.pets.dto.PetResponse;
 import com.mokah.veterinary.features.veterinarians.dto.VeterinarianResponse;
 
@@ -12,6 +13,7 @@ public record AppointmentResponse(
         String reason,
         String status,
         PetResponse pet,
-        VeterinarianResponse veterinarian
+        VeterinarianResponse veterinarian,
+        BranchResponse branch
 ) {
 }

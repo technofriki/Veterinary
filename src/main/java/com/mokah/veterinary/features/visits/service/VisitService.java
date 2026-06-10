@@ -26,5 +26,4 @@ public interface VisitService {
             VisitRequest dto
     );
 
-    void delete(UUID externalId);
 }
