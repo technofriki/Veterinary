@@ -46,9 +46,4 @@ public class VisitController {
         return service.update(externalId, dto);
     }
 
-    @DeleteMapping("/{externalId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable UUID externalId) {
-        service.delete(externalId);
-    }
 }
