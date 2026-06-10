@@ -10,8 +10,8 @@ import java.util.UUID;
 public record AppointmentCreateDTO(
         @NotNull LocalDateTime appointmentDate,
         @NotBlank String reason,
-        @NotNull AppointmentStatus status,
         @NotNull UUID petExternalId,
-        @NotNull UUID veterinarianExternalId
+        @NotNull UUID veterinarianExternalId,
+        @NotNull UUID branchExternalId
 ) {
 }
