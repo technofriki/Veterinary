@@ -5,6 +5,7 @@ import com.mokah.veterinary.features.medication.model.Medication;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -40,6 +41,9 @@ public class Prescription {
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String indication;
+
+    @Column(name = "expiration_date", nullable = false)
+    private LocalDate expirationDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "medication_id", nullable = false)
