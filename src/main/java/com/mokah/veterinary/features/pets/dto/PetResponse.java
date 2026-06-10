@@ -10,6 +10,7 @@ public record PetResponse(
         UUID externalId,
         String name,
         LocalDate birthDate,
+        Boolean active,
         AnimalType animalType,
         Breed breed
 ) {
