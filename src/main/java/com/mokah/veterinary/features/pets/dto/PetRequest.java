@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public record PetRequest(
         @NotBlank String name,
-        @NotNull LocalDate birthDate,
+         LocalDate birthDate,
         @NotNull UUID animalTypeExternalId,
         @NotNull UUID breedExternalId
 ) {
