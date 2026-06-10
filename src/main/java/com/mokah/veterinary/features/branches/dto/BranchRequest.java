@@ -7,9 +7,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalTime;
+
 public record BranchRequest(
         @NotBlank @Size(max = 50) String name,
         @NotBlank @Size(max = 20) String phone,
         @NotBlank @Email @Size(max = 50) String email,
+        @NotNull LocalTime openingTime,
+        @NotNull LocalTime closingTime,
         @NotNull @Valid AddressRequest address
 ) {}
