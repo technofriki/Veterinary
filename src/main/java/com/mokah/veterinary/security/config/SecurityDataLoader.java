@@ -54,7 +54,9 @@ public class SecurityDataLoader implements CommandLineRunner {
         }
     }
 
+
     private void loadRoles() {
+
 
         Role adminRole = roleRepository.findByRole(Roles.ROLE_ADMIN)
                 .orElseGet(() -> roleRepository.save(Role.builder().role(Roles.ROLE_ADMIN).build()));
@@ -62,37 +64,50 @@ public class SecurityDataLoader implements CommandLineRunner {
         roleRepository.save(adminRole);
 
 
+
         Role vetRole = roleRepository.findByRole(Roles.ROLE_VETERINARIAN)
                 .orElseGet(() -> roleRepository.save(Role.builder().role(Roles.ROLE_VETERINARIAN).build()));
         vetRole.setPermits(getPermitsFromEnum(
                 Permits.VIEW_USERS,
+                Permits.VIEW_OWNERS,
                 Permits.VIEW_PETS,
                 Permits.VIEW_APPOINTMENTS,
+                Permits.VIEW_BRANCHES,
                 Permits.VIEW_DIAGNOSES, Permits.CREATE_DIAGNOSES, Permits.UPDATE_DIAGNOSES,
-                Permits.VIEW_PRESCRIPTIONS, Permits.CREATE_PRESCRIPTIONS
+                Permits.VIEW_PRESCRIPTIONS, Permits.CREATE_PRESCRIPTIONS,
+                Permits.VIEW_CLINICAL_RECORDS, Permits.CREATE_CLINICAL_RECORDS, Permits.UPDATE_CLINICAL_RECORDS,
+                Permits.VIEW_MEDICATIONS
         ));
         roleRepository.save(vetRole);
+
 
 
         Role receptionistRole = roleRepository.findByRole(Roles.ROLE_RECEPTIONIST)
                 .orElseGet(() -> roleRepository.save(Role.builder().role(Roles.ROLE_RECEPTIONIST).build()));
         receptionistRole.setPermits(getPermitsFromEnum(
                 Permits.VIEW_USERS,
+                Permits.VIEW_OWNERS, Permits.CREATE_OWNERS, Permits.UPDATE_OWNERS,
                 Permits.VIEW_PETS, Permits.CREATE_PETS, Permits.UPDATE_PETS,
                 Permits.VIEW_APPOINTMENTS, Permits.CREATE_APPOINTMENTS, Permits.UPDATE_APPOINTMENTS, Permits.DELETE_APPOINTMENTS,
+                Permits.VIEW_BRANCHES,
                 Permits.VIEW_DIAGNOSES,
-                Permits.VIEW_PRESCRIPTIONS
+                Permits.VIEW_PRESCRIPTIONS,
+                Permits.VIEW_CLINICAL_RECORDS,
+                Permits.VIEW_MEDICATIONS
         ));
         roleRepository.save(receptionistRole);
+
 
 
         Role clientRole = roleRepository.findByRole(Roles.ROLE_CLIENT)
                 .orElseGet(() -> roleRepository.save(Role.builder().role(Roles.ROLE_CLIENT).build()));
         clientRole.setPermits(getPermitsFromEnum(
-                Permits.VIEW_PETS,
+                Permits.VIEW_PETS, Permits.CREATE_PETS, Permits.UPDATE_PETS,
                 Permits.VIEW_APPOINTMENTS, Permits.CREATE_APPOINTMENTS, Permits.DELETE_APPOINTMENTS,
+                Permits.VIEW_BRANCHES,
                 Permits.VIEW_DIAGNOSES,
-                Permits.VIEW_PRESCRIPTIONS
+                Permits.VIEW_PRESCRIPTIONS,
+                Permits.VIEW_CLINICAL_RECORDS
         ));
         roleRepository.save(clientRole);
     }

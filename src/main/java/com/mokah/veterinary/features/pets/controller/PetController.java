@@ -23,6 +23,7 @@ public class PetController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('CREATE_PETS')")
     public PetResponse create(@Valid @RequestBody PetRequest request) {
+
         return service.create(request);
     }
 

@@ -6,6 +6,7 @@ import com.mokah.veterinary.features.visits.service.VisitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,11 +21,13 @@ public class VisitController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('CREATE_CLINICAL_RECORDS')")
     public VisitResponse create(@Valid @RequestBody VisitRequest dto) {
         return service.create(dto);
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('VIEW_CLINICAL_RECORDS')")
     public List<VisitResponse> findAll(
             @RequestParam(required = false) UUID visitExternalId,
             @RequestParam(required = false) String veterinarianName,
@@ -34,11 +37,13 @@ public class VisitController {
     }
 
     @GetMapping("/{externalId}")
+    @PreAuthorize("hasAuthority('VIEW_CLINICAL_RECORDS')")
     public VisitResponse findById(@PathVariable UUID externalId) {
         return service.findById(externalId);
     }
 
     @PutMapping("/{externalId}")
+    @PreAuthorize("hasAuthority('UPDATE_CLINICAL_RECORDS')")
     public VisitResponse update(
             @PathVariable UUID externalId,
             @Valid @RequestBody VisitRequest dto) {
@@ -47,6 +52,7 @@ public class VisitController {
     }
 
     @GetMapping("/medical-history/{petExternalId}")
+    @PreAuthorize("hasAuthority('VIEW_CLINICAL_RECORDS')")
     public List<VisitResponse> medicalHistory(
             @PathVariable UUID petExternalId) {
 
