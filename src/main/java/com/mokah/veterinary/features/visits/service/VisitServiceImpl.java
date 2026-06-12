@@ -34,6 +34,12 @@ public class VisitServiceImpl implements VisitService {
     @Override
     public VisitResponse create(VisitRequest dto) {
 
+        if(repository.existsByAppointment_ExternalId(dto.appointmentExternalId())){
+            throw new BusinessRuleException(
+                    "The appointment already has a registered visit."
+            );
+        }
+
         Appointment appointment = appointmentService.entityByExternalId(dto.appointmentExternalId());
         if (appointment.getStatus() != AppointmentStatus.CONFIRMED) {
             throw new AppointmentNotConfirmedException("The visit can not be created. Appointment must be confirmed. Appointment Status: " + appointment.getStatus());
@@ -95,5 +101,12 @@ public class VisitServiceImpl implements VisitService {
         return mapper.toResponse(repository.save(entity));
     }
 
+    @Override
+    public List<VisitResponse> findMedicalHistory(UUID petExternalId) {
+
+        return mapper.toResponseList(
+                repository.findByAppointment_Pet_ExternalId(petExternalId)
+        );
+    }
 
 }

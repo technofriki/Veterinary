@@ -26,4 +26,5 @@ public interface VisitService {
             VisitRequest dto
     );
 
+    List<VisitResponse> findMedicalHistory(UUID petExternalId);
 }
