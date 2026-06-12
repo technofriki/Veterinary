@@ -6,6 +6,7 @@ import com.mokah.veterinary.features.conditions.service.ConditionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,21 +21,25 @@ public class ConditionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('CREATE_CLINICAL_RECORDS')")
     public ConditionResponse create(@Valid @RequestBody ConditionRequest dto) {
         return service.create(dto);
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('VIEW_CLINICAL_RECORDS')")
     public List<ConditionResponse> findAll() {
         return service.findAll();
     }
 
     @GetMapping("/{externalId}")
+    @PreAuthorize("hasAuthority('VIEW_CLINICAL_RECORDS')")
     public ConditionResponse findById(@PathVariable UUID externalId) {
         return service.findById(externalId);
     }
 
     @PutMapping("/{externalId}")
+    @PreAuthorize("hasAuthority('UPDATE_CLINICAL_RECORDS')")
     public ConditionResponse update(
             @PathVariable UUID externalId,
             @Valid @RequestBody ConditionRequest dto) {
@@ -44,6 +49,7 @@ public class ConditionController {
 
     @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID externalId) {
         service.delete(externalId);
     }

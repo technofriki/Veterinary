@@ -6,6 +6,7 @@ import com.mokah.veterinary.features.animaltypes.service.AnimalTypeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,22 +20,26 @@ public class AnimalTypeController {
     private final AnimalTypeService service;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('VIEW_PETS')")
     public List<AnimalTypeResponse> getAll() {
         return service.findAll();
     }
 
     @GetMapping("/{externalId}")
+    @PreAuthorize("hasAuthority('VIEW_PETS')")
     public AnimalTypeResponse getById(@PathVariable UUID externalId) {
         return service.findById(externalId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public AnimalTypeResponse create(@Valid @RequestBody AnimalTypeRequest request) {
         return service.create(request);
     }
 
     @PutMapping("/{externalId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public AnimalTypeResponse update(
             @PathVariable UUID externalId,
             @Valid @RequestBody AnimalTypeRequest dto) {
@@ -43,6 +48,7 @@ public class AnimalTypeController {
     }
 
     @DeleteMapping("/{externalId}")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID externalId) {
         service.delete(externalId);

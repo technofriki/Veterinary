@@ -6,6 +6,7 @@ import com.mokah.veterinary.features.branches.service.BranchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,21 +21,25 @@ public class BranchController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('MANAGE_BRANCHES')")
     public BranchResponse create(@Valid @RequestBody BranchRequest dto) {
         return branchService.create(dto);
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('VIEW_BRANCHES')")
     public List<BranchResponse> findAll() {
         return branchService.findAll();
     }
 
     @GetMapping("/{externalId}")
+    @PreAuthorize("hasAuthority('VIEW_BRANCHES')")
     public BranchResponse findById(@PathVariable UUID externalId) {
         return branchService.findById(externalId);
     }
 
     @PutMapping("/{externalId}")
+    @PreAuthorize("hasAuthority('MANAGE_BRANCHES')")
     public BranchResponse update(
             @PathVariable UUID externalId,
             @Valid @RequestBody BranchRequest dto) {
@@ -44,6 +49,7 @@ public class BranchController {
 
     @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAuthority('MANAGE_BRANCHES')")
     public void delete(@PathVariable UUID externalId) {
         branchService.delete(externalId);
     }

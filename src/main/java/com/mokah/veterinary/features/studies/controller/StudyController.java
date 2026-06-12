@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,11 +22,13 @@ public class StudyController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('CREATE_CLINICAL_RECORDS')")
     public StudyResponse create(@Valid @RequestBody StudyRequest dto) {
         return service.create(dto);
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('VIEW_CLINICAL_RECORDS')")
     public List<StudyResponse> findAll(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String description) {
@@ -34,11 +37,13 @@ public class StudyController {
     }
 
     @GetMapping("/{externalId}")
+    @PreAuthorize("hasAuthority('VIEW_CLINICAL_RECORDS')")
     public StudyResponse findById(@PathVariable UUID externalId) {
         return service.findById(externalId);
     }
 
     @PutMapping("/{externalId}")
+    @PreAuthorize("hasAuthority('UPDATE_CLINICAL_RECORDS')")
     public StudyResponse update(
             @PathVariable UUID externalId,
             @Valid @RequestBody StudyRequest dto) {
@@ -48,6 +53,7 @@ public class StudyController {
 
     @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID externalId) {
         service.delete(externalId);
     }
