@@ -33,16 +33,14 @@ public class SecurityDataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-
         loadPermits();
         loadRoles();
         createAdminUser();
+        createMockUsers();
     }
 
     private void loadPermits() {
-
         for (Permits permitEnum : Permits.values()) {
-
             permitRepository.findByPermit(permitEnum)
                     .orElseGet(() ->
                             permitRepository.save(
@@ -54,16 +52,11 @@ public class SecurityDataLoader implements CommandLineRunner {
         }
     }
 
-
     private void loadRoles() {
-
-
         Role adminRole = roleRepository.findByRole(Roles.ROLE_ADMIN)
                 .orElseGet(() -> roleRepository.save(Role.builder().role(Roles.ROLE_ADMIN).build()));
         adminRole.setPermits(new HashSet<>(permitRepository.findAll()));
         roleRepository.save(adminRole);
-
-
 
         Role vetRole = roleRepository.findByRole(Roles.ROLE_VETERINARIAN)
                 .orElseGet(() -> roleRepository.save(Role.builder().role(Roles.ROLE_VETERINARIAN).build()));
@@ -80,8 +73,6 @@ public class SecurityDataLoader implements CommandLineRunner {
         ));
         roleRepository.save(vetRole);
 
-
-
         Role receptionistRole = roleRepository.findByRole(Roles.ROLE_RECEPTIONIST)
                 .orElseGet(() -> roleRepository.save(Role.builder().role(Roles.ROLE_RECEPTIONIST).build()));
         receptionistRole.setPermits(getPermitsFromEnum(
@@ -97,8 +88,6 @@ public class SecurityDataLoader implements CommandLineRunner {
         ));
         roleRepository.save(receptionistRole);
 
-
-
         Role clientRole = roleRepository.findByRole(Roles.ROLE_CLIENT)
                 .orElseGet(() -> roleRepository.save(Role.builder().role(Roles.ROLE_CLIENT).build()));
         clientRole.setPermits(getPermitsFromEnum(
@@ -113,7 +102,6 @@ public class SecurityDataLoader implements CommandLineRunner {
     }
 
     private void createAdminUser() {
-
         if (credentialsRepository.findByUsername("admin").isPresent()) {
             return;
         }
@@ -141,6 +129,58 @@ public class SecurityDataLoader implements CommandLineRunner {
 
         credentialsRepository.save(credentials);
     }
+
+
+    private void createMockUsers() {
+
+        if (credentialsRepository.findByUsername("vet_juan").isEmpty()) {
+            User vetUser = User.builder()
+                    .firstName("Juan")
+                    .lastName("Veterinario")
+                    .email("juan@veterinary.com")
+                    .userState(UserState.ACTIVE)
+                    .build();
+
+            vetUser = userRepository.save(vetUser);
+            Role vetRole = roleRepository.findByRole(Roles.ROLE_VETERINARIAN).orElseThrow();
+
+            Credentials credentials = Credentials.builder()
+                    .username("vet_juan")
+                    .password(passwordEncoder.encode("vet123"))
+                    .enabled(true)
+                    .refreshToken(UUID.randomUUID().toString())
+                    .user(vetUser)
+                    .roles(Set.of(vetRole))
+                    .build();
+
+            credentialsRepository.save(credentials);
+        }
+
+
+        if (credentialsRepository.findByUsername("cliente_carlos").isEmpty()) {
+            User clientUser = User.builder()
+                    .firstName("Carlos")
+                    .lastName("Cliente")
+                    .email("carlos@gmail.com")
+                    .userState(UserState.ACTIVE)
+                    .build();
+
+            clientUser = userRepository.save(clientUser);
+            Role clientRole = roleRepository.findByRole(Roles.ROLE_CLIENT).orElseThrow();
+
+            Credentials credentials = Credentials.builder()
+                    .username("cliente_carlos")
+                    .password(passwordEncoder.encode("cliente123"))
+                    .enabled(true)
+                    .refreshToken(UUID.randomUUID().toString())
+                    .user(clientUser)
+                    .roles(Set.of(clientRole))
+                    .build();
+
+            credentialsRepository.save(credentials);
+        }
+    }
+
     private Set<Permit> getPermitsFromEnum(Permits... permits) {
         Set<Permit> permitSet = new HashSet<>();
         for (Permits p : permits) {
