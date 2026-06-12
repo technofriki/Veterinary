@@ -4,6 +4,7 @@ import com.mokah.veterinary.features.users.dto.UserResponse;
 import com.mokah.veterinary.features.users.services.UserServiceInterface;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,12 +18,14 @@ public class UserController {
     public UserController(UserServiceInterface userService) {this.userService = userService;}
 
     @GetMapping
+    @PreAuthorize("hasAuthority('VIEW_USERS')")
     public ResponseEntity<List<UserResponse>> findAllUsers() {
         List<UserResponse> responseList = userService.findAll();
         return ResponseEntity.ok(responseList);
     }
 
     @GetMapping("/{externalId}")
+    @PreAuthorize("hasAuthority('VIEW_USERS')")
     public ResponseEntity<UserResponse> getUserByExternalId(@PathVariable UUID externalId) {
         UserResponse response = userService.findByExternalId(externalId);
         return ResponseEntity.ok(response);
@@ -30,6 +33,7 @@ public class UserController {
 
 
     @DeleteMapping("/{externalId}")
+    @PreAuthorize("hasAuthority('DELETE_USERS')")
     public ResponseEntity<UserResponse> deleteUser(@PathVariable UUID externalId) {
         userService.delete(externalId);
         return ResponseEntity.noContent().build();
