@@ -47,7 +47,10 @@ public class GlobalExceptionHandler {
             VeterinarianPhoneExistsException.class,
             DiagnosisByStudyExistsException.class,
             ConditionByPetExistsException.class,
-            StudyByVisitExistsException.class
+            StudyByVisitExistsException.class,
+            OwnerDniExistsException.class,
+            BranchNameExistsException.class,
+            OwnerByPetExistsException.class
     })
     public ResponseEntity<ApiErrorResponse> handleBusinessError(RuntimeException ex) {
         return buildResponse(HttpStatus.CONFLICT, ex.getMessage());

@@ -1,5 +1,6 @@
 package com.mokah.veterinary.features.branches.service;
 
+import com.mokah.veterinary.common.exception.BranchNameExistsException;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.adresses.mapper.AddressMapper;
 import com.mokah.veterinary.features.branches.dto.BranchRequest;
@@ -25,7 +26,7 @@ public class BranchServiceImpl implements BranchService {
     public BranchResponse create(BranchRequest dto) {
 
         if (branchRepository.existsByName(dto.name())) {
-            throw new IllegalArgumentException("Branch already exists");
+            throw new BranchNameExistsException("Branch already exists");
         }
 
         Branch branch = branchMapper.toEntity(dto);
