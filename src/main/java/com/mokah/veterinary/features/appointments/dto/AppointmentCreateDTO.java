@@ -1,6 +1,5 @@
 package com.mokah.veterinary.features.appointments.dto;
 
-import com.mokah.veterinary.features.appointments.model.AppointmentStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
