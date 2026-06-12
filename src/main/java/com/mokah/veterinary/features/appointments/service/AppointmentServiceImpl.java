@@ -41,7 +41,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         Boolean busyVet = repository.existsByVeterinarian_ExternalIdAndAppointmentDateAndStatus(
                 dto.veterinarianExternalId(),
-                dto.appointmentDate(), // Asegúrate de que el método en el DTO se llame así (o usa dto.getAppointmentDate())
+                dto.appointmentDate(),
                 AppointmentStatus.CONFIRMED
         );
 
@@ -140,7 +140,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 dto.veterinarianExternalId(),
                 dto.appointmentDate(),
                 AppointmentStatus.CONFIRMED,
-                externalId // Pasamos el ID actual para que no choque consigo mismo
+                externalId
         );
         if (busyVet) {
             throw new AppointmentOverlapException("veterinarian has already been scheduled for that time.");

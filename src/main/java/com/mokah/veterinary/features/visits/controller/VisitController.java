@@ -46,4 +46,11 @@ public class VisitController {
         return service.update(externalId, dto);
     }
 
+    @GetMapping("/medical-history/{petExternalId}")
+    public List<VisitResponse> medicalHistory(
+            @PathVariable UUID petExternalId) {
+
+        return service.findMedicalHistory(petExternalId);
+    }
+
 }
