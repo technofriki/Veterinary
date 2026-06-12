@@ -1,5 +1,6 @@
 package com.mokah.veterinary.features.owners.service;
 
+import com.mokah.veterinary.common.exception.OwnerDniExistsException;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.owners.dto.OwnerRequest;
 import com.mokah.veterinary.features.owners.dto.OwnerResponse;
@@ -23,7 +24,7 @@ public class OwnerServiceImpl implements OwnerService {
     public OwnerResponse create(OwnerRequest dto) {
 
         if (repository.existsByDni(dto.dni())) {
-            throw new IllegalArgumentException("Owner with DNI " + dto.dni() + " already exists");
+            throw new OwnerDniExistsException("Owner with DNI " + dto.dni() + " already exists");
         }
 
         Owner owner = mapper.toEntity(dto);
