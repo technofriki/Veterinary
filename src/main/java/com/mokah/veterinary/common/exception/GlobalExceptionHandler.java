@@ -31,9 +31,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiErrorResponse> handleValidationsErrors(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ApiErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
         String error = ex.getBindingResult()
-                .getFieldErrors().stream()
+                .getFieldErrors()
+                .stream()
                 .map(fieldError ->
                         fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .collect(Collectors.joining(", "));
@@ -42,17 +43,26 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
+            AppointmentOverlapException.class,
+            AppointmentNotConfirmedException.class,
+            BusinessRuleException.class,
+            InvalidAppointmentTimeException.class,
+            InvalidDateException.class,
+
             VeterinarianEmailExistsException.class,
             VeterinarianLicenseExistsException.class,
             VeterinarianPhoneExistsException.class,
+
             DiagnosisByStudyExistsException.class,
             ConditionByPetExistsException.class,
             StudyByVisitExistsException.class,
+
             OwnerDniExistsException.class,
-            BranchNameExistsException.class,
-            OwnerByPetExistsException.class
+            OwnerByPetExistsException.class,
+
+            BranchNameExistsException.class
     })
-    public ResponseEntity<ApiErrorResponse> handleBusinessError(RuntimeException ex) {
+    public ResponseEntity<ApiErrorResponse> handleBusinessExceptions(RuntimeException ex) {
         return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 
@@ -63,7 +73,11 @@ public class GlobalExceptionHandler {
 
     private ResponseEntity<ApiErrorResponse> buildResponse(HttpStatus status, String message) {
         ApiErrorResponse error = new ApiErrorResponse(
-                LocalDateTime.now(), status.value(), status.getReasonPhrase(), message);
+                LocalDateTime.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                message
+        );
         return new ResponseEntity<>(error, status);
     }
 }
