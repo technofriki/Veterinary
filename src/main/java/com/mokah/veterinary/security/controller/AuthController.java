@@ -20,7 +20,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> authenticateUser(@RequestBody AuthRequest authRequest) {
-        // Al haber cambiado el retorno en el servicio, aquí lo asignamos directo a Credentials
         Credentials user = authService.authenticate(authRequest);
 
         String token = jwtService.generateToken(user);
