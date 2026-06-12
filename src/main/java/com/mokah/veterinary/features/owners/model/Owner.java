@@ -44,7 +44,10 @@ public class Owner {
     @Column(name = "dni", nullable = false, length = 30, unique = true)
     private String dni;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
     @JoinColumn(name = "address_id")
     private Address address;
 }
