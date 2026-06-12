@@ -2,8 +2,6 @@ package com.mokah.veterinary.security.enums;
 
 public enum Permits {
     VIEW_USERS,
-    CREATE_USERS,
-    UPDATE_USERS,
     DELETE_USERS,
 
     VIEW_PETS,
@@ -22,7 +20,5 @@ public enum Permits {
     DELETE_DIAGNOSES,
 
     VIEW_PRESCRIPTIONS,
-    CREATE_PRESCRIPTIONS,
-    UPDATE_PRESCRIPTIONS,
-    DELETE_PRESCRIPTIONS
+    CREATE_PRESCRIPTIONS
 }

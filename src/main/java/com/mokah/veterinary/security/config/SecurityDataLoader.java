@@ -57,46 +57,44 @@ public class SecurityDataLoader implements CommandLineRunner {
     private void loadRoles() {
 
         Role adminRole = roleRepository.findByRole(Roles.ROLE_ADMIN)
-                .orElseGet(() ->
-                        roleRepository.save(
-                                Role.builder()
-                                        .role(Roles.ROLE_ADMIN)
-                                        .build()
-                        )
-                );
-
-        adminRole.setPermits(
-                new HashSet<>(permitRepository.findAll())
-        );
-
+                .orElseGet(() -> roleRepository.save(Role.builder().role(Roles.ROLE_ADMIN).build()));
+        adminRole.setPermits(new HashSet<>(permitRepository.findAll()));
         roleRepository.save(adminRole);
 
-        roleRepository.findByRole(Roles.ROLE_VETERINARIAN)
-                .orElseGet(() ->
-                        roleRepository.save(
-                                Role.builder()
-                                        .role(Roles.ROLE_VETERINARIAN)
-                                        .build()
-                        )
-                );
 
-        roleRepository.findByRole(Roles.ROLE_RECEPTIONIST)
-                .orElseGet(() ->
-                        roleRepository.save(
-                                Role.builder()
-                                        .role(Roles.ROLE_RECEPTIONIST)
-                                        .build()
-                        )
-                );
+        Role vetRole = roleRepository.findByRole(Roles.ROLE_VETERINARIAN)
+                .orElseGet(() -> roleRepository.save(Role.builder().role(Roles.ROLE_VETERINARIAN).build()));
+        vetRole.setPermits(getPermitsFromEnum(
+                Permits.VIEW_USERS,
+                Permits.VIEW_PETS,
+                Permits.VIEW_APPOINTMENTS,
+                Permits.VIEW_DIAGNOSES, Permits.CREATE_DIAGNOSES, Permits.UPDATE_DIAGNOSES,
+                Permits.VIEW_PRESCRIPTIONS, Permits.CREATE_PRESCRIPTIONS
+        ));
+        roleRepository.save(vetRole);
 
-        roleRepository.findByRole(Roles.ROLE_CLIENT)
-                .orElseGet(() ->
-                        roleRepository.save(
-                                Role.builder()
-                                        .role(Roles.ROLE_CLIENT)
-                                        .build()
-                        )
-                );
+
+        Role receptionistRole = roleRepository.findByRole(Roles.ROLE_RECEPTIONIST)
+                .orElseGet(() -> roleRepository.save(Role.builder().role(Roles.ROLE_RECEPTIONIST).build()));
+        receptionistRole.setPermits(getPermitsFromEnum(
+                Permits.VIEW_USERS,
+                Permits.VIEW_PETS, Permits.CREATE_PETS, Permits.UPDATE_PETS,
+                Permits.VIEW_APPOINTMENTS, Permits.CREATE_APPOINTMENTS, Permits.UPDATE_APPOINTMENTS, Permits.DELETE_APPOINTMENTS,
+                Permits.VIEW_DIAGNOSES,
+                Permits.VIEW_PRESCRIPTIONS
+        ));
+        roleRepository.save(receptionistRole);
+
+
+        Role clientRole = roleRepository.findByRole(Roles.ROLE_CLIENT)
+                .orElseGet(() -> roleRepository.save(Role.builder().role(Roles.ROLE_CLIENT).build()));
+        clientRole.setPermits(getPermitsFromEnum(
+                Permits.VIEW_PETS,
+                Permits.VIEW_APPOINTMENTS, Permits.CREATE_APPOINTMENTS, Permits.DELETE_APPOINTMENTS,
+                Permits.VIEW_DIAGNOSES,
+                Permits.VIEW_PRESCRIPTIONS
+        ));
+        roleRepository.save(clientRole);
     }
 
     private void createAdminUser() {
@@ -127,5 +125,12 @@ public class SecurityDataLoader implements CommandLineRunner {
                 .build();
 
         credentialsRepository.save(credentials);
+    }
+    private Set<Permit> getPermitsFromEnum(Permits... permits) {
+        Set<Permit> permitSet = new HashSet<>();
+        for (Permits p : permits) {
+            permitRepository.findByPermit(p).ifPresent(permitSet::add);
+        }
+        return permitSet;
     }
 }

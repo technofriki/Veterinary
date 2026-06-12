@@ -8,6 +8,7 @@ import com.mokah.veterinary.features.appointments.service.AppointmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -23,11 +24,13 @@ public class AppointmentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('CREATE_APPOINTMENTS')")
     public AppointmentResponse create(@Valid @RequestBody AppointmentCreateDTO dto) {
         return service.create(dto);
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('VIEW_APPOINTMENTS')")
     public List<AppointmentResponse> findAll(
             @RequestParam(required = false) LocalDateTime date,
             @RequestParam(required = false) String reason,
@@ -39,11 +42,13 @@ public class AppointmentController {
     }
 
     @GetMapping("/{externalId}")
+    @PreAuthorize("hasAuthority('VIEW_APPOINTMENTS')")
     public AppointmentResponse findById(@PathVariable UUID externalId) {
         return service.findById(externalId);
     }
 
     @PutMapping("/{externalId}")
+    @PreAuthorize("hasAuthority('UPDATE_APPOINTMENTS')")
     public AppointmentResponse update(
             @PathVariable UUID externalId,
             @Valid @RequestBody AppointmentUpdateDTO dto) {
@@ -53,6 +58,7 @@ public class AppointmentController {
 
     @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAuthority('DELETE_APPOINTMENTS')")
     public void delete(@PathVariable UUID externalId) {
         service.delete(externalId);
     }
