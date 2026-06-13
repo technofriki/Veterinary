@@ -1,6 +1,7 @@
 package com.mokah.veterinary.features.owners.repository;
 
 import com.mokah.veterinary.features.owners.model.Owner;
+import com.mokah.veterinary.features.users.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +14,5 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
     Optional<Owner> findByDni(String dni);
     boolean existsByDni(String dni);
     boolean existsByUser_Email(String email);
+    Optional<Owner> findByUser(User user);
 }

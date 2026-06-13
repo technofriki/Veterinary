@@ -22,4 +22,6 @@ public interface PetService {
     PetResponse update(UUID externalId, PetRequest dto);
 
     void delete(UUID externalId);
+
+    List<PetResponse> findPetsByAuthenticatedUser(String userEmail);
 }

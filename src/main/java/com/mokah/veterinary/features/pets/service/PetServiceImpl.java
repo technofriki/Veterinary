@@ -7,17 +7,24 @@ import com.mokah.veterinary.features.animaltypes.model.AnimalType;
 import com.mokah.veterinary.features.animaltypes.service.AnimalTypeService;
 import com.mokah.veterinary.features.breed.model.Breed;
 import com.mokah.veterinary.features.breed.service.BreedService;
+import com.mokah.veterinary.features.owners.model.Owner;
+import com.mokah.veterinary.features.owners.repository.OwnerRepository;
+import com.mokah.veterinary.features.ownersbypets.model.OwnerByPet;
+import com.mokah.veterinary.features.ownersbypets.repository.OwnerByPetRepository;
 import com.mokah.veterinary.features.pets.dto.PetRequest;
 import com.mokah.veterinary.features.pets.dto.PetResponse;
 import com.mokah.veterinary.features.pets.mapper.PetMapper;
 import com.mokah.veterinary.features.pets.model.Pet;
 import com.mokah.veterinary.features.pets.repository.PetRepository;
+import com.mokah.veterinary.features.users.model.User;
+import com.mokah.veterinary.features.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +34,9 @@ public class PetServiceImpl implements PetService {
     private final PetMapper mapper;
     private final AnimalTypeService animalTypeService;
     private final BreedService breedService;
+    private final UserRepository userRepository;
+    private final OwnerRepository ownerRepository;
+    private final OwnerByPetRepository ownerByPetRepository;
 
     @Override
     public PetResponse create(PetRequest dto) {
@@ -103,5 +113,22 @@ public class PetServiceImpl implements PetService {
         }
         pet.setActive(false);
         repository.save(pet);
+    }
+
+    @Override
+    public List<PetResponse> findPetsByAuthenticatedUser(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", userEmail));
+
+        Owner owner = ownerRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Owner", "user", user.getId()));
+
+        List<OwnerByPet> ownerByPets = ownerByPetRepository.findByOwnerId(owner.getId());
+
+        return ownerByPets.stream()
+                .map(OwnerByPet::getPet)
+                .filter(pet -> pet.getActive())
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
     }
 }

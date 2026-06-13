@@ -7,6 +7,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,5 +61,13 @@ public class PetController {
     @PreAuthorize("hasAuthority('DELETE_PETS')")
     public void delete(@PathVariable UUID externalId) {
         service.delete(externalId);
+    }
+
+    @GetMapping("/my")
+    @PreAuthorize("hasAuthority('VIEW_PETS')")
+    public List<PetResponse> findMyPets() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        return service.findPetsByAuthenticatedUser(userEmail);
     }
 }
