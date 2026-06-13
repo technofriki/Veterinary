@@ -14,7 +14,8 @@ public interface VisitService {
     List<VisitResponse> findAll(
             UUID visitExternalId,
             String veterinarianName,
-            String petName
+            String petName,
+            Boolean walkIn
     );
 
     Visit entityByExternalId(UUID externalId);
