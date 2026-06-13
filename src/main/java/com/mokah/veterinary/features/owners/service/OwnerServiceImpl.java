@@ -7,6 +7,9 @@ import com.mokah.veterinary.features.owners.dto.OwnerResponse;
 import com.mokah.veterinary.features.owners.model.Owner;
 import com.mokah.veterinary.features.owners.mapper.OwnerMapper;
 import com.mokah.veterinary.features.owners.repository.OwnerRepository;
+import com.mokah.veterinary.features.users.enums.UserState;
+import com.mokah.veterinary.features.users.model.User;
+import com.mokah.veterinary.features.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,7 @@ public class OwnerServiceImpl implements OwnerService {
 
     private final OwnerRepository repository;
     private final OwnerMapper mapper;
+    private final UserRepository userRepository;
 
     @Override
     public OwnerResponse create(OwnerRequest dto) {
@@ -27,7 +31,21 @@ public class OwnerServiceImpl implements OwnerService {
             throw new OwnerDniExistsException("Owner with DNI " + dto.dni() + " already exists");
         }
 
+        if (repository.existsByUser_Email(dto.email())) {
+            throw new IllegalArgumentException("Owner with email " + dto.email() + " already exists");
+        }
+
+        User user = User.builder()
+                .firstName(dto.firstName())
+                .lastName(dto.lastName())
+                .email(dto.email())
+                .userState(UserState.ACTIVE)
+                .build();
+        user = userRepository.save(user);
+
         Owner owner = mapper.toEntity(dto);
+        owner.setUser(user);
+
         return mapper.toResponse(repository.save(owner));
     }
 
@@ -65,7 +83,22 @@ public class OwnerServiceImpl implements OwnerService {
             throw new IllegalArgumentException("Owner with DNI already exists");
         }
 
+        if (!entity.getUser().getEmail().equals(dto.email())
+                && repository.existsByUser_Email(dto.email())) {
+            throw new IllegalArgumentException("Owner with email already exists");
+        }
+
         mapper.updateEntity(entity, dto);
+
+        if (dto.firstName() != null) {
+            entity.getUser().setFirstName(dto.firstName());
+        }
+        if (dto.lastName() != null) {
+            entity.getUser().setLastName(dto.lastName());
+        }
+        if (dto.email() != null) {
+            entity.getUser().setEmail(dto.email());
+        }
 
         return mapper.toResponse(repository.save(entity));
     }
