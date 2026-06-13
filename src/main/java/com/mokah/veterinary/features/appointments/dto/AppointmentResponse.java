@@ -11,6 +11,7 @@ import java.util.UUID;
 public record AppointmentResponse(
         UUID externalId,
         LocalDateTime appointmentDate,
+        Integer durationMinutes,
         String reason,
         AppointmentStatus status,
         PetResponse pet,

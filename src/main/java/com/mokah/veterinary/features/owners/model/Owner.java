@@ -43,7 +43,7 @@ public class Owner {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }
