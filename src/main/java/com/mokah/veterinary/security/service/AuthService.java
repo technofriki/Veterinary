@@ -129,10 +129,10 @@ public class AuthService {
                 .roles(Set.of(defaultRole))
                 .build();
 
-        credentials = credentialsRepository.save(credentials);
-
         String refreshToken = jwtService.generateRefreshToken(credentials);
+
         credentials.setRefreshToken(refreshToken);
+
         credentialsRepository.save(credentials);
     }
 }
