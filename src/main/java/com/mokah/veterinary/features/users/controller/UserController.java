@@ -2,7 +2,6 @@ package com.mokah.veterinary.features.users.controller;
 
 import com.mokah.veterinary.features.users.dto.UserResponse;
 import com.mokah.veterinary.features.users.services.UserServiceInterface;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

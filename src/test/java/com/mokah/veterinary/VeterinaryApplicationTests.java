@@ -1,4 +1,4 @@
-package com.Mokah.veterinary;
+package com.mokah.veterinary;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
