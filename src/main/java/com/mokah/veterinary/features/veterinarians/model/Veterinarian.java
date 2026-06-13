@@ -1,6 +1,7 @@
 package com.mokah.veterinary.features.veterinarians.model;
 
 import com.mokah.veterinary.features.branches.model.Branch;
+import com.mokah.veterinary.features.users.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,20 +30,11 @@ public class Veterinarian {
         }
     }
 
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
-
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
-
     @Column(name = "license_number", nullable = false, unique = true)
     private String licenseNumber;
 
     @Column(nullable = false)
     private String phone;
-
-    @Column(nullable = false, unique = true)
-    private String email;
 
     @Column(nullable = false)
     private Boolean active;
@@ -50,4 +42,8 @@ public class Veterinarian {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id", nullable = false)
     private Branch branch;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }
