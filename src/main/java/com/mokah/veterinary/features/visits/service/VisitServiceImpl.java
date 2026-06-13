@@ -34,24 +34,39 @@ public class VisitServiceImpl implements VisitService {
     @Override
     public VisitResponse create(VisitRequest dto) {
 
-        if(repository.existsByAppointment_ExternalId(dto.appointmentExternalId())){
+        if (dto.appointmentExternalId() != null &&
+                repository.existsByAppointment_ExternalId(dto.appointmentExternalId())) {
             throw new BusinessRuleException(
                     "The appointment already has a registered visit."
             );
         }
 
-        Appointment appointment = appointmentService.entityByExternalId(dto.appointmentExternalId());
-        if (appointment.getStatus() != AppointmentStatus.CONFIRMED) {
-            throw new AppointmentNotConfirmedException("The visit can not be created. Appointment must be confirmed. Appointment Status: " + appointment.getStatus());
+        Appointment appointment = null;
+
+        if (dto.appointmentExternalId() != null) {
+
+            appointment = appointmentService.entityByExternalId(dto.appointmentExternalId());
+
+            if (appointment.getStatus() != AppointmentStatus.CONFIRMED) {
+                throw new AppointmentNotConfirmedException(
+                        "The visit can not be created. Appointment must be confirmed. Status: "
+                                + appointment.getStatus()
+                );
+            }
+
+            appointment.setStatus(AppointmentStatus.COMPLETED);
+
+        } else {
+            System.out.println("Creating WALK-IN visit (no appointment)");
         }
-        appointment.setStatus(AppointmentStatus.COMPLETED);
 
         Visit entity = mapper.toEntity(dto);
 
-        entity.setVeterinarian(veterinarianService.entityByExternalId(dto.veterinarianExternalId()));
+        entity.setVeterinarian(
+                veterinarianService.entityByExternalId(dto.veterinarianExternalId())
+        );
 
         entity.setAppointment(appointment);
-
 
         return mapper.toResponse(repository.save(entity));
     }
@@ -59,7 +74,9 @@ public class VisitServiceImpl implements VisitService {
     @Override
     public Visit entityByExternalId(UUID externalId) {
         return repository.findByExternalId(externalId)
-                .orElseThrow(() -> new ResourceNotFoundException("Visit", "externalId", externalId));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Visit", "externalId", externalId)
+                );
     }
 
     @Override
@@ -71,12 +88,14 @@ public class VisitServiceImpl implements VisitService {
     public List<VisitResponse> findAll(
             UUID visitExternalId,
             String veterinarianName,
-            String petName) {
+            String petName,
+            Boolean walkIn) {
 
         PredicateSpecification<Visit> spec = PredicateSpecification.allOf(
                 VisitSpecification.hasExternalId(visitExternalId),
                 VisitSpecification.hasVeterinarianName(veterinarianName),
-                VisitSpecification.hasPetName(petName)
+                VisitSpecification.hasPetName(petName),
+                VisitSpecification.isWalkIn(walkIn)
         );
 
         return mapper.toResponseList(repository.findAll(spec));
@@ -84,29 +103,41 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     @Transactional
-    public VisitResponse update(
-            UUID externalId,
-            VisitRequest dto) {
+    public VisitResponse update(UUID externalId, VisitRequest dto) {
 
         Visit entity = entityByExternalId(externalId);
 
+        if (dto.appointmentExternalId() != null) {
+
+            if (entity.getAppointment() == null ||
+                    !entity.getAppointment().getExternalId().equals(dto.appointmentExternalId())) {
+
+                throw new BusinessRuleException(
+                        "Cannot reassign a clinical visit to a different appointment."
+                );
+            }
+        } else {
+
+            if (entity.getAppointment() != null) {
+                throw new BusinessRuleException(
+                        "Cannot convert an appointment-based visit into a walk-in."
+                );
+            }
+        }
+
         mapper.update(entity, dto);
 
-        entity.setVeterinarian(veterinarianService.entityByExternalId(dto.veterinarianExternalId()));
-
-        if (!entity.getAppointment().getExternalId().equals(dto.appointmentExternalId())) {
-            throw new BusinessRuleException("Cannot reassign a clinical visit to a different appointment.");
-        }
+        entity.setVeterinarian(
+                veterinarianService.entityByExternalId(dto.veterinarianExternalId())
+        );
 
         return mapper.toResponse(repository.save(entity));
     }
 
     @Override
     public List<VisitResponse> findMedicalHistory(UUID petExternalId) {
-
         return mapper.toResponseList(
                 repository.findByAppointment_Pet_ExternalId(petExternalId)
         );
     }
-
 }

@@ -31,9 +31,10 @@ public class VisitController {
     public List<VisitResponse> findAll(
             @RequestParam(required = false) UUID visitExternalId,
             @RequestParam(required = false) String veterinarianName,
-            @RequestParam(required = false) String petName) {
-
-        return service.findAll(visitExternalId, veterinarianName, petName);
+            @RequestParam(required = false) String petName,
+            @RequestParam(required = false) Boolean walkIn
+    ) {
+        return service.findAll(visitExternalId, veterinarianName, petName, walkIn);
     }
 
     @GetMapping("/{externalId}")
@@ -53,10 +54,7 @@ public class VisitController {
 
     @GetMapping("/medical-history/{petExternalId}")
     @PreAuthorize("hasAuthority('VIEW_CLINICAL_RECORDS')")
-    public List<VisitResponse> medicalHistory(
-            @PathVariable UUID petExternalId) {
-
+    public List<VisitResponse> medicalHistory(@PathVariable UUID petExternalId) {
         return service.findMedicalHistory(petExternalId);
     }
-
 }
