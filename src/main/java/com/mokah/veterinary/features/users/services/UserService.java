@@ -2,7 +2,6 @@ package com.mokah.veterinary.features.users.services;
 
 import com.mokah.veterinary.common.exception.BusinessRuleException;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
-import com.mokah.veterinary.features.pets.model.Pet;
 import com.mokah.veterinary.features.users.dto.UserResponse;
 import com.mokah.veterinary.features.users.enums.UserState;
 import com.mokah.veterinary.features.users.model.User;
@@ -13,8 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Service
 public class UserService implements UserServiceInterface {

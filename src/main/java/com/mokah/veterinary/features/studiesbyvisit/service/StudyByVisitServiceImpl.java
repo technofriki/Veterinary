@@ -2,7 +2,6 @@ package com.mokah.veterinary.features.studiesbyvisit.service;
 
 
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
-import com.mokah.veterinary.features.studies.model.Study;
 import com.mokah.veterinary.features.studies.service.StudyService;
 import com.mokah.veterinary.features.studiesbyvisit.dto.StudyByVisitDTO;
 import com.mokah.veterinary.features.studiesbyvisit.dto.StudyByVisitResponse;
@@ -10,7 +9,6 @@ import com.mokah.veterinary.features.studiesbyvisit.exception.StudyByVisitExists
 import com.mokah.veterinary.features.studiesbyvisit.mapper.StudyByVisitMapper;
 import com.mokah.veterinary.features.studiesbyvisit.model.StudyByVisit;
 import com.mokah.veterinary.features.studiesbyvisit.repository.StudyByVisitRepository;
-import com.mokah.veterinary.features.visits.model.Visit;
 import com.mokah.veterinary.features.visits.service.VisitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
