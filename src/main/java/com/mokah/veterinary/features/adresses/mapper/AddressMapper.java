@@ -6,8 +6,6 @@ import com.mokah.veterinary.features.adresses.model.Address;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
-import java.util.List;
-
 @Mapper(componentModel = "spring")
 public interface AddressMapper {
 
