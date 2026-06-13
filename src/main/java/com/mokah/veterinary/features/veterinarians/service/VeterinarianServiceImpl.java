@@ -4,6 +4,9 @@ import com.mokah.veterinary.common.exception.BusinessRuleException;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.branches.model.Branch;
 import com.mokah.veterinary.features.branches.service.BranchService;
+import com.mokah.veterinary.features.users.enums.UserState;
+import com.mokah.veterinary.features.users.model.User;
+import com.mokah.veterinary.features.users.repository.UserRepository;
 import com.mokah.veterinary.features.veterinarians.dto.VeterinarianCreateDTO;
 import com.mokah.veterinary.features.veterinarians.dto.VeterinarianResponse;
 import com.mokah.veterinary.features.veterinarians.dto.VeterinarianUpdateDTO;
@@ -28,11 +31,12 @@ public class VeterinarianServiceImpl implements VeterinarianService {
     private final VeterinarianRepository repository;
     private final VeterinarianMapper mapper;
     private final BranchService branchService;
+    private final UserRepository userRepository;
 
     @Override
     public VeterinarianResponse create(VeterinarianCreateDTO dto) {
 
-        if (repository.existsByEmail(dto.email())) {
+        if (repository.existsByUser_Email(dto.email())) {
             throw new VeterinarianEmailExistsException(
                     "Veterinarian with email " + dto.email() + " already exists");
         }
@@ -47,7 +51,16 @@ public class VeterinarianServiceImpl implements VeterinarianService {
                     "Veterinarian with phone " + dto.phone() + " already exists");
         }
 
+        User user = User.builder()
+                .firstName(dto.firstName())
+                .lastName(dto.lastName())
+                .email(dto.email())
+                .userState(UserState.ACTIVE)
+                .build();
+        user = userRepository.save(user);
+
         Veterinarian entity = mapper.toEntity(dto);
+        entity.setUser(user);
 
         Branch branch = branchService.entityByExternalId(dto.branchExternalId());
         entity.setBranch(branch);
@@ -90,8 +103,8 @@ public class VeterinarianServiceImpl implements VeterinarianService {
         Veterinarian entity = entityByExternalId(externalId);
 
         if (dto.email() != null
-                && !dto.email().equalsIgnoreCase(entity.getEmail())
-                && repository.existsByEmail(dto.email())) {
+                && !dto.email().equalsIgnoreCase(entity.getUser().getEmail())
+                && repository.existsByUser_Email(dto.email())) {
 
             throw new VeterinarianEmailExistsException(
                     "Veterinarian with email " + dto.email() + " already exists");
@@ -114,6 +127,16 @@ public class VeterinarianServiceImpl implements VeterinarianService {
         }
 
         mapper.update(entity, dto);
+
+        if (dto.firstName() != null) {
+            entity.getUser().setFirstName(dto.firstName());
+        }
+        if (dto.lastName() != null) {
+            entity.getUser().setLastName(dto.lastName());
+        }
+        if (dto.email() != null) {
+            entity.getUser().setEmail(dto.email());
+        }
 
         if (dto.branchExternalId() != null) {
             Branch branch = branchService.entityByExternalId(dto.branchExternalId());

@@ -3,6 +3,7 @@ package com.mokah.veterinary.security.controller;
 import com.mokah.veterinary.security.dto.AuthRequest;
 import com.mokah.veterinary.security.dto.AuthResponse;
 import com.mokah.veterinary.security.dto.RefreshTokenRequest;
+import com.mokah.veterinary.security.dto.RegisterRequest;
 import com.mokah.veterinary.security.model.Credentials;
 import com.mokah.veterinary.security.service.AuthService;
 import com.mokah.veterinary.security.service.JwtService;
@@ -31,5 +32,11 @@ public class AuthController {
     public ResponseEntity<AuthResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
         AuthResponse response = authService.refreshAccessToken(request.refreshToken());
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+        authService.register(request);
+        return ResponseEntity.ok("User registered successfully");
     }
 }
