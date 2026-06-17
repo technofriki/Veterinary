@@ -36,9 +36,9 @@ public class VisitSpecification {
                 return cb.conjunction();
             }
 
-            return cb.and(
-                    cb.isNotNull(from.get("appointment")),
-                    cb.like(cb.lower(from.get("appointment").get("pet").get("name")), "%" + petName.toLowerCase() + "%")
+            return cb.like(
+                    cb.lower(from.get("pet").get("name")),
+                    "%" + petName.toLowerCase() + "%"
             );
         };
     }
