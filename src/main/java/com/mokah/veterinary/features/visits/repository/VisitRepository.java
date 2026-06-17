@@ -13,7 +13,7 @@ public interface VisitRepository extends JpaRepository<Visit, Long>,
 
     Optional<Visit> findByExternalId(UUID externalId);
 
-    List<Visit> findByPet_ExternalId(UUID petExternalId);
+    List<Visit> findByPet_ExternalIdOrderByVisitDateDesc(UUID petExternalId);
 
     boolean existsByAppointment_ExternalId(UUID appointmentExternalId);
 }

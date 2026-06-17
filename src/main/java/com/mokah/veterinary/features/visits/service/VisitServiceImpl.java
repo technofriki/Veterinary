@@ -171,7 +171,7 @@ public class VisitServiceImpl implements VisitService {
     @Override
     public List<VisitResponse> findMedicalHistory(UUID petExternalId) {
         return mapper.toResponseList(
-                repository.findByPet_ExternalId(petExternalId)
+                repository.findByPet_ExternalIdOrderByVisitDateDesc(petExternalId)
         );
     }
 
