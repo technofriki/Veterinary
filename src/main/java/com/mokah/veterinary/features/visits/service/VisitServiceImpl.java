@@ -6,7 +6,18 @@ import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.appointments.model.Appointment;
 import com.mokah.veterinary.features.appointments.model.AppointmentStatus;
 import com.mokah.veterinary.features.appointments.service.AppointmentService;
+import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponse;
+import com.mokah.veterinary.features.diagnosis.mapper.DiagnosisMapper;
+import com.mokah.veterinary.features.diagnosis.repository.DiagnosisRepository;
 import com.mokah.veterinary.features.pets.service.PetService;
+import com.mokah.veterinary.features.prescriptions.dto.PrescriptionResponse;
+import com.mokah.veterinary.features.prescriptions.mapper.PrescriptionMapper;
+import com.mokah.veterinary.features.prescriptions.repository.PrescriptionRepository;
+import com.mokah.veterinary.features.studies.dto.StudyResponse;
+import com.mokah.veterinary.features.studies.mapper.StudyMapper;
+import com.mokah.veterinary.features.studies.model.Study;
+import com.mokah.veterinary.features.studiesbyvisit.model.StudyByVisit;
+import com.mokah.veterinary.features.studiesbyvisit.repository.StudyByVisitRepository;
 import com.mokah.veterinary.features.veterinarians.service.VeterinarianService;
 import com.mokah.veterinary.features.visits.dto.VisitRequest;
 import com.mokah.veterinary.features.visits.dto.VisitResponse;
@@ -32,6 +43,13 @@ public class VisitServiceImpl implements VisitService {
     private final VeterinarianService veterinarianService;
     private final AppointmentService appointmentService;
     private final PetService petService;
+    private final DiagnosisRepository diagnosisRepository;
+    private final StudyByVisitRepository studyByVisitRepository;
+    private final PrescriptionRepository prescriptionRepository;
+
+    private final DiagnosisMapper diagnosisMapper;
+    private final StudyMapper studyMapper;
+    private final PrescriptionMapper prescriptionMapper;
 
     @Transactional
     @Override
@@ -156,4 +174,40 @@ public class VisitServiceImpl implements VisitService {
                 repository.findByPet_ExternalId(petExternalId)
         );
     }
+
+    @Override
+    public List<DiagnosisResponse> findDiagnosesByVisit(UUID visitExternalId) {
+
+        entityByExternalId(visitExternalId);
+
+        return diagnosisMapper.toResponseList(
+                diagnosisRepository.findByVisit_ExternalId(visitExternalId)
+        );
+    }
+
+    @Override
+    public List<PrescriptionResponse> findPrescriptionsByVisit(UUID visitExternalId) {
+
+        entityByExternalId(visitExternalId);
+
+        return prescriptionMapper.toResponseList(
+                prescriptionRepository.findByDiagnosis_Visit_ExternalId(visitExternalId)
+        );
+    }
+
+    @Override
+    public List<StudyResponse> findStudiesByVisit(UUID visitExternalId) {
+
+        entityByExternalId(visitExternalId);
+
+        List<Study> studies =
+                studyByVisitRepository.findByVisit_ExternalId(visitExternalId)
+                        .stream()
+                        .map(StudyByVisit::getStudy)
+                        .toList();
+
+        return studyMapper.toResponseList(studies);
+    }
+
+
 }

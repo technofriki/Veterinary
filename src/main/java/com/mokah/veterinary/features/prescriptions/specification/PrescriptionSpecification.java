@@ -23,7 +23,6 @@ public class PrescriptionSpecification {
                 : cb.equal(
                 root.get("diagnosis")
                         .get("visit")
-                        .get("appointment")
                         .get("pet")
                         .get("externalId"),
                 externalId
