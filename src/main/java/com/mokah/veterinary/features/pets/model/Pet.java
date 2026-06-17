@@ -40,6 +40,9 @@ public class Pet {
     @Column(nullable = false)
     private Boolean active;
 
+    @Column(name = "color", nullable = false, length = 50)
+    private String color;
+
     @ManyToOne
     @JoinColumn(name = "animal_type_id")
     private AnimalType animalType;
@@ -47,4 +50,5 @@ public class Pet {
     @ManyToOne
     @JoinColumn(name = "breed_id")
     private Breed breed;
+
 }
