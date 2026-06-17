@@ -16,6 +16,7 @@ import com.mokah.veterinary.security.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,12 +32,20 @@ public class SecurityDataLoader implements CommandLineRunner {
     private final CredentialsRepository credentialsRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${admin.username}")
+    private String adminUsername;
+
+    @Value("${admin.password}")
+    private String adminPassword;
+
+    @Value("${admin.email}")
+    private String adminEmail;
+
     @Override
     public void run(String... args) {
         loadPermits();
         loadRoles();
         createAdminUser();
-        createMockUsers();
     }
 
     private void loadPermits() {
@@ -102,14 +111,27 @@ public class SecurityDataLoader implements CommandLineRunner {
     }
 
     private void createAdminUser() {
-        if (credentialsRepository.findByUsername("admin").isPresent()) {
+
+        if (adminUsername == null || adminUsername.isBlank()) {
+            throw new IllegalStateException("admin.username no configurado");
+        }
+
+        if (adminPassword == null || adminPassword.isBlank()) {
+            throw new IllegalStateException("admin.password no configurado");
+        }
+
+        if (adminEmail == null || adminEmail.isBlank()) {
+            throw new IllegalStateException("admin.email no configurado");
+        }
+
+        if (credentialsRepository.findByUsername(adminUsername).isPresent()) {
             return;
         }
 
         User adminUser = User.builder()
                 .firstName("Admin")
                 .lastName("System")
-                .email("admin@veterinary.com")
+                .email(adminEmail)
                 .userState(UserState.ACTIVE)
                 .build();
 
@@ -119,8 +141,8 @@ public class SecurityDataLoader implements CommandLineRunner {
                 .orElseThrow();
 
         Credentials credentials = Credentials.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("admin123"))
+                .username(adminUsername)
+                .password(passwordEncoder.encode(adminPassword))
                 .enabled(true)
                 .refreshToken(UUID.randomUUID().toString())
                 .user(adminUser)
@@ -128,57 +150,6 @@ public class SecurityDataLoader implements CommandLineRunner {
                 .build();
 
         credentialsRepository.save(credentials);
-    }
-
-
-    private void createMockUsers() {
-
-        if (credentialsRepository.findByUsername("vet_juan").isEmpty()) {
-            User vetUser = User.builder()
-                    .firstName("Juan")
-                    .lastName("Veterinario")
-                    .email("juan@veterinary.com")
-                    .userState(UserState.ACTIVE)
-                    .build();
-
-            vetUser = userRepository.save(vetUser);
-            Role vetRole = roleRepository.findByRole(Roles.ROLE_VETERINARIAN).orElseThrow();
-
-            Credentials credentials = Credentials.builder()
-                    .username("vet_juan")
-                    .password(passwordEncoder.encode("vet123"))
-                    .enabled(true)
-                    .refreshToken(UUID.randomUUID().toString())
-                    .user(vetUser)
-                    .roles(Set.of(vetRole))
-                    .build();
-
-            credentialsRepository.save(credentials);
-        }
-
-
-        if (credentialsRepository.findByUsername("cliente_carlos").isEmpty()) {
-            User clientUser = User.builder()
-                    .firstName("Carlos")
-                    .lastName("Cliente")
-                    .email("carlos@gmail.com")
-                    .userState(UserState.ACTIVE)
-                    .build();
-
-            clientUser = userRepository.save(clientUser);
-            Role clientRole = roleRepository.findByRole(Roles.ROLE_CLIENT).orElseThrow();
-
-            Credentials credentials = Credentials.builder()
-                    .username("cliente_carlos")
-                    .password(passwordEncoder.encode("cliente123"))
-                    .enabled(true)
-                    .refreshToken(UUID.randomUUID().toString())
-                    .user(clientUser)
-                    .roles(Set.of(clientRole))
-                    .build();
-
-            credentialsRepository.save(credentials);
-        }
     }
 
     private Set<Permit> getPermitsFromEnum(Permits... permits) {

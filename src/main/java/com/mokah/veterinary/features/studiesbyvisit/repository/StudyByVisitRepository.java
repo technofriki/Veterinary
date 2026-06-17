@@ -4,6 +4,7 @@ import com.mokah.veterinary.features.studiesbyvisit.model.StudyByVisit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,4 +16,5 @@ public interface StudyByVisitRepository extends JpaRepository<StudyByVisit, Long
             UUID studyExternalId,
             UUID visitExternalId
     );
+    List<StudyByVisit> findByVisit_ExternalId(UUID visitExternalId);
 }

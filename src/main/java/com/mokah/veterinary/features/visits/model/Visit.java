@@ -1,6 +1,7 @@
 package com.mokah.veterinary.features.visits.model;
 
 import com.mokah.veterinary.features.appointments.model.Appointment;
+import com.mokah.veterinary.features.pets.model.Pet;
 import com.mokah.veterinary.features.veterinarians.model.Veterinarian;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,8 +32,12 @@ public class Visit {
     private String observations;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "appointment_id", nullable = false)
+    @JoinColumn(name = "appointment_id")
     private Appointment appointment;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pet_id", nullable = false)
+    private Pet pet;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "veterinarian_id", nullable = false)

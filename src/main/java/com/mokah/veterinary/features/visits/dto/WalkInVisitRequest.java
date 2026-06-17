@@ -5,9 +5,9 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public record VisitRequest(
+public record WalkInVisitRequest(
         @NotBlank String observations,
-        UUID appointmentExternalId,
+        @NotNull UUID petExternalId,
         @NotNull UUID veterinarianExternalId
 ) {
 }

@@ -11,7 +11,7 @@ public class VeterinarianSpecification {
         return (root, cb) -> firstName == null
                 ? cb.conjunction()
                 : cb.like(
-                cb.lower(root.get("firstName")),
+                cb.lower(root.join("user").get("firstName")),
                 "%" + firstName.toLowerCase() + "%"
         );
     }
@@ -20,7 +20,7 @@ public class VeterinarianSpecification {
         return (root, cb) -> lastName == null
                 ? cb.conjunction()
                 : cb.like(
-                cb.lower(root.get("lastName")),
+                cb.lower(root.join("user").get("lastName")),
                 "%" + lastName.toLowerCase() + "%"
         );
     }
