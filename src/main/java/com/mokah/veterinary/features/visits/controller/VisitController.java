@@ -1,5 +1,8 @@
 package com.mokah.veterinary.features.visits.controller;
 
+import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponse;
+import com.mokah.veterinary.features.prescriptions.dto.PrescriptionResponse;
+import com.mokah.veterinary.features.studies.dto.StudyResponse;
 import com.mokah.veterinary.features.visits.dto.VisitRequest;
 import com.mokah.veterinary.features.visits.dto.VisitResponse;
 import com.mokah.veterinary.features.visits.dto.WalkInVisitRequest;
@@ -64,5 +67,29 @@ public class VisitController {
     @PreAuthorize("hasAuthority('VIEW_CLINICAL_RECORDS')")
     public List<VisitResponse> medicalHistory(@PathVariable UUID petExternalId) {
         return service.findMedicalHistory(petExternalId);
+    }
+
+    @GetMapping("/{externalId}/diagnoses")
+    @PreAuthorize("hasAuthority('VIEW_CLINICAL_RECORDS')")
+    public List<DiagnosisResponse> findDiagnosesByVisit(
+            @PathVariable UUID externalId) {
+
+        return service.findDiagnosesByVisit(externalId);
+    }
+
+    @GetMapping("/{externalId}/studies")
+    @PreAuthorize("hasAuthority('VIEW_CLINICAL_RECORDS')")
+    public List<StudyResponse> findStudiesByVisit(
+            @PathVariable UUID externalId) {
+
+        return service.findStudiesByVisit(externalId);
+    }
+
+    @GetMapping("/{externalId}/prescriptions")
+    @PreAuthorize("hasAuthority('VIEW_CLINICAL_RECORDS')")
+    public List<PrescriptionResponse> findPrescriptionsByVisit(
+            @PathVariable UUID externalId) {
+
+        return service.findPrescriptionsByVisit(externalId);
     }
 }

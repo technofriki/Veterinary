@@ -1,5 +1,8 @@
 package com.mokah.veterinary.features.visits.service;
 
+import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponse;
+import com.mokah.veterinary.features.prescriptions.dto.PrescriptionResponse;
+import com.mokah.veterinary.features.studies.dto.StudyResponse;
 import com.mokah.veterinary.features.visits.dto.VisitRequest;
 import com.mokah.veterinary.features.visits.dto.VisitResponse;
 import com.mokah.veterinary.features.visits.dto.WalkInVisitRequest;
@@ -11,6 +14,7 @@ import java.util.UUID;
 public interface VisitService {
 
     VisitResponse create(VisitRequest dto);
+
     VisitResponse walkInCreate(WalkInVisitRequest dto);
 
     List<VisitResponse> findAll(
@@ -30,4 +34,10 @@ public interface VisitService {
     );
 
     List<VisitResponse> findMedicalHistory(UUID petExternalId);
+
+    List<DiagnosisResponse> findDiagnosesByVisit(UUID visitExternalId);
+
+    List<StudyResponse> findStudiesByVisit(UUID visitExternalId);
+
+    List<PrescriptionResponse> findPrescriptionsByVisit(UUID visitExternalId);
 }
