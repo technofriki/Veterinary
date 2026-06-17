@@ -243,4 +243,23 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new InvalidAppointmentTimeException("Branch is closed at that time.");
         }
     }
+
+    @Transactional
+    @Override
+    public void confirmAppointment(UUID externalId) {
+
+        Appointment appointment = entityByExternalId(externalId);
+
+        if (appointment.getStatus() == AppointmentStatus.CONFIRMED) {
+            throw new BusinessRuleException("Appointment already confirmed.");
+        }
+
+        if (appointment.getStatus() == AppointmentStatus.CANCELLED) {
+            throw new BusinessRuleException("Cannot confirm a cancelled appointment.");
+        }
+
+        appointment.setStatus(AppointmentStatus.CONFIRMED);
+
+        repository.save(appointment);
+    }
 }

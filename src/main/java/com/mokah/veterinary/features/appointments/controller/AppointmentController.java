@@ -62,4 +62,11 @@ public class AppointmentController {
     public void delete(@PathVariable UUID externalId) {
         service.delete(externalId);
     }
+
+    @PatchMapping("/{externalId}/confirm")
+    @PreAuthorize("hasAuthority('UPDATE_APPOINTMENTS')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void confirmAppointment(@PathVariable UUID externalId) {
+        service.confirmAppointment(externalId);
+    }
 }

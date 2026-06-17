@@ -32,4 +32,6 @@ public interface AppointmentService {
     );
 
     void delete(UUID externalId);
+
+    void confirmAppointment(UUID externalId);
 }

@@ -23,4 +23,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long>,
             UUID veterinarianExternalId,
             List<AppointmentStatus> statuses
     );
+
+    Long countByPet_ExternalIdAndStatusIn(
+            UUID petExternalId,
+            List<AppointmentStatus> statuses
+    );
 }
