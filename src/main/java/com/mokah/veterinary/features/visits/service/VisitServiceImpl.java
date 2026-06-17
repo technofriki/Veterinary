@@ -21,6 +21,7 @@ import com.mokah.veterinary.features.studiesbyvisit.repository.StudyByVisitRepos
 import com.mokah.veterinary.features.veterinarians.service.VeterinarianService;
 import com.mokah.veterinary.features.visits.dto.VisitRequest;
 import com.mokah.veterinary.features.visits.dto.VisitResponse;
+import com.mokah.veterinary.features.visits.dto.VisitUpdateDTO;
 import com.mokah.veterinary.features.visits.dto.WalkInVisitRequest;
 import com.mokah.veterinary.features.visits.model.Visit;
 import com.mokah.veterinary.features.visits.mapper.VisitMapper;
@@ -137,29 +138,11 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     @Transactional
-    public VisitResponse update(UUID externalId, VisitRequest dto) {
+    public VisitResponse update(UUID externalId, VisitUpdateDTO dto) {
 
         Visit entity = entityByExternalId(externalId);
 
-        if (dto.appointmentExternalId() != null) {
-
-            if (entity.getAppointment() == null ||
-                    !entity.getAppointment().getExternalId().equals(dto.appointmentExternalId())) {
-
-                throw new BusinessRuleException(
-                        "Cannot reassign a clinical visit to a different appointment."
-                );
-            }
-        } else {
-
-            if (entity.getAppointment() != null) {
-                throw new BusinessRuleException(
-                        "Cannot convert an appointment-based visit into a walk-in."
-                );
-            }
-        }
-
-        mapper.update(entity, dto);
+        entity.setObservations(dto.observations());
 
         entity.setVeterinarian(
                 veterinarianService.entityByExternalId(dto.veterinarianExternalId())

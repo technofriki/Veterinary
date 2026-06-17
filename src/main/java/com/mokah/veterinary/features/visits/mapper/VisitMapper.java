@@ -4,6 +4,7 @@ import com.mokah.veterinary.features.appointments.mapper.AppointmentMapper;
 import com.mokah.veterinary.features.veterinarians.mapper.VeterinarianMapper;
 import com.mokah.veterinary.features.visits.dto.VisitRequest;
 import com.mokah.veterinary.features.visits.dto.VisitResponse;
+import com.mokah.veterinary.features.visits.dto.VisitUpdateDTO;
 import com.mokah.veterinary.features.visits.dto.WalkInVisitRequest;
 import com.mokah.veterinary.features.visits.model.Visit;
 import org.mapstruct.Mapper;
@@ -36,5 +37,5 @@ public interface VisitMapper {
     @Mapping(target = "veterinarian", ignore = true)
     @Mapping(target = "appointment", ignore = true)
     @Mapping(target = "pet", ignore = true)
-    void update(@MappingTarget Visit entity, VisitRequest request);
+    void update(@MappingTarget Visit entity, VisitUpdateDTO request);
 }

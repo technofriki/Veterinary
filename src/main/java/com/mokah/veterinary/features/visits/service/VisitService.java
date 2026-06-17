@@ -5,6 +5,7 @@ import com.mokah.veterinary.features.prescriptions.dto.PrescriptionResponse;
 import com.mokah.veterinary.features.studies.dto.StudyResponse;
 import com.mokah.veterinary.features.visits.dto.VisitRequest;
 import com.mokah.veterinary.features.visits.dto.VisitResponse;
+import com.mokah.veterinary.features.visits.dto.VisitUpdateDTO;
 import com.mokah.veterinary.features.visits.dto.WalkInVisitRequest;
 import com.mokah.veterinary.features.visits.model.Visit;
 
@@ -30,7 +31,7 @@ public interface VisitService {
 
     VisitResponse update(
             UUID externalId,
-            VisitRequest dto
+            VisitUpdateDTO dto
     );
 
     List<VisitResponse> findMedicalHistory(UUID petExternalId);
