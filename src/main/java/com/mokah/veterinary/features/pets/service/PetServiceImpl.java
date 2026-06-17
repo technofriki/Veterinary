@@ -31,20 +31,20 @@ public class PetServiceImpl implements PetService {
     @Override
     public PetResponse create(PetRequest dto) {
 
-        if(dto.birthDate() != null && dto.birthDate().isAfter(LocalDate.now())){
+        if (dto.birthDate() != null && dto.birthDate().isAfter(LocalDate.now())) {
             throw new InvalidDateException("Birth date can not be after now");
         }
-
-        AnimalType animalType = animalTypeService.entityByExternalId(dto.animalTypeExternalId());
-        Breed breed = breedService.entityByExternalId(dto.breedExternalId());
 
         Pet entity = Pet.builder()
                 .name(dto.name())
                 .birthDate(dto.birthDate())
-                .animalType(animalType)
-                .breed(breed)
                 .active(true)
+                .color(dto.color())
                 .build();
+
+        entity.setAnimalType(animalTypeService.findOrCreate(dto.animalType()));
+
+        entity.setBreed(breedService.findOrCreate(dto.breed()));
 
         return mapper.toResponse(repository.save(entity));
     }
@@ -77,20 +77,20 @@ public class PetServiceImpl implements PetService {
     public PetResponse update(UUID externalId, PetRequest dto) {
 
         Pet entity = entityByExternalId(externalId);
-        if (entity.getBirthDate() == null && dto.birthDate() != null) {
+
+        if (dto.birthDate() != null) {
+
             if (dto.birthDate().isAfter(LocalDate.now())) {
                 throw new InvalidDateException("Birth date can not be after now");
             }
+
             entity.setBirthDate(dto.birthDate());
         }
 
-            AnimalType animalType = animalTypeService.entityByExternalId(dto.animalTypeExternalId());
-            Breed breed = breedService.entityByExternalId(dto.breedExternalId());
-
-
-            entity.setName(dto.name());
-            entity.setAnimalType(animalType);
-            entity.setBreed(breed);
+        entity.setColor(dto.color());
+        entity.setName(dto.name());
+        entity.setAnimalType(animalTypeService.findOrCreate(dto.animalType()));
+        entity.setBreed(breedService.findOrCreate(dto.breed()));
 
         return mapper.toResponse(repository.save(entity));
     }
@@ -98,7 +98,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public void delete(UUID externalId) {
         Pet pet = entityByExternalId(externalId);
-        if(!pet.getActive()){
+        if (!pet.getActive()) {
             throw new BusinessRuleException("The selected pet is no longer active in the system.");
         }
         pet.setActive(false);

@@ -1,11 +1,14 @@
 package com.mokah.veterinary.features.breed.service;
 
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
+import com.mokah.veterinary.features.animaltypes.dto.AnimalTypeRequest;
+import com.mokah.veterinary.features.animaltypes.model.AnimalType;
 import com.mokah.veterinary.features.breed.dto.BreedRequest;
 import com.mokah.veterinary.features.breed.dto.BreedResponse;
 import com.mokah.veterinary.features.breed.model.Breed;
 import com.mokah.veterinary.features.breed.mapper.BreedMapper;
 import com.mokah.veterinary.features.breed.repository.BreedRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +50,6 @@ public class BreedServiceImpl implements BreedService {
         Breed entity = entityByExternalId(externalId);
 
         entity.setName(request.name());
-        entity.setColor(request.color());
 
         return mapper.toResponse(repository.save(entity));
     }
@@ -55,5 +57,18 @@ public class BreedServiceImpl implements BreedService {
     @Override
     public void delete(UUID externalId) {
         repository.delete(entityByExternalId(externalId));
+    }
+
+    @Override
+    @Transactional
+    public Breed findOrCreate(BreedRequest dto) {
+
+        String name = dto.name().trim();
+
+        return repository.findByNameIgnoreCase(name)
+                .orElseGet(() -> repository.save(Breed.builder()
+                                .name(name)
+                                .build()
+                ));
     }
 }

@@ -30,6 +30,4 @@ public class Breed {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "color", nullable = false, length = 50)
-    private String color;
 }

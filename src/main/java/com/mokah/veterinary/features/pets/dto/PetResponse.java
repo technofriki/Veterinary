@@ -11,6 +11,7 @@ public record PetResponse(
         String name,
         LocalDate birthDate,
         Boolean active,
+        String color,
         AnimalType animalType,
         Breed breed
 ) {
