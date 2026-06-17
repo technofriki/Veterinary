@@ -2,6 +2,7 @@ package com.mokah.veterinary.features.visits.controller;
 
 import com.mokah.veterinary.features.visits.dto.VisitRequest;
 import com.mokah.veterinary.features.visits.dto.VisitResponse;
+import com.mokah.veterinary.features.visits.dto.WalkInVisitRequest;
 import com.mokah.veterinary.features.visits.service.VisitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,13 @@ public class VisitController {
     @PreAuthorize("hasAuthority('CREATE_CLINICAL_RECORDS')")
     public VisitResponse create(@Valid @RequestBody VisitRequest dto) {
         return service.create(dto);
+    }
+
+    @PostMapping("/walk-in")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('CREATE_CLINICAL_RECORDS')")
+    public VisitResponse walkInCreate(@Valid @RequestBody WalkInVisitRequest dto) {
+        return service.walkInCreate(dto);
     }
 
     @GetMapping

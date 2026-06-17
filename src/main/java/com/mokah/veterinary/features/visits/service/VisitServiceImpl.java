@@ -6,9 +6,11 @@ import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.appointments.model.Appointment;
 import com.mokah.veterinary.features.appointments.model.AppointmentStatus;
 import com.mokah.veterinary.features.appointments.service.AppointmentService;
+import com.mokah.veterinary.features.pets.service.PetService;
 import com.mokah.veterinary.features.veterinarians.service.VeterinarianService;
 import com.mokah.veterinary.features.visits.dto.VisitRequest;
 import com.mokah.veterinary.features.visits.dto.VisitResponse;
+import com.mokah.veterinary.features.visits.dto.WalkInVisitRequest;
 import com.mokah.veterinary.features.visits.model.Visit;
 import com.mokah.veterinary.features.visits.mapper.VisitMapper;
 import com.mokah.veterinary.features.visits.repository.VisitRepository;
@@ -29,36 +31,29 @@ public class VisitServiceImpl implements VisitService {
     private final VisitMapper mapper;
     private final VeterinarianService veterinarianService;
     private final AppointmentService appointmentService;
+    private final PetService petService;
 
     @Transactional
     @Override
     public VisitResponse create(VisitRequest dto) {
 
-        if (dto.appointmentExternalId() != null &&
-                repository.existsByAppointment_ExternalId(dto.appointmentExternalId())) {
+        if (repository.existsByAppointment_ExternalId(dto.appointmentExternalId())) {
             throw new BusinessRuleException(
                     "The appointment already has a registered visit."
             );
         }
 
-        Appointment appointment = null;
+        Appointment appointment =
+                appointmentService.entityByExternalId(dto.appointmentExternalId());
 
-        if (dto.appointmentExternalId() != null) {
-
-            appointment = appointmentService.entityByExternalId(dto.appointmentExternalId());
-
-            if (appointment.getStatus() != AppointmentStatus.CONFIRMED) {
-                throw new AppointmentNotConfirmedException(
-                        "The visit can not be created. Appointment must be confirmed. Status: "
-                                + appointment.getStatus()
-                );
-            }
-
-            appointment.setStatus(AppointmentStatus.COMPLETED);
-
-        } else {
-            System.out.println("Creating WALK-IN visit (no appointment)");
+        if (appointment.getStatus() != AppointmentStatus.CONFIRMED) {
+            throw new AppointmentNotConfirmedException(
+                    "The visit can not be created. Appointment must be confirmed. Status: "
+                            + appointment.getStatus()
+            );
         }
+
+        appointment.setStatus(AppointmentStatus.COMPLETED);
 
         Visit entity = mapper.toEntity(dto);
 
@@ -67,6 +62,27 @@ public class VisitServiceImpl implements VisitService {
         );
 
         entity.setAppointment(appointment);
+
+        entity.setPet(appointment.getPet());
+
+        return mapper.toResponse(repository.save(entity));
+    }
+
+    @Transactional
+    @Override
+    public VisitResponse walkInCreate(WalkInVisitRequest dto) {
+
+        Visit entity = mapper.toEntity(dto);
+
+        entity.setPet(
+                petService.entityByExternalId(dto.petExternalId())
+        );
+
+        entity.setVeterinarian(
+                veterinarianService.entityByExternalId(dto.veterinarianExternalId())
+        );
+
+        entity.setAppointment(null);
 
         return mapper.toResponse(repository.save(entity));
     }
@@ -137,7 +153,7 @@ public class VisitServiceImpl implements VisitService {
     @Override
     public List<VisitResponse> findMedicalHistory(UUID petExternalId) {
         return mapper.toResponseList(
-                repository.findByAppointment_Pet_ExternalId(petExternalId)
+                repository.findByPet_ExternalId(petExternalId)
         );
     }
 }
