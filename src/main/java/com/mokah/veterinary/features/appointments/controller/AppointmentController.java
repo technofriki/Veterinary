@@ -7,11 +7,14 @@ import com.mokah.veterinary.features.appointments.model.AppointmentStatus;
 import com.mokah.veterinary.features.appointments.service.AppointmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -69,4 +72,14 @@ public class AppointmentController {
     public void confirmAppointment(@PathVariable UUID externalId) {
         service.confirmAppointment(externalId);
     }
+
+    @GetMapping("/available")
+    @PreAuthorize("hasAnyAuthority('VIEW_APPOINTMENTS', 'CREATE_APPOINTMENTS')")
+    public List<LocalTime> getAvailableSlots(
+            @RequestParam UUID veterinarianExternalId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        return service.getAvailableSlots(veterinarianExternalId, date);
+    }
+
 }

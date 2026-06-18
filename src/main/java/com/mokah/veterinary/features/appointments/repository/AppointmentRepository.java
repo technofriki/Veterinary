@@ -28,4 +28,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long>,
             UUID petExternalId,
             List<AppointmentStatus> statuses
     );
+
+    List<Appointment> findByVeterinarian_ExternalIdAndStatusInAndAppointmentDateBetween(
+            UUID veterinarianExternalId,
+            List<AppointmentStatus> statuses,
+            LocalDateTime start,
+            LocalDateTime end
+    );
 }

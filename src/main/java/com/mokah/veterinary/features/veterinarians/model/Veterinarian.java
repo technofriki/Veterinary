@@ -5,6 +5,7 @@ import com.mokah.veterinary.features.users.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
@@ -38,6 +39,12 @@ public class Veterinarian {
 
     @Column(nullable = false)
     private Boolean active;
+
+    @Column(name = "work_start_time")
+    private LocalTime workStartTime;
+
+    @Column(name = "work_end_time")
+    private LocalTime workEndTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id", nullable = false)

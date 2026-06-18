@@ -15,14 +15,17 @@ import com.mokah.veterinary.features.appointments.repository.AppointmentReposito
 import com.mokah.veterinary.features.branches.model.Branch;
 import com.mokah.veterinary.features.branches.service.BranchService;
 import com.mokah.veterinary.features.pets.service.PetService;
+import com.mokah.veterinary.features.veterinarians.model.Veterinarian;
 import com.mokah.veterinary.features.veterinarians.service.VeterinarianService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,6 +59,12 @@ public class AppointmentServiceImpl implements AppointmentService {
                 dto.durationMinutes(),
                 null
         );
+
+        validateHalfHourSlot(dto.appointmentDate());
+
+        validateVeterinarianSchedule(
+                dto.veterinarianExternalId(),
+                dto.appointmentDate());
 
         Branch branch = branchService.entityByExternalId(dto.branchExternalId());
 
@@ -129,6 +138,11 @@ public class AppointmentServiceImpl implements AppointmentService {
                 dto.durationMinutes(),
                 externalId
         );
+
+        validateHalfHourSlot(dto.appointmentDate());
+        validateVeterinarianSchedule(
+                dto.veterinarianExternalId(),
+                dto.appointmentDate());
 
         mapper.update(entity, dto);
 
@@ -237,10 +251,41 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         LocalTime time = dateTime.toLocalTime();
 
-        if (time.isBefore(branch.getOpeningTime()) ||
-                time.isAfter(branch.getClosingTime())) {
+        LocalTime lastAvailableSlot =
+                branch.getClosingTime().minusMinutes(30);
 
-            throw new InvalidAppointmentTimeException("Branch is closed at that time.");
+        if (time.isBefore(branch.getOpeningTime())
+                || time.isAfter(lastAvailableSlot)) {
+
+            throw new InvalidAppointmentTimeException(
+                    "Branch is closed at that time."
+            );
+        }
+    }
+
+    private void validateHalfHourSlot(LocalDateTime dateTime) {
+
+        int minute = dateTime.getMinute();
+
+        if (minute != 0 && minute != 30) {
+            throw new InvalidAppointmentTimeException(
+                    "Appointments can only start on the hour or half hour."
+            );
+        }
+    }
+
+    private void validateVeterinarianSchedule(UUID veterinarianExternalId, LocalDateTime dateTime) {
+        Veterinarian vet = veterinarianService.entityByExternalId(veterinarianExternalId);
+        LocalTime time = dateTime.toLocalTime();
+
+        if (vet.getWorkStartTime() == null || vet.getWorkEndTime() == null) {
+            throw new BusinessRuleException("Veterinarian does not have working hours configured.");
+        }
+
+        LocalTime lastSlot = vet.getWorkEndTime().minusMinutes(30);
+
+        if (time.isBefore(vet.getWorkStartTime()) || time.isAfter(lastSlot)) {
+            throw new InvalidAppointmentTimeException("Appointment is outside veterinarian working hours.");
         }
     }
 
@@ -262,4 +307,42 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         repository.save(appointment);
     }
+
+    @Override
+    public List<LocalTime> getAvailableSlots(UUID veterinarianExternalId, LocalDate date) {
+
+        Veterinarian vet = veterinarianService.entityByExternalId(veterinarianExternalId);
+
+        if (vet.getWorkStartTime() == null || vet.getWorkEndTime() == null) {
+            throw new BusinessRuleException("Veterinarian does not have working hours configured.");
+        }
+
+        // Slots ocupados ese día
+        LocalDateTime dayStart = date.atStartOfDay();
+        LocalDateTime dayEnd = date.atTime(LocalTime.MAX);
+
+        List<LocalTime> takenSlots = repository
+                .findByVeterinarian_ExternalIdAndStatusInAndAppointmentDateBetween(
+                        veterinarianExternalId,
+                        List.of(AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED),
+                        dayStart,
+                        dayEnd)
+                .stream()
+                .map(a -> a.getAppointmentDate().toLocalTime())
+                .toList();
+
+        // Slots disponibles
+        List<LocalTime> availableSlots = new ArrayList<>();
+        LocalTime slot = vet.getWorkStartTime();
+
+        while (!slot.plusMinutes(30).isAfter(vet.getWorkEndTime())) {
+            if (!takenSlots.contains(slot)) {
+                availableSlots.add(slot);
+            }
+            slot = slot.plusMinutes(30);
+        }
+
+        return availableSlots;
+    }
+
 }
