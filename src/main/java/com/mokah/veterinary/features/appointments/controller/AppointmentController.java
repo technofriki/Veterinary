@@ -77,9 +77,10 @@ public class AppointmentController {
     @PreAuthorize("hasAnyAuthority('VIEW_APPOINTMENTS', 'CREATE_APPOINTMENTS')")
     public List<LocalTime> getAvailableSlots(
             @RequestParam UUID veterinarianExternalId,
+            @RequestParam UUID branchExternalId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
-        return service.getAvailableSlots(veterinarianExternalId, date);
+        return service.getAvailableSlots(veterinarianExternalId, branchExternalId, date);
     }
 
 }
