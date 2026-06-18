@@ -1,5 +1,6 @@
 package com.mokah.veterinary.features.prescriptions.service;
 
+import com.mokah.veterinary.common.exception.BusinessRuleException;
 import com.mokah.veterinary.common.exception.InvalidDateException;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.diagnosis.model.Diagnosis;
@@ -39,6 +40,8 @@ public class PrescriptionServiceImpl implements PrescriptionService {
         return mapper.toResponse(entityByExternalId(externalId));
     }
 
+
+
     @Override
     public List<PrescriptionResponse> findAll(
             UUID diagnosisExternalId,
@@ -75,7 +78,22 @@ public class PrescriptionServiceImpl implements PrescriptionService {
         entity.setDiagnosis(diagnosisService.entityByExternalId(request.diagnosisExternalId()));
 
         entity.setMedication(medicationService.entityByExternalId(request.medicationExternalId()));
+        entity.setActive(true);
 
         return mapper.toResponse(repository.save(entity));
     }
+
+    @Override
+    public void delete(UUID externalId) {
+        Prescription entity = entityByExternalId(externalId);
+        if (!entity.getActive()) {
+            throw new BusinessRuleException(
+                    "Prescription is already inactive."
+            );
+        }
+        entity.setActive(false);
+        repository.save(entity);
+    }
 }
+
+

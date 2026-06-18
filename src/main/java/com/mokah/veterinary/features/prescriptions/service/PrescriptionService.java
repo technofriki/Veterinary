@@ -19,5 +19,5 @@ public interface PrescriptionService {
             UUID diagnosisExternalId,
             UUID petExternalId
     );
-
+    void delete (UUID externalId);
 }

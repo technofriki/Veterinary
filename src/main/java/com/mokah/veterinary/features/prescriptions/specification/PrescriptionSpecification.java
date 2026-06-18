@@ -28,4 +28,10 @@ public class PrescriptionSpecification {
                 externalId
         );
     }
+    public static PredicateSpecification<Prescription> isActive(Boolean active) {
+
+        return (root, cb) -> active == null
+                ? cb.conjunction()
+                : cb.equal(root.get("active"), active);
+    }
 }
