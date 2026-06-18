@@ -36,9 +36,9 @@ public class VeterinarianServiceImpl implements VeterinarianService {
     @Override
     public VeterinarianResponse create(VeterinarianCreateDTO dto) {
 
-        if (repository.existsByUser_Email(dto.email())) {
+        if (userRepository.existsByEmail(dto.email())) {
             throw new VeterinarianEmailExistsException(
-                    "Veterinarian with email " + dto.email() + " already exists");
+                    "User with email " + dto.email() + " already exists");
         }
 
         if (repository.existsByLicenseNumber(dto.licenseNumber())) {
@@ -104,10 +104,10 @@ public class VeterinarianServiceImpl implements VeterinarianService {
 
         if (dto.email() != null
                 && !dto.email().equalsIgnoreCase(entity.getUser().getEmail())
-                && repository.existsByUser_Email(dto.email())) {
+                && userRepository.existsByEmail(dto.email())) {
 
             throw new VeterinarianEmailExistsException(
-                    "Veterinarian with email " + dto.email() + " already exists");
+                    "User with email " + dto.email() + " already exists");
         }
 
         if (dto.phone() != null

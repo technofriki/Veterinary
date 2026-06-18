@@ -21,7 +21,7 @@ public class BranchController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('MANAGE_BRANCHES')")
+    @PreAuthorize("hasRole('ADMIN')")
     public BranchResponse create(@Valid @RequestBody BranchRequest dto) {
         return branchService.create(dto);
     }
@@ -39,7 +39,7 @@ public class BranchController {
     }
 
     @PutMapping("/{externalId}")
-    @PreAuthorize("hasAuthority('MANAGE_BRANCHES')")
+    @PreAuthorize("hasRole('ADMIN')")
     public BranchResponse update(
             @PathVariable UUID externalId,
             @Valid @RequestBody BranchRequest dto) {
@@ -49,7 +49,7 @@ public class BranchController {
 
     @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAuthority('MANAGE_BRANCHES')")
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID externalId) {
         branchService.delete(externalId);
     }

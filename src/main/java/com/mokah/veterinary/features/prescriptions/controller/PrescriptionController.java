@@ -21,7 +21,7 @@ public class PrescriptionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('CREATE_PRESCRIPTIONS')")
+    @PreAuthorize("hasRole('VETERINARIAN')")
     public PrescriptionResponse create(@Valid @RequestBody PrescriptionRequest dto) {
         return service.create(dto);
     }

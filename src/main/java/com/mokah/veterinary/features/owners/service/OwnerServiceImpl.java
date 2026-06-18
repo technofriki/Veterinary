@@ -31,8 +31,8 @@ public class OwnerServiceImpl implements OwnerService {
             throw new OwnerDniExistsException("Owner with DNI " + dto.dni() + " already exists");
         }
 
-        if (repository.existsByUser_Email(dto.email())) {
-            throw new IllegalArgumentException("Owner with email " + dto.email() + " already exists");
+        if (userRepository.existsByEmail(dto.email())) {
+            throw new IllegalArgumentException("User with email " + dto.email() + " already exists");
         }
 
         User user = User.builder()
@@ -84,8 +84,8 @@ public class OwnerServiceImpl implements OwnerService {
         }
 
         if (!entity.getUser().getEmail().equals(dto.email())
-                && repository.existsByUser_Email(dto.email())) {
-            throw new IllegalArgumentException("Owner with email already exists");
+                && userRepository.existsByEmail(dto.email())) {
+            throw new IllegalArgumentException("User with email already exists");
         }
 
         mapper.updateEntity(entity, dto);

@@ -64,7 +64,9 @@ public class SecurityDataLoader implements CommandLineRunner {
     private void loadRoles() {
         Role adminRole = roleRepository.findByRole(Roles.ROLE_ADMIN)
                 .orElseGet(() -> roleRepository.save(Role.builder().role(Roles.ROLE_ADMIN).build()));
-        adminRole.setPermits(new HashSet<>(permitRepository.findAll()));
+        Set<Permit> allPermits = new HashSet<>(permitRepository.findAll());
+        allPermits.removeIf(permit -> permit.getPermit() == Permits.CREATE_CLINICAL_RECORDS);
+        adminRole.setPermits(allPermits);
         roleRepository.save(adminRole);
 
         Role vetRole = roleRepository.findByRole(Roles.ROLE_VETERINARIAN)

@@ -26,14 +26,14 @@ public class VisitController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('CREATE_CLINICAL_RECORDS')")
+    @PreAuthorize("hasRole('VETERINARIAN')")
     public VisitResponse create(@Valid @RequestBody VisitRequest dto) {
         return service.create(dto);
     }
 
     @PostMapping("/walk-in")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('CREATE_CLINICAL_RECORDS')")
+    @PreAuthorize("hasRole('VETERINARIAN')")
     public VisitResponse walkInCreate(@Valid @RequestBody WalkInVisitRequest dto) {
         return service.walkInCreate(dto);
     }
@@ -56,7 +56,7 @@ public class VisitController {
     }
 
     @PutMapping("/{externalId}")
-    @PreAuthorize("hasAuthority('UPDATE_CLINICAL_RECORDS')")
+    @PreAuthorize("hasRole('VETERINARIAN')")
     public VisitResponse update(
             @PathVariable UUID externalId,
             @Valid @RequestBody VisitUpdateDTO dto) {
