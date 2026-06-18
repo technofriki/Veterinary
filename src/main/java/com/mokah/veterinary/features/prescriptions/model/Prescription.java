@@ -45,6 +45,10 @@ public class Prescription {
     @Column(name = "expiration_date", nullable = false)
     private LocalDate expirationDate;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean active = true;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "medication_id", nullable = false)
     private Medication medication;

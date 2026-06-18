@@ -40,4 +40,10 @@ public class PrescriptionController {
 
         return service.findAll(diagnosisExternalId, petExternalId);
     }
+
+    @DeleteMapping
+    @PreAuthorize("hasAuthority('DELETE_PRESCRIPTIONS')")
+    public void delete (@PathVariable UUID externalId) {
+        service.delete(externalId);
+    }
 }

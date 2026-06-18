@@ -11,6 +11,7 @@ public record PrescriptionResponse(
         Long quantity,
         String indication,
         LocalDate expirationDate,
+        Boolean active,
         MedicationResponse medication,
         DiagnosisResponse diagnosis
 ) {
