@@ -37,9 +37,9 @@ public class ReceptionistServiceImpl implements ReceptionistService {
     @Transactional
     public ReceptionistResponse create(ReceptionistCreateDTO dto) {
 
-        if (repository.existsByUser_Email(dto.email())) {
+        if (userRepository.existsByEmail(dto.email())) {
             throw new ReceptionistEmailExistsException(
-                    "Receptionist with email " + dto.email() + " already exists");
+                    "User with email " + dto.email() + " already exists");
         }
 
         if (repository.existsByPhone(dto.phone())) {
@@ -99,10 +99,10 @@ public class ReceptionistServiceImpl implements ReceptionistService {
 
         if (dto.email() != null
                 && !dto.email().equalsIgnoreCase(entity.getUser().getEmail())
-                && repository.existsByUser_Email(dto.email())) {
+                && userRepository.existsByEmail(dto.email())) {
 
             throw new ReceptionistEmailExistsException(
-                    "Receptionist with email " + dto.email() + " already exists");
+                    "User with email " + dto.email() + " already exists");
         }
 
         if (dto.phone() != null

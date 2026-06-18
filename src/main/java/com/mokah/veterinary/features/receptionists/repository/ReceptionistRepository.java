@@ -10,7 +10,6 @@ import java.util.UUID;
 
 @Repository
 public interface ReceptionistRepository extends JpaRepository<Receptionist, Long>, JpaSpecificationExecutor<Receptionist> {
-    Boolean existsByUser_Email(String email);
     Boolean existsByPhone(String phone);
     Optional<Receptionist> findByExternalId(UUID externalId);
 }
