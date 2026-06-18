@@ -309,15 +309,23 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<LocalTime> getAvailableSlots(UUID veterinarianExternalId, LocalDate date) {
+    public List<LocalTime> getAvailableSlots(UUID veterinarianExternalId, UUID branchExternalId, LocalDate date) {
 
         Veterinarian vet = veterinarianService.entityByExternalId(veterinarianExternalId);
+        Branch branch = branchService.entityByExternalId(branchExternalId);
 
         if (vet.getWorkStartTime() == null || vet.getWorkEndTime() == null) {
             throw new BusinessRuleException("Veterinarian does not have working hours configured.");
         }
 
-        // Slots ocupados ese día
+        LocalTime effectiveStartTime = vet.getWorkStartTime().isAfter(branch.getOpeningTime())
+                ? vet.getWorkStartTime()
+                : branch.getOpeningTime();
+
+        LocalTime effectiveEndTime = vet.getWorkEndTime().isBefore(branch.getClosingTime())
+                ? vet.getWorkEndTime()
+                : branch.getClosingTime();
+
         LocalDateTime dayStart = date.atStartOfDay();
         LocalDateTime dayEnd = date.atTime(LocalTime.MAX);
 
@@ -331,11 +339,10 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .map(a -> a.getAppointmentDate().toLocalTime())
                 .toList();
 
-        // Slots disponibles
         List<LocalTime> availableSlots = new ArrayList<>();
-        LocalTime slot = vet.getWorkStartTime();
+        LocalTime slot = effectiveStartTime;
 
-        while (!slot.plusMinutes(30).isAfter(vet.getWorkEndTime())) {
+        while (!slot.plusMinutes(30).isAfter(effectiveEndTime)) {
             if (!takenSlots.contains(slot)) {
                 availableSlots.add(slot);
             }

@@ -33,7 +33,7 @@ public interface AppointmentService {
             AppointmentUpdateDTO dto
     );
 
-    List<LocalTime> getAvailableSlots(UUID veterinarianExternalId, LocalDate date);
+    List<LocalTime> getAvailableSlots(UUID veterinarianExternalId, UUID branchExternalId, LocalDate date);
 
     void delete(UUID externalId);
 
