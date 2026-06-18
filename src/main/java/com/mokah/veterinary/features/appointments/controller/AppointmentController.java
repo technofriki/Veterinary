@@ -27,7 +27,7 @@ public class AppointmentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('CREATE_APPOINTMENTS')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'CLIENT')")
     public AppointmentResponse create(@Valid @RequestBody AppointmentCreateDTO dto) {
         return service.create(dto);
     }
@@ -67,7 +67,7 @@ public class AppointmentController {
     }
 
     @PatchMapping("/{externalId}/confirm")
-    @PreAuthorize("hasAuthority('UPDATE_APPOINTMENTS')")
+    @PreAuthorize("hasRole('VETERINARIAN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void confirmAppointment(@PathVariable UUID externalId) {
         service.confirmAppointment(externalId);
