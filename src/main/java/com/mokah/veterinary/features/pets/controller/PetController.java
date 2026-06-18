@@ -3,6 +3,7 @@ package com.mokah.veterinary.features.pets.controller;
 import com.mokah.veterinary.features.pets.dto.PetRequest;
 import com.mokah.veterinary.features.pets.dto.PetResponse;
 import com.mokah.veterinary.features.pets.service.PetService;
+import com.mokah.veterinary.features.visits.dto.VisitResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -69,5 +70,11 @@ public class PetController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
         return service.findPetsByAuthenticatedUser(userEmail);
+    }
+
+    @GetMapping("/{externalId}/history")
+    @PreAuthorize("hasAuthority('VIEW_PETS')")
+    public List<VisitResponse> getHistory(@PathVariable UUID externalId){
+        return service.getHistory(externalId);
     }
 }

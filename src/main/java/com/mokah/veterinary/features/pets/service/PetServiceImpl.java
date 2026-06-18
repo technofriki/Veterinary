@@ -3,9 +3,11 @@ package com.mokah.veterinary.features.pets.service;
 import com.mokah.veterinary.common.exception.BusinessRuleException;
 import com.mokah.veterinary.common.exception.InvalidDateException;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
-import com.mokah.veterinary.features.animaltypes.model.AnimalType;
+import com.mokah.veterinary.features.animaltypes.mapper.AnimalTypeMapper;
 import com.mokah.veterinary.features.animaltypes.service.AnimalTypeService;
-import com.mokah.veterinary.features.breed.model.Breed;
+import com.mokah.veterinary.features.appointments.model.AppointmentStatus;
+import com.mokah.veterinary.features.appointments.repository.AppointmentRepository;
+import com.mokah.veterinary.features.breed.mapper.BreedMapper;
 import com.mokah.veterinary.features.breed.service.BreedService;
 import com.mokah.veterinary.features.owners.model.Owner;
 import com.mokah.veterinary.features.owners.repository.OwnerRepository;
@@ -18,6 +20,10 @@ import com.mokah.veterinary.features.pets.model.Pet;
 import com.mokah.veterinary.features.pets.repository.PetRepository;
 import com.mokah.veterinary.features.users.model.User;
 import com.mokah.veterinary.features.users.repository.UserRepository;
+import com.mokah.veterinary.features.visits.dto.VisitResponse;
+import com.mokah.veterinary.features.visits.mapper.VisitMapper;
+import com.mokah.veterinary.features.visits.model.Visit;
+import com.mokah.veterinary.features.visits.repository.VisitRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,10 +39,49 @@ public class PetServiceImpl implements PetService {
     private final PetRepository repository;
     private final PetMapper mapper;
     private final AnimalTypeService animalTypeService;
+    private final AnimalTypeMapper animalTypeMapper;
     private final BreedService breedService;
+    private final BreedMapper breedMapper;
     private final UserRepository userRepository;
     private final OwnerRepository ownerRepository;
     private final OwnerByPetRepository ownerByPetRepository;
+    private final VisitRepository visitRepository;
+    private final VisitMapper visitMapper;
+    private final AppointmentRepository appointmentRepository;
+
+    @Override
+    public PetResponse toResponse(Pet pet) {
+
+        Visit lastVisit = visitRepository
+                .findTop1ByPet_ExternalIdOrderByVisitDateDesc(pet.getExternalId())
+                .orElse(null);
+
+        Long visitsCount =
+                visitRepository.countByPet_ExternalId(pet.getExternalId());
+
+        LocalDate lastVisitDate = (lastVisit == null)
+                ? null
+                : lastVisit.getVisitDate().toLocalDate();
+
+        Long activeAppointments =
+                appointmentRepository.countByPet_ExternalIdAndStatusIn(
+                        pet.getExternalId(),
+                        List.of(AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED)
+                );
+
+        return new PetResponse(
+                pet.getExternalId(),
+                pet.getName(),
+                pet.getBirthDate(),
+                pet.getActive(),
+                pet.getColor(),
+                animalTypeMapper.toResponse(pet.getAnimalType()),
+                breedMapper.toResponse(pet.getBreed()),
+                visitsCount,
+                lastVisitDate,
+                activeAppointments
+        );
+    }
 
     @Override
     public PetResponse create(PetRequest dto) {
@@ -130,5 +175,13 @@ public class PetServiceImpl implements PetService {
                 .filter(pet -> pet.getActive())
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<VisitResponse> getHistory(UUID petExternalId) {
+
+        return visitMapper.toResponseList(
+                visitRepository.findByPet_ExternalIdOrderByVisitDateDesc(petExternalId)
+        );
     }
 }

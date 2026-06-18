@@ -5,6 +5,7 @@ import com.mokah.veterinary.features.prescriptions.dto.PrescriptionResponse;
 import com.mokah.veterinary.features.studies.dto.StudyResponse;
 import com.mokah.veterinary.features.visits.dto.VisitRequest;
 import com.mokah.veterinary.features.visits.dto.VisitResponse;
+import com.mokah.veterinary.features.visits.dto.VisitUpdateDTO;
 import com.mokah.veterinary.features.visits.dto.WalkInVisitRequest;
 import com.mokah.veterinary.features.visits.service.VisitService;
 import jakarta.validation.Valid;
@@ -58,7 +59,7 @@ public class VisitController {
     @PreAuthorize("hasAuthority('UPDATE_CLINICAL_RECORDS')")
     public VisitResponse update(
             @PathVariable UUID externalId,
-            @Valid @RequestBody VisitRequest dto) {
+            @Valid @RequestBody VisitUpdateDTO dto) {
 
         return service.update(externalId, dto);
     }
