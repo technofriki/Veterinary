@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
+import java.time.LocalTime;
 import java.util.UUID;
 
 public record VeterinarianCreateDTO(
@@ -13,5 +14,7 @@ public record VeterinarianCreateDTO(
         @NotBlank String licenseNumber,
         @NotBlank String phone,
         @NotBlank @Email String email,
+        @NotNull LocalTime workStartTime,
+        @NotNull LocalTime workEndTime,
         @NotNull UUID branchExternalId
 ) {}
