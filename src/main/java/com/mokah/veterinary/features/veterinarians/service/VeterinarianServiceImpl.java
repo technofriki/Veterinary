@@ -17,11 +17,19 @@ import com.mokah.veterinary.features.veterinarians.mapper.VeterinarianMapper;
 import com.mokah.veterinary.features.veterinarians.model.Veterinarian;
 import com.mokah.veterinary.features.veterinarians.repository.VeterinarianRepository;
 import com.mokah.veterinary.features.veterinarians.specification.VeterinarianSpecification;
+import com.mokah.veterinary.security.enums.Roles;
+import com.mokah.veterinary.security.model.Credentials;
+import com.mokah.veterinary.security.model.Role;
+import com.mokah.veterinary.security.repository.CredentialsRepository;
+import com.mokah.veterinary.security.repository.RoleRepository;
+import com.mokah.veterinary.security.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -32,6 +40,10 @@ public class VeterinarianServiceImpl implements VeterinarianService {
     private final VeterinarianMapper mapper;
     private final BranchService branchService;
     private final UserRepository userRepository;
+    private final CredentialsRepository credentialsRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Override
     public VeterinarianResponse create(VeterinarianCreateDTO dto) {
@@ -39,6 +51,11 @@ public class VeterinarianServiceImpl implements VeterinarianService {
         if (userRepository.existsByEmail(dto.email())) {
             throw new VeterinarianEmailExistsException(
                     "User with email " + dto.email() + " already exists");
+        }
+
+        if (credentialsRepository.findByUsername(dto.email()).isPresent()) {
+            throw new VeterinarianEmailExistsException(
+                    "Username " + dto.email() + " already exists");
         }
 
         if (repository.existsByLicenseNumber(dto.licenseNumber())) {
@@ -58,6 +75,24 @@ public class VeterinarianServiceImpl implements VeterinarianService {
                 .userState(UserState.ACTIVE)
                 .build();
         user = userRepository.save(user);
+
+        Role veterinarianRole = roleRepository.findByRole(Roles.ROLE_VETERINARIAN)
+                .orElseThrow(() -> new IllegalStateException("Veterinarian role not found"));
+
+        String encodedPassword = passwordEncoder.encode(dto.password());
+
+        Credentials credentials = Credentials.builder()
+                .username(dto.email())
+                .password(encodedPassword)
+                .enabled(true)
+                .user(user)
+                .roles(Set.of(veterinarianRole))
+                .build();
+
+        String refreshToken = jwtService.generateRefreshToken(credentials);
+        credentials.setRefreshToken(refreshToken);
+
+        credentialsRepository.save(credentials);
 
         Veterinarian entity = mapper.toEntity(dto);
         entity.setUser(user);
