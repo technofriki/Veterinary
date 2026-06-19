@@ -17,8 +17,9 @@ public interface VeterinarianMapper {
     @Mapping(source = "user.firstName", target = "firstName")
     @Mapping(source = "user.lastName", target = "lastName")
     @Mapping(source = "user.email", target = "email")
-    @Mapping(source = "user.workStartTime", target = "workStartTime")
-    @Mapping(source = "user.workEndTime", target = "workEndTime")
+    @Mapping(source = "workStartTime", target = "workStartTime")
+    @Mapping(source = "workEndTime", target = "workEndTime")
+    @Mapping(source = "workDays", target = "workDays")
     VeterinarianResponse toResponse(Veterinarian entity);
     List<VeterinarianResponse> toResponseList(List<Veterinarian> entities);
 

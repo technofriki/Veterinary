@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/diagnosis")
+@RequestMapping("/api/diagnoses")
 @RequiredArgsConstructor
 public class DiagnosisController {
 

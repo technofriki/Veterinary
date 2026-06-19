@@ -5,7 +5,9 @@ import com.mokah.veterinary.features.users.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -45,6 +47,12 @@ public class Veterinarian {
 
     @Column(name = "work_end_time")
     private LocalTime workEndTime;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "veterinarian_work_days", joinColumns = @JoinColumn(name = "veterinarian_id"))
+    @Column(name = "day_of_week")
+    @Enumerated(EnumType.STRING)
+    private Set<DayOfWeek> workDays;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id", nullable = false)
