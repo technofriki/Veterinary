@@ -8,8 +8,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecificationExecutor<Visit> {
+public interface VisitRepository extends JpaRepository<Visit, Long>,
+        JpaSpecificationExecutor<Visit> {
+
     Optional<Visit> findByExternalId(UUID externalId);
-    List<Visit> findByAppointment_Pet_ExternalId(UUID petExternalId);
+
+    Optional<Visit> findTop1ByPet_ExternalIdOrderByVisitDateDesc(UUID petExternalId);
+
+    long countByPet_ExternalId(UUID petExternalId);
+
+    List<Visit> findByPet_ExternalIdOrderByVisitDateDesc(UUID petExternalId);
+
     boolean existsByAppointment_ExternalId(UUID appointmentExternalId);
 }

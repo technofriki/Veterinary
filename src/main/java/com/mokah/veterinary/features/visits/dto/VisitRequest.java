@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public record VisitRequest(
         @NotBlank String observations,
-        @NotNull UUID appointmentExternalId,
+        UUID appointmentExternalId,
         @NotNull UUID veterinarianExternalId
 ) {
 }

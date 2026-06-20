@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/diagnosis")
+@RequestMapping("/api/diagnoses")
 @RequiredArgsConstructor
 public class DiagnosisController {
 
@@ -21,7 +21,7 @@ public class DiagnosisController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('CREATE_DIAGNOSES')")
+    @PreAuthorize("hasRole('VETERINARIAN')")
     public DiagnosisResponse create(@Valid @RequestBody DiagnosisRequest dto) {
         return service.create(dto);
     }
@@ -39,7 +39,7 @@ public class DiagnosisController {
     }
 
     @PutMapping("/{externalId}")
-    @PreAuthorize("hasAuthority('UPDATE_DIAGNOSES')")
+    @PreAuthorize("hasRole('VETERINARIAN')")
     public DiagnosisResponse update(
             @PathVariable UUID externalId,
             @Valid @RequestBody DiagnosisRequest dto) {

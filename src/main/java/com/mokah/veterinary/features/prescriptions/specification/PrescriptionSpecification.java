@@ -23,10 +23,15 @@ public class PrescriptionSpecification {
                 : cb.equal(
                 root.get("diagnosis")
                         .get("visit")
-                        .get("appointment")
                         .get("pet")
                         .get("externalId"),
                 externalId
         );
+    }
+    public static PredicateSpecification<Prescription> isActive(Boolean active) {
+
+        return (root, cb) -> active == null
+                ? cb.conjunction()
+                : cb.equal(root.get("active"), active);
     }
 }

@@ -3,10 +3,13 @@ package com.mokah.veterinary.features.pets.controller;
 import com.mokah.veterinary.features.pets.dto.PetRequest;
 import com.mokah.veterinary.features.pets.dto.PetResponse;
 import com.mokah.veterinary.features.pets.service.PetService;
+import com.mokah.veterinary.features.visits.dto.VisitResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,5 +62,19 @@ public class PetController {
     @PreAuthorize("hasAuthority('DELETE_PETS')")
     public void delete(@PathVariable UUID externalId) {
         service.delete(externalId);
+    }
+
+    @GetMapping("/my")
+    @PreAuthorize("hasAuthority('VIEW_PETS')")
+    public List<PetResponse> findMyPets() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        return service.findPetsByAuthenticatedUser(userEmail);
+    }
+
+    @GetMapping("/{externalId}/history")
+    @PreAuthorize("hasAuthority('VIEW_PETS')")
+    public List<VisitResponse> getHistory(@PathVariable UUID externalId){
+        return service.getHistory(externalId);
     }
 }

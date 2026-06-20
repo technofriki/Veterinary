@@ -4,6 +4,9 @@ import com.mokah.veterinary.common.exception.BusinessRuleException;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.branches.model.Branch;
 import com.mokah.veterinary.features.branches.service.BranchService;
+import com.mokah.veterinary.features.users.enums.UserState;
+import com.mokah.veterinary.features.users.model.User;
+import com.mokah.veterinary.features.users.repository.UserRepository;
 import com.mokah.veterinary.features.veterinarians.dto.VeterinarianCreateDTO;
 import com.mokah.veterinary.features.veterinarians.dto.VeterinarianResponse;
 import com.mokah.veterinary.features.veterinarians.dto.VeterinarianUpdateDTO;
@@ -14,11 +17,19 @@ import com.mokah.veterinary.features.veterinarians.mapper.VeterinarianMapper;
 import com.mokah.veterinary.features.veterinarians.model.Veterinarian;
 import com.mokah.veterinary.features.veterinarians.repository.VeterinarianRepository;
 import com.mokah.veterinary.features.veterinarians.specification.VeterinarianSpecification;
+import com.mokah.veterinary.security.enums.Roles;
+import com.mokah.veterinary.security.model.Credentials;
+import com.mokah.veterinary.security.model.Role;
+import com.mokah.veterinary.security.repository.CredentialsRepository;
+import com.mokah.veterinary.security.repository.RoleRepository;
+import com.mokah.veterinary.security.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -28,13 +39,23 @@ public class VeterinarianServiceImpl implements VeterinarianService {
     private final VeterinarianRepository repository;
     private final VeterinarianMapper mapper;
     private final BranchService branchService;
+    private final UserRepository userRepository;
+    private final CredentialsRepository credentialsRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Override
     public VeterinarianResponse create(VeterinarianCreateDTO dto) {
 
-        if (repository.existsByEmail(dto.email())) {
+        if (userRepository.existsByEmail(dto.email())) {
             throw new VeterinarianEmailExistsException(
-                    "Veterinarian with email " + dto.email() + " already exists");
+                    "User with email " + dto.email() + " already exists");
+        }
+
+        if (credentialsRepository.findByUsername(dto.email()).isPresent()) {
+            throw new VeterinarianEmailExistsException(
+                    "Username " + dto.email() + " already exists");
         }
 
         if (repository.existsByLicenseNumber(dto.licenseNumber())) {
@@ -47,7 +68,34 @@ public class VeterinarianServiceImpl implements VeterinarianService {
                     "Veterinarian with phone " + dto.phone() + " already exists");
         }
 
+        User user = User.builder()
+                .firstName(dto.firstName())
+                .lastName(dto.lastName())
+                .email(dto.email())
+                .userState(UserState.ACTIVE)
+                .build();
+        user = userRepository.save(user);
+
+        Role veterinarianRole = roleRepository.findByRole(Roles.ROLE_VETERINARIAN)
+                .orElseThrow(() -> new IllegalStateException("Veterinarian role not found"));
+
+        String encodedPassword = passwordEncoder.encode(dto.password());
+
+        Credentials credentials = Credentials.builder()
+                .username(dto.email())
+                .password(encodedPassword)
+                .enabled(true)
+                .user(user)
+                .roles(Set.of(veterinarianRole))
+                .build();
+
+        String refreshToken = jwtService.generateRefreshToken(credentials);
+        credentials.setRefreshToken(refreshToken);
+
+        credentialsRepository.save(credentials);
+
         Veterinarian entity = mapper.toEntity(dto);
+        entity.setUser(user);
 
         Branch branch = branchService.entityByExternalId(dto.branchExternalId());
         entity.setBranch(branch);
@@ -90,11 +138,11 @@ public class VeterinarianServiceImpl implements VeterinarianService {
         Veterinarian entity = entityByExternalId(externalId);
 
         if (dto.email() != null
-                && !dto.email().equalsIgnoreCase(entity.getEmail())
-                && repository.existsByEmail(dto.email())) {
+                && !dto.email().equalsIgnoreCase(entity.getUser().getEmail())
+                && userRepository.existsByEmail(dto.email())) {
 
             throw new VeterinarianEmailExistsException(
-                    "Veterinarian with email " + dto.email() + " already exists");
+                    "User with email " + dto.email() + " already exists");
         }
 
         if (dto.phone() != null
@@ -114,6 +162,16 @@ public class VeterinarianServiceImpl implements VeterinarianService {
         }
 
         mapper.update(entity, dto);
+
+        if (dto.firstName() != null) {
+            entity.getUser().setFirstName(dto.firstName());
+        }
+        if (dto.lastName() != null) {
+            entity.getUser().setLastName(dto.lastName());
+        }
+        if (dto.email() != null) {
+            entity.getUser().setEmail(dto.email());
+        }
 
         if (dto.branchExternalId() != null) {
             Branch branch = branchService.entityByExternalId(dto.branchExternalId());

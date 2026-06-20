@@ -1,7 +1,12 @@
 package com.mokah.veterinary.features.visits.controller;
 
+import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponse;
+import com.mokah.veterinary.features.prescriptions.dto.PrescriptionResponse;
+import com.mokah.veterinary.features.studies.dto.StudyResponse;
 import com.mokah.veterinary.features.visits.dto.VisitRequest;
 import com.mokah.veterinary.features.visits.dto.VisitResponse;
+import com.mokah.veterinary.features.visits.dto.VisitUpdateDTO;
+import com.mokah.veterinary.features.visits.dto.WalkInVisitRequest;
 import com.mokah.veterinary.features.visits.service.VisitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +26,16 @@ public class VisitController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('CREATE_CLINICAL_RECORDS')")
+    @PreAuthorize("hasRole('VETERINARIAN')")
     public VisitResponse create(@Valid @RequestBody VisitRequest dto) {
         return service.create(dto);
+    }
+
+    @PostMapping("/walk-in")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('VETERINARIAN')")
+    public VisitResponse walkInCreate(@Valid @RequestBody WalkInVisitRequest dto) {
+        return service.walkInCreate(dto);
     }
 
     @GetMapping
@@ -31,9 +43,10 @@ public class VisitController {
     public List<VisitResponse> findAll(
             @RequestParam(required = false) UUID visitExternalId,
             @RequestParam(required = false) String veterinarianName,
-            @RequestParam(required = false) String petName) {
-
-        return service.findAll(visitExternalId, veterinarianName, petName);
+            @RequestParam(required = false) String petName,
+            @RequestParam(required = false) Boolean walkIn
+    ) {
+        return service.findAll(visitExternalId, veterinarianName, petName, walkIn);
     }
 
     @GetMapping("/{externalId}")
@@ -43,20 +56,41 @@ public class VisitController {
     }
 
     @PutMapping("/{externalId}")
-    @PreAuthorize("hasAuthority('UPDATE_CLINICAL_RECORDS')")
+    @PreAuthorize("hasRole('VETERINARIAN')")
     public VisitResponse update(
             @PathVariable UUID externalId,
-            @Valid @RequestBody VisitRequest dto) {
+            @Valid @RequestBody VisitUpdateDTO dto) {
 
         return service.update(externalId, dto);
     }
 
     @GetMapping("/medical-history/{petExternalId}")
     @PreAuthorize("hasAuthority('VIEW_CLINICAL_RECORDS')")
-    public List<VisitResponse> medicalHistory(
-            @PathVariable UUID petExternalId) {
-
+    public List<VisitResponse> medicalHistory(@PathVariable UUID petExternalId) {
         return service.findMedicalHistory(petExternalId);
     }
 
+    @GetMapping("/{externalId}/diagnoses")
+    @PreAuthorize("hasAuthority('VIEW_CLINICAL_RECORDS')")
+    public List<DiagnosisResponse> findDiagnosesByVisit(
+            @PathVariable UUID externalId) {
+
+        return service.findDiagnosesByVisit(externalId);
+    }
+
+    @GetMapping("/{externalId}/studies")
+    @PreAuthorize("hasAuthority('VIEW_CLINICAL_RECORDS')")
+    public List<StudyResponse> findStudiesByVisit(
+            @PathVariable UUID externalId) {
+
+        return service.findStudiesByVisit(externalId);
+    }
+
+    @GetMapping("/{externalId}/prescriptions")
+    @PreAuthorize("hasAuthority('VIEW_CLINICAL_RECORDS')")
+    public List<PrescriptionResponse> findPrescriptionsByVisit(
+            @PathVariable UUID externalId) {
+
+        return service.findPrescriptionsByVisit(externalId);
+    }
 }

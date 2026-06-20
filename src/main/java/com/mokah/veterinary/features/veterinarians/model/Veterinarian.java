@@ -1,9 +1,13 @@
 package com.mokah.veterinary.features.veterinarians.model;
 
 import com.mokah.veterinary.features.branches.model.Branch;
+import com.mokah.veterinary.features.users.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -29,25 +33,32 @@ public class Veterinarian {
         }
     }
 
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
-
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
-
     @Column(name = "license_number", nullable = false, unique = true)
     private String licenseNumber;
 
     @Column(nullable = false)
     private String phone;
 
-    @Column(nullable = false, unique = true)
-    private String email;
-
     @Column(nullable = false)
     private Boolean active;
+
+    @Column(name = "work_start_time")
+    private LocalTime workStartTime;
+
+    @Column(name = "work_end_time")
+    private LocalTime workEndTime;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "veterinarian_work_days", joinColumns = @JoinColumn(name = "veterinarian_id"))
+    @Column(name = "day_of_week")
+    @Enumerated(EnumType.STRING)
+    private Set<DayOfWeek> workDays;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id", nullable = false)
     private Branch branch;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

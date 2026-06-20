@@ -39,13 +39,13 @@ public class MedicationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('MANAGE_MEDICATIONS')")
+    @PreAuthorize("hasRole('ADMIN')")
     public MedicationResponse create(@Valid @RequestBody MedicationRequest dto) {
         return service.create(dto);
     }
 
     @PutMapping("/{externalId}")
-    @PreAuthorize("hasAuthority('MANAGE_MEDICATIONS')")
+    @PreAuthorize("hasRole('ADMIN')")
     public MedicationResponse update(
             @PathVariable UUID externalId,
             @Valid @RequestBody MedicationRequest dto) {
@@ -55,7 +55,7 @@ public class MedicationController {
 
     @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAuthority('MANAGE_MEDICATIONS')")
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID externalId) {
 
         service.delete(externalId);

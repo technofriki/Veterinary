@@ -10,7 +10,6 @@ import java.util.UUID;
 
 @Repository
 public interface VeterinarianRepository extends JpaRepository<Veterinarian, Long>, JpaSpecificationExecutor<Veterinarian> {
-    Boolean existsByEmail(String email);
     Boolean existsByPhone(String phone);
     Boolean existsByLicenseNumber(String licenseNumber);
     Optional<Veterinarian> findByExternalId(UUID externalId);

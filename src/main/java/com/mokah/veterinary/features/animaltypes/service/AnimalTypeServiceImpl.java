@@ -6,6 +6,7 @@ import com.mokah.veterinary.features.animaltypes.dto.AnimalTypeResponse;
 import com.mokah.veterinary.features.animaltypes.model.AnimalType;
 import com.mokah.veterinary.features.animaltypes.mapper.AnimalTypeMapper;
 import com.mokah.veterinary.features.animaltypes.repository.AnimalTypeRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -55,5 +56,19 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
     @Override
     public void delete(UUID externalId) {
         repository.delete(entityByExternalId(externalId));
+    }
+
+    @Override
+    @Transactional
+    public AnimalType findOrCreate(AnimalTypeRequest dto) {
+
+        String name = dto.name().trim();
+
+        return repository.findByNameIgnoreCase(name)
+                .orElseGet(() -> repository.save(
+                        AnimalType.builder()
+                                .name(name)
+                                .build()
+                ));
     }
 }

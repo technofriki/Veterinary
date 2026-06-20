@@ -21,7 +21,7 @@ public class StudyController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('CREATE_CLINICAL_RECORDS')")
+    @PreAuthorize("hasRole('VETERINARIAN')")
     public StudyResponse create(@Valid @RequestBody StudyRequest dto) {
         return service.create(dto);
     }

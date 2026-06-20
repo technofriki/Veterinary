@@ -10,10 +10,7 @@ public class VisitSpecification {
     public static PredicateSpecification<Visit> hasExternalId(UUID externalId) {
         return (from, cb) -> externalId == null
                 ? cb.conjunction()
-                : cb.equal(
-                from.get("externalId"),
-                externalId
-        );
+                : cb.equal(from.get("externalId"), externalId);
     }
 
     public static PredicateSpecification<Visit> hasVeterinarianName(String veterinarianName) {
@@ -26,20 +23,8 @@ public class VisitSpecification {
             String pattern = "%" + veterinarianName.toLowerCase() + "%";
 
             return cb.or(
-                    cb.like(
-                            cb.lower(
-                                    from.get("veterinarian")
-                                            .get("firstName")
-                            ),
-                            pattern
-                    ),
-                    cb.like(
-                            cb.lower(
-                                    from.get("veterinarian")
-                                            .get("lastName")
-                            ),
-                            pattern
-                    )
+                    cb.like(cb.lower(from.get("veterinarian").get("firstName")), pattern),
+                    cb.like(cb.lower(from.get("veterinarian").get("lastName")), pattern)
             );
         };
     }
@@ -52,13 +37,24 @@ public class VisitSpecification {
             }
 
             return cb.like(
-                    cb.lower(
-                            from.get("appointment")
-                                    .get("pet")
-                                    .get("name")
-                    ),
+                    cb.lower(from.get("pet").get("name")),
                     "%" + petName.toLowerCase() + "%"
             );
+        };
+    }
+
+    public static PredicateSpecification<Visit> isWalkIn(Boolean walkIn) {
+        return (from, cb) -> {
+
+            if (walkIn == null) {
+                return cb.conjunction();
+            }
+
+            if (walkIn) {
+                return cb.isNull(from.get("appointment"));
+            }
+
+            return cb.isNotNull(from.get("appointment"));
         };
     }
 }

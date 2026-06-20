@@ -4,7 +4,6 @@ import java.util.UUID;
 
 public record BreedResponse(
         UUID externalId,
-        String name,
-        String color
+        String name
 ) {
 }

@@ -21,7 +21,7 @@ public class PrescriptionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('CREATE_PRESCRIPTIONS')")
+    @PreAuthorize("hasRole('VETERINARIAN')")
     public PrescriptionResponse create(@Valid @RequestBody PrescriptionRequest dto) {
         return service.create(dto);
     }
@@ -39,5 +39,12 @@ public class PrescriptionController {
             @RequestParam(required = false) UUID petExternalId) {
 
         return service.findAll(diagnosisExternalId, petExternalId);
+    }
+
+    @DeleteMapping("/{externalId}")
+    @PreAuthorize("hasRole('VETERINARIAN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable UUID externalId) {
+        service.delete(externalId);
     }
 }

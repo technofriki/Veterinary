@@ -1,10 +1,12 @@
 package com.mokah.veterinary.features.visits.model;
 
 import com.mokah.veterinary.features.appointments.model.Appointment;
+import com.mokah.veterinary.features.pets.model.Pet;
 import com.mokah.veterinary.features.veterinarians.model.Veterinarian;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -19,20 +21,30 @@ public class Visit {
     @Column(name = "external_id", nullable = false, unique = true, updatable = false)
     private UUID externalId;
 
-    @PrePersist
-    public void generateExternalId() {
-        if (externalId == null) {
-            externalId = UUID.randomUUID();
-        }
-    }
-
     @Lob
     @Column(nullable = false)
     private String observations;
 
+    @Column(name = "visit_date", nullable = false)
+    private LocalDateTime visitDate;
+
+    @PrePersist
+    public void prePersist() {
+        if (externalId == null) {
+            externalId = UUID.randomUUID();
+        }
+        if (visitDate == null) {
+            visitDate = LocalDateTime.now();
+        }
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "appointment_id", nullable = false)
+    @JoinColumn(name = "appointment_id")
     private Appointment appointment;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pet_id", nullable = false)
+    private Pet pet;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "veterinarian_id", nullable = false)

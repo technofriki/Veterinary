@@ -6,7 +6,9 @@ import com.mokah.veterinary.features.appointments.dto.AppointmentUpdateDTO;
 import com.mokah.veterinary.features.appointments.model.Appointment;
 import com.mokah.veterinary.features.appointments.model.AppointmentStatus;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,5 +33,9 @@ public interface AppointmentService {
             AppointmentUpdateDTO dto
     );
 
+    List<LocalTime> getAvailableSlots(UUID veterinarianExternalId, UUID branchExternalId, LocalDate date);
+
     void delete(UUID externalId);
+
+    void confirmAppointment(UUID externalId);
 }

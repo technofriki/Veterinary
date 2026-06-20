@@ -20,4 +20,6 @@ public interface BreedService {
     BreedResponse update(UUID externalId, BreedRequest dto);
 
     void delete(UUID externalId);
+
+    Breed findOrCreate(BreedRequest dto);
 }
