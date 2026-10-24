@@ -3,6 +3,11 @@ package com.mokah.veterinary.security.service;
 import com.mokah.veterinary.features.users.enums.UserState;
 import com.mokah.veterinary.features.users.model.User;
 import com.mokah.veterinary.features.users.repository.UserRepository;
+import com.mokah.veterinary.features.adresses.mapper.AddressMapper;
+import com.mokah.veterinary.features.adresses.model.Address;
+import com.mokah.veterinary.features.adresses.repository.AddressRepository;
+import com.mokah.veterinary.features.owners.model.Owner;
+import com.mokah.veterinary.features.owners.repository.OwnerRepository;
 import com.mokah.veterinary.security.dto.AuthRequest;
 import com.mokah.veterinary.security.dto.AuthResponse;
 import com.mokah.veterinary.security.dto.RegisterRequest;
@@ -31,6 +36,9 @@ public class AuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final OwnerRepository ownerRepository;
+    private final AddressRepository addressRepository;
+    private final AddressMapper addressMapper;
 
     public Credentials authenticate(AuthRequest input) {
 
@@ -107,6 +115,10 @@ public class AuthService {
             throw new IllegalArgumentException("Username already exists");
         }
 
+        if (ownerRepository.existsByDni(request.dni())) {
+            throw new IllegalArgumentException("DNI already registered");
+        }
+
         User user = User.builder()
                 .firstName(request.firstName())
                 .lastName(request.lastName())
@@ -134,5 +146,17 @@ public class AuthService {
         credentials.setRefreshToken(refreshToken);
 
         credentialsRepository.save(credentials);
+
+        Address address = addressMapper.toEntity(request.address());
+        address = addressRepository.save(address);
+
+        Owner owner = Owner.builder()
+                .phone(request.phone())
+                .dni(request.dni())
+                .address(address)
+                .user(user)
+                .build();
+
+        ownerRepository.save(owner);
     }
 }

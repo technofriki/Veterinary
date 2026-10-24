@@ -73,7 +73,7 @@ public class ReceptionistServiceImpl implements ReceptionistService {
         user = userRepository.save(user);
 
         Role receptionistRole = roleRepository.findByRole(Roles.ROLE_RECEPTIONIST)
-                .orElseThrow(() -> new IllegalStateException("Receptionist role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Role", "name", Roles.ROLE_RECEPTIONIST.name()));
 
         String encodedPassword = passwordEncoder.encode(dto.password());
 

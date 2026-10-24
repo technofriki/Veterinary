@@ -1,198 +1,309 @@
-# Veterinary Management System
+# 🐾 Veterinary Management System
 
 Sistema de gestión veterinaria desarrollado como trabajo final para Programación III (UTN), utilizando Spring Boot, MySQL y arquitectura REST.
 
 La aplicación permite gestionar propietarios, mascotas, veterinarios, sucursales, turnos, visitas clínicas, diagnósticos, estudios médicos, medicamentos y prescripciones. Además, incorpora autenticación JWT y control de acceso basado en roles y permisos.
 
-## Tecnologías Utilizadas
+## 🛠 Tecnologías Utilizadas
 
-* Java 21
-* Spring Boot 4
-* Spring Data JPA
-* Hibernate ORM
-* MySQL 8
-* Spring Security
-* JWT Authentication
-* Swagger / OpenAPI
-* MapStruct
-* Lombok
-* Jakarta Validation
-* Maven
+| Tecnología | Versión |
+|------------|---------|
+| Java | 21 |
+| Spring Boot | 4.0.6 |
+| Spring Data JPA | 4.0.6 |
+| Spring Security | 4.0.6 |
+| Hibernate ORM | - |
+| MySQL Connector | 8.x |
+| JWT (jjwt) | 0.13.0 |
+| Swagger / OpenAPI | 3.0.2 |
+| MapStruct | 1.6.3 |
+| Lombok | 1.18.38 |
+| Jakarta Validation | - |
+| Maven | - |
 
-## Funcionalidades Principales
+## ✨ Funcionalidades Principales
 
-### Gestión de Mascotas
+### 🐾 Gestión de Mascotas
+- Registro de propietarios con validación de DNI único
+- Registro de mascotas
+- Asociación propietario ↔ mascota
+- Gestión de tipos de animales
+- Gestión de razas
 
-* Registro de propietarios
-* Registro de mascotas
-* Asociación propietario ↔ mascota
-* Gestión de tipos de animales
-* Gestión de razas
+### 📅 Gestión de Turnos
+- Creación de turnos con validación de horarios
+- Confirmación de turnos
+- Cancelación de turnos
+- Validación de horarios de atención de sucursales
+- Prevención de superposición de turnos
+- Asignación de veterinarios y sucursales
 
-### Gestión de Turnos
+### 🏥 Gestión Clínica
+- Registro de visitas veterinarias
+- Historial médico de mascotas
+- Registro de observaciones clínicas
+- Gestión de diagnósticos
 
-* Creación de turnos
-* Confirmación de turnos
-* Cancelación de turnos
-* Validación de horarios
-* Prevención de superposición de turnos
-* Asignación de veterinarios y sucursales
+### 🔬 Estudios Diagnósticos
+- Catálogo de estudios
+- Asociación de estudios a visitas clínicas
+- Asociación de estudios a diagnósticos
+- Registro de conclusiones diagnósticas
 
-### Gestión Clínica
+### 🔐 Seguridad
+- Autenticación mediante JWT
+- Refresh Token
+- Roles y permisos
+- Protección de endpoints mediante Spring Security
 
-* Registro de visitas veterinarias
-* Historial médico de mascotas
-* Registro de observaciones clínicas
-* Gestión de diagnósticos
+## ⚙️ Configuración del Entorno
 
-### Estudios Diagnósticos
+### Requisitos Previos
 
-* Catálogo de estudios
-* Asociación de estudios a visitas clínicas
-* Asociación de estudios a diagnósticos
-* Registro de conclusiones diagnósticas
-
-### Seguridad
-
-* Autenticación mediante JWT
-* Refresh Token
-* Roles y permisos
-* Protección de endpoints mediante Spring Security
-
-## Configuración del Entorno
-
-### Requisitos
-
-* IntelliJ IDEA
-* MySQL Workbench local
-* Java 21+
+- **Java 21+** instalado
+- **MySQL 8+** instalado y ejecutándose
+- **IntelliJ IDEA** (recomendado) o cualquier IDE compatible con Maven
+- **Git** para clonar el repositorio
 
 ### Clonar el Proyecto
 
-1. Abrir IntelliJ IDEA
-2. **File → New → Project from Version Control**
-3. Pegar el URL: `https://github.com/technofriki/Veterinary.git`
-4. Elegir directorio y clonar
+```bash
+git clone https://github.com/technofriki/Veterinary.git
+cd Veterinary
+```
+
+O desde IntelliJ IDEA:
+1. **File → New → Project from Version Control**
+2. Pegar el URL: `https://github.com/technofriki/Veterinary.git`
+3. Elegir directorio y clonar
 
 ### Configurar Base de Datos
 
-1. En MySQL Workbench, crear la base de datos:
+1. En MySQL Workbench o terminal, crear la base de datos:
 
 ```sql
 CREATE DATABASE veterinary;
 ```
 
-2. Configurar variables de entorno en IntelliJ:
+2. Configurar las siguientes variables de entorno en tu IDE o sistema:
 
-* **Run → Edit Configurations...**
-* En **Environment variables**, agregar:
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `BD_URL` | URL de conexión a MySQL | `jdbc:mysql://localhost:3306/veterinary` |
+| `BD_USER` | Usuario de MySQL | `root` |
+| `BD_PASS` | Contraseña de MySQL | `tu_contraseña` |
+| `JWT_SECRET` | Clave secreta para JWT | `tu_clave_secreta_muy_larga_y_segura` |
+| `JWT_EXPIRATION` | Expiración del token (ms) | `3600000` (1 hora, opcional) |
+| `JWT_REFRESH_EXPIRATION` | Expiración refresh token (ms) | `86400000` (24 horas, opcional) |
+| `ADMIN_USERNAME` | Usuario admin inicial | `admin` |
+| `ADMIN_PASSWORD` | Contraseña admin inicial | `admin123` |
+| `ADMIN_EMAIL` | Email del admin inicial | `admin@veterinary.com` |
 
-```text
-BD_URL=jdbc:mysql://localhost:3306/veterinary
-BD_USER=root
-BD_PASS=tu_contraseña_de_mysql
-```
+**En IntelliJ IDEA:**
+- **Run → Edit Configurations...**
+- En **Environment variables**, agregar las variables mencionadas arriba
 
-## Reglas de Negocio Implementadas
+## 📋 Reglas de Negocio Implementadas
 
-### Turnos
+### 📅 Turnos
+- No se pueden crear turnos en fechas pasadas
+- No se permiten turnos fuera del horario de atención de la sucursal
+- No se permiten turnos superpuestos para una misma mascota
+- No se permiten turnos superpuestos para un mismo veterinario
+- Una visita clínica solo puede registrarse sobre un turno confirmado
 
-* No se pueden crear turnos en fechas pasadas.
-* No se permiten turnos fuera del horario de atención de la sucursal.
-* No se permiten turnos superpuestos para una misma mascota.
-* No se permiten turnos superpuestos para un mismo veterinario.
-* Una visita clínica solo puede registrarse sobre un turno confirmado.
+### 👤 Propietarios
+- El DNI debe ser único
+- No se permite asociar dos veces el mismo propietario a la misma mascota
 
-### Propietarios
+### 🏢 Sucursales
+- El nombre de la sucursal debe ser único
 
-* El DNI debe ser único.
-* No se permite asociar dos veces el mismo propietario a la misma mascota.
+### 🔬 Estudios
+- No se permite asociar dos veces el mismo estudio a una visita
+- No se permite asociar dos veces el mismo estudio a un diagnóstico
 
-### Sucursales
+## 🔄 Flujo de Trabajo
 
-* El nombre de la sucursal debe ser único.
+### Ramas
 
-### Estudios
+- **develop**: Rama de desarrollo principal
+- **master**: Rama estable para releases
 
-* No se permite asociar dos veces el mismo estudio a una visita.
-* No se permite asociar dos veces el mismo estudio a un diagnóstico.
+### Comandos Git
 
-## Flujo de Trabajo
-
-### Rama Principal
-
-* **develop**: Rama de desarrollo
-* **master**: Rama estable para releases
-
-### Comandos Git (desde IntelliJ Git tab)
-
-**Antes de trabajar:**
-
-* Pull para descargar cambios del repositorio
-
-**Después de hacer cambios:**
-
-* Commit → Push para subir cambios
-
-### O usando terminal:
-
+**Antes de comenzar a trabajar:**
 ```bash
 git checkout develop
 git pull origin develop
+```
 
+**Después de hacer cambios:**
+```bash
 git add .
 git commit -m "descripción del cambio"
 git push origin develop
 ```
 
-## Estructura del Proyecto
+Desde IntelliJ IDEA puedes usar la pestaña **Git** para realizar estas operaciones de forma visual.
 
-* `src/main/java/com/mokah/veterinary/features/`: Módulos funcionales
-* `src/main/java/com/mokah/veterinary/security/`: Seguridad JWT y autorización
-* `src/main/java/com/mokah/veterinary/common/`: Excepciones y componentes compartidos
-* `src/main/resources/application.yaml`: Configuración de Spring Boot
-* `src/test/`: Tests unitarios e integración
+## 📁 Estructura del Proyecto
 
-## Documentación Swagger
+```
+Veterinary/
+├── src/
+│   ├── main/
+│   │   ├── java/com/mokah/veterinary/
+│   │   │   ├── features/           # Módulos funcionales
+│   │   │   │   ├── adresses/       # Gestión de direcciones
+│   │   │   │   ├── appointments/   # Gestión de turnos
+│   │   │   │   ├── diagnoses/      # Gestión de diagnósticos
+│   │   │   │   ├── medical_studies/# Gestión de estudios médicos
+│   │   │   │   ├── owners/         # Gestión de propietarios
+│   │   │   │   ├── pets/           # Gestión de mascotas
+│   │   │   │   ├── branches/       # Gestión de sucursales
+│   │   │   │   ├── users/          # Gestión de usuarios
+│   │   │   │   └── vets/           # Gestión de veterinarios
+│   │   │   ├── security/           # Seguridad JWT y autorización
+│   │   │   │   ├── config/         # Configuración de Spring Security
+│   │   │   │   ├── dto/            # DTOs de autenticación
+│   │   │   │   ├── filter/         # Filtros JWT
+│   │   │   │   └── service/        # Servicios de autenticación
+│   │   │   ├── common/             # Excepciones y componentes compartidos
+│   │   │   └── VeterinaryApplication.java
+│   │   └── resources/
+│   │       └── application.yaml    # Configuración de Spring Boot
+│   └── test/                       # Tests unitarios e integración
+├── pom.xml                         # Dependencias de Maven
+└── README.md
+```
 
-Una vez iniciada la aplicación:
+## 📚 Documentación Swagger
 
-```text
+Una vez iniciada la aplicación, accede a la documentación interactiva de la API:
+
+```
 http://localhost:8080/swagger-ui/index.html
 ```
 
-Swagger permite visualizar y probar todos los endpoints de la API.
+Swagger/OpenAPI permite:
+- Visualizar todos los endpoints disponibles
+- Probar los endpoints directamente desde el navegador
+- Ver los modelos de datos y esquemas
+- Documentación de parámetros y respuestas
 
-## Ejecutar la Aplicación
+## 🚀 Ejecutar la Aplicación
 
-1. Configurar variables de entorno
-2. Ejecutar `VeterinaryApplication.java`
-3. Acceder a:
+### Opción 1: Desde IntelliJ IDEA
 
-```text
-http://localhost:8080
+1. Configurar las variables de entorno mencionadas arriba
+2. Ejecutar la clase `VeterinaryApplication.java`
+3. La aplicación iniciará en `http://localhost:8080`
+
+### Opción 2: Desde terminal con Maven
+
+```bash
+# Configurar variables de entorno en tu sistema
+# Luego ejecutar:
+./mvnw spring-boot:run
 ```
 
-## Autenticación
+### Opción 3: Compilar y ejecutar JAR
 
-1. Realizar login:
+```bash
+./mvnw clean package
+java -jar target/veterinary-0.0.1-SNAPSHOT.jar
+```
+
+## 🔑 Autenticación
+
+La aplicación utiliza JWT (JSON Web Tokens) para la autenticación.
+
+### 1. Registrar un usuario
+
+```http
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "username": "usuario",
+  "password": "contraseña",
+  "email": "usuario@email.com"
+}
+```
+
+### 2. Iniciar sesión
 
 ```http
 POST /api/auth/login
+Content-Type: application/json
+
+{
+  "username": "usuario",
+  "password": "contraseña"
+}
 ```
 
-2. Obtener el token JWT.
-
-3. Utilizar el token en Swagger o Postman:
-
-```text
-Authorization: Bearer <token>
+**Respuesta:**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "type": "Bearer"
+}
 ```
 
-## Notas Importantes
+### 3. Usar el token
 
-* No modificar `application.yaml` con credenciales personales.
-* Utilizar variables de entorno para la conexión a la base de datos.
-* Swagger está habilitado para facilitar las pruebas de la API.
-* El acceso a los endpoints se encuentra protegido mediante JWT y permisos por rol.
-* La aplicación genera y actualiza automáticamente las tablas mediante Hibernate.
+En Swagger:
+1. Haz clic en el botón **Authorize** 🔒
+2. Ingresa: `Bearer <tu_token>`
+3. Haz clic en **Authorize**
+
+En Postman o cURL:
+```http
+Authorization: Bearer <tu_token>
+```
+
+### 4. Refrescar el token
+
+```http
+POST /api/auth/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+## ⚠️ Notas Importantes
+
+- **No modificar** `application.yaml` con credenciales personales. Usa variables de entorno.
+- La aplicación genera y actualiza automáticamente las tablas mediante Hibernate (`ddl-auto: update`).
+- Swagger está habilitado para facilitar las pruebas de la API.
+- El acceso a los endpoints se encuentra protegido mediante JWT y permisos por rol.
+- El usuario admin se crea automáticamente al iniciar la aplicación con las credenciales configuradas en las variables de entorno.
+
+## 🐛 Troubleshooting
+
+### Error de conexión a la base de datos
+- Verifica que MySQL esté ejecutándose
+- Confirma que la base de datos `veterinary` existe
+- Revisa que las variables de entorno `BD_URL`, `BD_USER` y `BD_PASS` sean correctas
+
+### Error de compilación
+- Asegúrate de tener Java 21 instalado
+- Ejecuta `./mvnw clean install` para limpiar y reconstruir
+
+### Error de autenticación JWT
+- Verifica que `JWT_SECRET` esté configurado como variable de entorno
+- Asegúrate de que el token no haya expirado (1 hora por defecto)
+
+## 📝 Licencia
+
+Este proyecto fue desarrollado como trabajo final para la cátedra de Programación III (UTN).
+
+---
+
+**Autor:** technofriki  
+**Repositorio:** https://github.com/technofriki/Veterinary

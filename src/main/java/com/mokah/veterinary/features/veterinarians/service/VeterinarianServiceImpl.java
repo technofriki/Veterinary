@@ -77,7 +77,7 @@ public class VeterinarianServiceImpl implements VeterinarianService {
         user = userRepository.save(user);
 
         Role veterinarianRole = roleRepository.findByRole(Roles.ROLE_VETERINARIAN)
-                .orElseThrow(() -> new IllegalStateException("Veterinarian role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Role", "name", Roles.ROLE_VETERINARIAN.name()));
 
         String encodedPassword = passwordEncoder.encode(dto.password());
 
