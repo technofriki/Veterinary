@@ -54,6 +54,7 @@ public class OwnerController {
     }
 
     @DeleteMapping("/{externalId}")
+    @PreAuthorize("hasAuthority('DELETE_OWNERS')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID externalId) {
         ownerService.delete(externalId);

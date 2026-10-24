@@ -7,6 +7,7 @@ public enum Permits {
     VIEW_OWNERS,
     CREATE_OWNERS,
     UPDATE_OWNERS,
+    DELETE_OWNERS,
 
 
     VIEW_PETS,
