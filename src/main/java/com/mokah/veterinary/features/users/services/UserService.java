@@ -27,7 +27,7 @@ public class UserService implements UserServiceInterface {
     @Override
     public User entityByExternalId(UUID externalId) {
         return userRepository.findByExternalId(externalId)
-                .orElseThrow(() -> new ResourceNotFoundException("User with externalId"+ externalId +"not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User with externalId " + externalId + " not found"));
     }
     @Override
     public List<UserResponse> findAll() {
@@ -47,7 +47,7 @@ public class UserService implements UserServiceInterface {
     public void delete(UUID externalId){
         User entity = entityByExternalId(externalId);
         if(entity.getUserState() == UserState.INACTIVE){
-            throw new BusinessRuleException("User with externalId"+ externalId +" has been deleted already");
+            throw new BusinessRuleException("User with externalId " + externalId + " has been deleted already");
         }
         entity.setUserState(UserState.INACTIVE);
         userRepository.save(entity);
