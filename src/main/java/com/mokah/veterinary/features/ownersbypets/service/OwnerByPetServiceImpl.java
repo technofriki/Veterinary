@@ -1,6 +1,7 @@
 package com.mokah.veterinary.features.ownersbypets.service;
 
 import com.mokah.veterinary.common.exception.OwnerByPetExistsException;
+import com.mokah.veterinary.common.exception.ResourceAlreadyExistsException;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.owners.model.Owner;
 import com.mokah.veterinary.features.owners.service.OwnerService;
@@ -75,7 +76,7 @@ public class OwnerByPetServiceImpl implements OwnerByPetService {
                 pet.getId(),
                 entity.getId())) {
 
-            throw new IllegalArgumentException(
+            throw new ResourceAlreadyExistsException(
                     "This owner is already associated with this pet"
             );
         }

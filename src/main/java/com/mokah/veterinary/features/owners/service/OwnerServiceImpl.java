@@ -1,6 +1,7 @@
 package com.mokah.veterinary.features.owners.service;
 
 import com.mokah.veterinary.common.exception.OwnerDniExistsException;
+import com.mokah.veterinary.common.exception.ResourceAlreadyExistsException;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.owners.dto.OwnerRequest;
 import com.mokah.veterinary.features.owners.dto.OwnerResponse;
@@ -32,7 +33,7 @@ public class OwnerServiceImpl implements OwnerService {
         }
 
         if (userRepository.existsByEmail(dto.email())) {
-            throw new IllegalArgumentException("User with email " + dto.email() + " already exists");
+            throw new ResourceAlreadyExistsException("User with email " + dto.email() + " already exists");
         }
 
         User user = User.builder()
@@ -80,12 +81,12 @@ public class OwnerServiceImpl implements OwnerService {
 
         if (!entity.getDni().equals(dto.dni())
                 && repository.existsByDni(dto.dni())) {
-            throw new IllegalArgumentException("Owner with DNI already exists");
+            throw new ResourceAlreadyExistsException("Owner with DNI already exists");
         }
 
         if (!entity.getUser().getEmail().equals(dto.email())
                 && userRepository.existsByEmail(dto.email())) {
-            throw new IllegalArgumentException("User with email already exists");
+            throw new ResourceAlreadyExistsException("User with email already exists");
         }
 
         mapper.updateEntity(entity, dto);

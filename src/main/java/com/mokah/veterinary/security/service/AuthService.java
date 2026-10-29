@@ -1,5 +1,6 @@
 package com.mokah.veterinary.security.service;
 
+import com.mokah.veterinary.common.exception.ResourceAlreadyExistsException;
 import com.mokah.veterinary.features.users.enums.UserState;
 import com.mokah.veterinary.features.users.model.User;
 import com.mokah.veterinary.features.users.repository.UserRepository;
@@ -108,15 +109,15 @@ public class AuthService {
     @Transactional
     public void register(RegisterRequest request) {
         if (userRepository.findByEmail(request.email()).isPresent()) {
-            throw new IllegalArgumentException("Email already registered");
+            throw new ResourceAlreadyExistsException("Email already registered");
         }
 
         if (credentialsRepository.findByUsername(request.email()).isPresent()) {
-            throw new IllegalArgumentException("Username already exists");
+            throw new ResourceAlreadyExistsException("Username already exists");
         }
 
         if (ownerRepository.existsByDni(request.dni())) {
-            throw new IllegalArgumentException("DNI already registered");
+            throw new ResourceAlreadyExistsException("DNI already registered");
         }
 
         User user = User.builder()
