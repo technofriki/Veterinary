@@ -10,6 +10,8 @@ import com.mokah.veterinary.features.veterinarians.exception.VeterinarianPhoneEx
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -60,10 +62,21 @@ public class GlobalExceptionHandler {
             OwnerDniExistsException.class,
             OwnerByPetExistsException.class,
 
-            BranchNameExistsException.class
+            BranchNameExistsException.class,
+            ResourceAlreadyExistsException.class
     })
     public ResponseEntity<ApiErrorResponse> handleBusinessExceptions(RuntimeException ex) {
         return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAccessDenied(AccessDeniedException ex) {
+        return buildResponse(HttpStatus.FORBIDDEN, "Acceso denegado: permisos insuficientes");
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuthenticationException(AuthenticationException ex) {
+        return buildResponse(HttpStatus.UNAUTHORIZED, "Credenciales inválidas");
     }
 
     @ExceptionHandler(IllegalStateException.class)

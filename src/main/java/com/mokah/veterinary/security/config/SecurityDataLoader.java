@@ -88,7 +88,7 @@ public class SecurityDataLoader implements CommandLineRunner {
                 .orElseGet(() -> roleRepository.save(Role.builder().role(Roles.ROLE_RECEPTIONIST).build()));
         receptionistRole.setPermits(getPermitsFromEnum(
                 Permits.VIEW_USERS,
-                Permits.VIEW_OWNERS, Permits.CREATE_OWNERS, Permits.UPDATE_OWNERS,
+                Permits.VIEW_OWNERS, Permits.CREATE_OWNERS, Permits.UPDATE_OWNERS, Permits.DELETE_OWNERS,
                 Permits.VIEW_PETS, Permits.CREATE_PETS, Permits.UPDATE_PETS,
                 Permits.VIEW_APPOINTMENTS, Permits.CREATE_APPOINTMENTS, Permits.UPDATE_APPOINTMENTS, Permits.DELETE_APPOINTMENTS,
                 Permits.VIEW_BRANCHES,
