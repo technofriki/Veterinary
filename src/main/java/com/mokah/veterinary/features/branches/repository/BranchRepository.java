@@ -12,4 +12,6 @@ public interface BranchRepository extends JpaRepository<Branch, Long> {
     Optional<Branch> findByExternalId(UUID externalId);
     Optional<Branch> findByName(String name);
     boolean existsByName(String name);
+    boolean existsByPhone(String phone);
+    boolean existsByEmail(String email);
 }

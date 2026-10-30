@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface MedicationRepository extends JpaRepository<Medication, Long> {
     Optional<Medication> findByExternalId(UUID externalId);
     Optional<Medication> findByNameIgnoreCase(String name);
+    boolean existsByNameIgnoreCaseAndDosageAndDosageUnit(String name, Double dosage, String dosageUnit);
 }

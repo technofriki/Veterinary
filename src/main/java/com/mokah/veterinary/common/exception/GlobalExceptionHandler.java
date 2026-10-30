@@ -3,6 +3,7 @@ package com.mokah.veterinary.common.exception;
 import com.mokah.veterinary.common.dto.ApiErrorResponse;
 import com.mokah.veterinary.features.conditionsbypet.exception.ConditionByPetExistsException;
 import com.mokah.veterinary.features.diagnosisbystudies.exception.DiagnosisByStudyExistsException;
+import com.mokah.veterinary.features.medication.exception.MedicationExistsException;
 import com.mokah.veterinary.features.studiesbyvisit.exception.StudyByVisitExistsException;
 import com.mokah.veterinary.features.veterinarians.exception.VeterinarianEmailExistsException;
 import com.mokah.veterinary.features.veterinarians.exception.VeterinarianLicenseExistsException;
@@ -63,6 +64,10 @@ public class GlobalExceptionHandler {
             OwnerByPetExistsException.class,
 
             BranchNameExistsException.class,
+            BranchPhoneExistsException.class,
+            BranchEmailExistsException.class,
+
+            MedicationExistsException.class,
             ResourceAlreadyExistsException.class
     })
     public ResponseEntity<ApiErrorResponse> handleBusinessExceptions(RuntimeException ex) {
