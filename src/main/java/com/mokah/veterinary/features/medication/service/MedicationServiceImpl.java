@@ -3,6 +3,7 @@ package com.mokah.veterinary.features.medication.service;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.medication.dto.MedicationRequest;
 import com.mokah.veterinary.features.medication.dto.MedicationResponse;
+import com.mokah.veterinary.features.medication.exception.MedicationExistsException;
 import com.mokah.veterinary.features.medication.model.Medication;
 import com.mokah.veterinary.features.medication.mapper.MedicationMapper;
 import com.mokah.veterinary.features.medication.repository.MedicationRepository;
@@ -45,6 +46,13 @@ public class MedicationServiceImpl implements MedicationService {
 
     @Override
     public MedicationResponse create(MedicationRequest dto) {
+        if (repository.existsByNameIgnoreCaseAndDosageAndDosageUnit(
+                dto.name(), dto.dosage(), dto.dosageUnit())) {
+            throw new MedicationExistsException(
+                    "Medication with name " + dto.name() + ", dosage " + dto.dosage() + 
+                    " " + dto.dosageUnit() + " already exists");
+        }
+
         Medication entity = mapper.toEntity(dto);
 
         return mapper.toResponse(repository.save(entity));
@@ -57,6 +65,17 @@ public class MedicationServiceImpl implements MedicationService {
 
         Medication entity =
                 entityByExternalId(externalId);
+
+        if (!entity.getName().equalsIgnoreCase(dto.name())
+                || !entity.getDosage().equals(dto.dosage())
+                || !entity.getDosageUnit().equals(dto.dosageUnit())) {
+            if (repository.existsByNameIgnoreCaseAndDosageAndDosageUnit(
+                    dto.name(), dto.dosage(), dto.dosageUnit())) {
+                throw new MedicationExistsException(
+                        "Medication with name " + dto.name() + ", dosage " + dto.dosage() + 
+                        " " + dto.dosageUnit() + " already exists");
+            }
+        }
 
         entity.setName(dto.name());
         entity.setDosage(dto.dosage());
