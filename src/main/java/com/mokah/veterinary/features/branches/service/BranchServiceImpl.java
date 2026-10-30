@@ -1,6 +1,8 @@
 package com.mokah.veterinary.features.branches.service;
 
+import com.mokah.veterinary.common.exception.BranchEmailExistsException;
 import com.mokah.veterinary.common.exception.BranchNameExistsException;
+import com.mokah.veterinary.common.exception.BranchPhoneExistsException;
 import com.mokah.veterinary.common.exception.ResourceAlreadyExistsException;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.adresses.mapper.AddressMapper;
@@ -28,6 +30,14 @@ public class BranchServiceImpl implements BranchService {
 
         if (branchRepository.existsByName(dto.name())) {
             throw new BranchNameExistsException("Branch already exists");
+        }
+
+        if (branchRepository.existsByPhone(dto.phone())) {
+            throw new BranchPhoneExistsException("Branch with this phone already exists");
+        }
+
+        if (branchRepository.existsByEmail(dto.email())) {
+            throw new BranchEmailExistsException("Branch with this email already exists");
         }
 
         Branch branch = branchMapper.toEntity(dto);
@@ -59,6 +69,16 @@ public class BranchServiceImpl implements BranchService {
         if (!branch.getName().equals(dto.name())
                 && branchRepository.existsByName(dto.name())) {
             throw new ResourceAlreadyExistsException("Branch already exists");
+        }
+
+        if (!branch.getPhone().equals(dto.phone())
+                && branchRepository.existsByPhone(dto.phone())) {
+            throw new BranchPhoneExistsException("Branch with this phone already exists");
+        }
+
+        if (!branch.getEmail().equals(dto.email())
+                && branchRepository.existsByEmail(dto.email())) {
+            throw new BranchEmailExistsException("Branch with this email already exists");
         }
 
         branch.setName(dto.name());

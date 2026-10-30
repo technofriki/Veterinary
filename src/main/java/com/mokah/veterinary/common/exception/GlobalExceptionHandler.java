@@ -63,6 +63,8 @@ public class GlobalExceptionHandler {
             OwnerByPetExistsException.class,
 
             BranchNameExistsException.class,
+            BranchPhoneExistsException.class,
+            BranchEmailExistsException.class,
             ResourceAlreadyExistsException.class
     })
     public ResponseEntity<ApiErrorResponse> handleBusinessExceptions(RuntimeException ex) {
