@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Set;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -60,50 +61,44 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthResponse refreshAccessToken(String refreshToken) {
+    public AuthResponse login(AuthRequest input) {
+        Credentials user = authenticate(input);
 
-        String username =
-                jwtService.extractUsername(refreshToken);
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
 
-        Credentials user =
-                credentialsRepository.findByUsername(username)
-                        .orElseThrow(() ->
-                                new IllegalArgumentException(
-                                        "User not found"
-                                )
-                        );
-
-        if (!user.getRefreshToken().equals(refreshToken)) {
-
-            throw new IllegalArgumentException(
-                    "Refresh token does not match"
-            );
-        }
-
-        if (!jwtService.validateRefreshToken(
-                refreshToken,
-                user
-        )) {
-
-            throw new IllegalArgumentException(
-                    "Refresh token expired or invalid"
-            );
-        }
-
-        String newAccessToken =
-                jwtService.generateToken(user);
-
-        String newRefreshToken =
-                jwtService.generateRefreshToken(user);
-
-        user.setRefreshToken(newRefreshToken);
-
+        user.setRefreshToken(refreshToken);
         credentialsRepository.save(user);
+        return new AuthResponse(accessToken, refreshToken);
+    }
 
-        return new AuthResponse(
-                newAccessToken,
-                newRefreshToken
-        );
+    @Transactional
+    public AuthResponse refreshAccessToken(String refreshToken) {
+        try {
+            String username = jwtService.extractUsername(refreshToken);
+
+            Credentials user = credentialsRepository.findByUsername(username)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+            if (!user.getRefreshToken().equals(refreshToken)) {
+                throw new IllegalArgumentException("Refresh token does not match");
+            }
+
+            if (!jwtService.validateRefreshToken(refreshToken, user)) {
+                throw new IllegalArgumentException("Refresh token expired or invalid");
+            }
+
+            String newAccessToken = jwtService.generateToken(user);
+            String newRefreshToken = jwtService.generateRefreshToken(user);
+
+            user.setRefreshToken(newRefreshToken);
+            credentialsRepository.save(user);
+
+            return new AuthResponse(newAccessToken, newRefreshToken);
+
+        } catch (io.jsonwebtoken.JwtException e) {
+            throw new BadCredentialsException("Invalid or expired refresh token");
+        }
     }
 
     @Transactional
