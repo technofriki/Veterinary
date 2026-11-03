@@ -21,11 +21,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> authenticateUser(@RequestBody AuthRequest authRequest) {
-        Credentials user = authService.authenticate(authRequest);
-
-        String token = jwtService.generateToken(user);
-
-        return ResponseEntity.ok(new AuthResponse(token, user.getRefreshToken()));
+        AuthResponse response = authService.login(authRequest);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/refresh")

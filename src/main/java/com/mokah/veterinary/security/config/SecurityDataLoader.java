@@ -1,5 +1,6 @@
 package com.mokah.veterinary.security.config;
 
+import com.mokah.veterinary.security.service.JwtService;
 import org.springframework.boot.CommandLineRunner;
 
 import com.mokah.veterinary.features.users.model.User;
@@ -31,6 +32,7 @@ public class SecurityDataLoader implements CommandLineRunner {
     private final UserRepository userRepository;
     private final CredentialsRepository credentialsRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Value("${admin.username}")
     private String adminUsername;
@@ -146,10 +148,11 @@ public class SecurityDataLoader implements CommandLineRunner {
                 .username(adminUsername)
                 .password(passwordEncoder.encode(adminPassword))
                 .enabled(true)
-                .refreshToken(UUID.randomUUID().toString())
                 .user(adminUser)
                 .roles(Set.of(adminRole))
                 .build();
+        String refreshToken = jwtService.generateRefreshToken(credentials); /// creo el objeto credential y luego genero el refresh con el credentials.
+        credentials.setRefreshToken(refreshToken);
 
         credentialsRepository.save(credentials);
     }
