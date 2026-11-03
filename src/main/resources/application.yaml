@@ -21,7 +21,7 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET:miClaveSecretaParaDesarrolloDebeSerMuyLargaYSegura123456789}
-  expiration: ${JWT_EXPIRATION:60000}
+  expiration: ${JWT_EXPIRATION:900000}
   refresh-expiration: ${JWT_REFRESH_EXPIRATION:86400000}
 
 admin:
