@@ -14,11 +14,21 @@ import com.mokah.veterinary.features.appointments.model.AppointmentStatus;
 import com.mokah.veterinary.features.appointments.repository.AppointmentRepository;
 import com.mokah.veterinary.features.branches.model.Branch;
 import com.mokah.veterinary.features.branches.service.BranchService;
+import com.mokah.veterinary.features.owners.model.Owner;
+import com.mokah.veterinary.features.owners.repository.OwnerRepository;
+import com.mokah.veterinary.features.ownersbypets.model.OwnerByPet;
+import com.mokah.veterinary.features.ownersbypets.repository.OwnerByPetRepository;
 import com.mokah.veterinary.features.pets.service.PetService;
+import com.mokah.veterinary.features.users.model.User;
 import com.mokah.veterinary.features.veterinarians.model.Veterinarian;
+import com.mokah.veterinary.security.model.Credentials;
+import com.mokah.veterinary.security.repository.CredentialsRepository;
 import com.mokah.veterinary.features.veterinarians.service.VeterinarianService;
+import com.mokah.veterinary.security.enums.Roles;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +38,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +49,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final PetService petService;
     private final VeterinarianService veterinarianService;
     private final BranchService branchService;
+    private final CredentialsRepository credentialsRepository;
+    private final OwnerRepository ownerRepository;
+    private final OwnerByPetRepository ownerByPetRepository;
 
     @Override
     @Transactional
@@ -79,8 +93,22 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    @Transactional
     public AppointmentResponse findById(UUID externalId) {
-        return mapper.toResponse(entityByExternalId(externalId));
+        Appointment appointment = entityByExternalId(externalId);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals(Roles.ROLE_CLIENT.name()))) {
+            List<UUID> clientPetExternalIds = getClientPetExternalIds(authentication.getName());
+
+            if (!clientPetExternalIds.contains(appointment.getPet().getExternalId())) {
+                throw new ResourceNotFoundException("Appointment", "externalId", externalId);
+            }
+        }
+
+        return mapper.toResponse(appointment);
     }
 
     @Override
@@ -97,12 +125,21 @@ public class AppointmentServiceImpl implements AppointmentService {
             UUID petExternalId,
             UUID veterinarianExternalId) {
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<UUID> clientPetExternalIds = null;
+
+        if (authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals(Roles.ROLE_CLIENT.name()))) {
+            clientPetExternalIds = getClientPetExternalIds(authentication.getName());
+        }
+
         PredicateSpecification<Appointment> spec = PredicateSpecification.allOf(
                 AppointmentSpecification.hasAppointmentDate(appointmentDate),
                 AppointmentSpecification.hasReason(reason),
                 AppointmentSpecification.hasStatus(status),
                 AppointmentSpecification.hasPetExternalId(petExternalId),
-                AppointmentSpecification.hasVeterinarianExternalId(veterinarianExternalId)
+                AppointmentSpecification.hasVeterinarianExternalId(veterinarianExternalId),
+                AppointmentSpecification.hasPetExternalIdIn(clientPetExternalIds)
         );
 
         return mapper.toResponseList(repository.findAll(spec));
@@ -350,6 +387,22 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
 
         return availableSlots;
+    }
+
+    private List<UUID> getClientPetExternalIds(String username) {
+        Credentials credentials = credentialsRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Credentials", "username", username));
+
+        User user = credentials.getUser();
+
+        Owner owner = ownerRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Owner", "user", user.getId()));
+
+        List<OwnerByPet> ownerByPets = ownerByPetRepository.findByOwnerId(owner.getId());
+
+        return ownerByPets.stream()
+                .map(ownerByPet -> ownerByPet.getPet().getExternalId())
+                .collect(Collectors.toList());
     }
 
 }

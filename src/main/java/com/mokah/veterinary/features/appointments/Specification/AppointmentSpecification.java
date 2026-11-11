@@ -5,6 +5,7 @@ import com.mokah.veterinary.features.appointments.model.AppointmentStatus;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class AppointmentSpecification {
@@ -57,5 +58,14 @@ public class AppointmentSpecification {
                 from.get("veterinarian").get("externalId"),
                 veterinarianExternalId
         );
+    }
+
+    public static PredicateSpecification<Appointment> hasPetExternalIdIn(
+            List<UUID> petExternalIds) {
+        return (from, cb) -> petExternalIds == null
+                ? cb.conjunction()
+                : petExternalIds.isEmpty()
+                ? cb.disjunction()
+                : from.get("pet").get("externalId").in(petExternalIds);
     }
 }
