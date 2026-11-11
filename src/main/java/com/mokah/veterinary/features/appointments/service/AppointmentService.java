@@ -18,6 +18,8 @@ public interface AppointmentService {
 
     List<AppointmentResponse> findAll(
             LocalDateTime date,
+            LocalDate dateFrom,
+            LocalDate dateTo,
             String reason,
             AppointmentStatus status,
             UUID petExternalId,

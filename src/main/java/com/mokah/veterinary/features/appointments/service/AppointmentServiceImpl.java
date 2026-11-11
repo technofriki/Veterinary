@@ -3,6 +3,7 @@ package com.mokah.veterinary.features.appointments.service;
 import com.mokah.veterinary.common.exception.AppointmentOverlapException;
 import com.mokah.veterinary.common.exception.BusinessRuleException;
 import com.mokah.veterinary.common.exception.InvalidAppointmentTimeException;
+import com.mokah.veterinary.common.exception.InvalidRequestParameterException;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.appointments.Specification.AppointmentSpecification;
 import com.mokah.veterinary.features.appointments.dto.AppointmentCreateDTO;
@@ -119,11 +120,21 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public List<AppointmentResponse> findAll(
-            LocalDateTime appointmentDate,
+            LocalDateTime date,
+            LocalDate dateFrom,
+            LocalDate dateTo,
             String reason,
             AppointmentStatus status,
             UUID petExternalId,
             UUID veterinarianExternalId) {
+
+        if (date != null && (dateFrom != null || dateTo != null)) {
+            throw new InvalidRequestParameterException("Cannot use 'date' parameter together with 'dateFrom' or 'dateTo'");
+        }
+
+        if (dateFrom != null && dateTo != null && dateFrom.isAfter(dateTo)) {
+            throw new InvalidRequestParameterException("dateFrom must be before or equal to dateTo");
+        }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         List<UUID> clientPetExternalIds = null;
@@ -134,7 +145,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
 
         PredicateSpecification<Appointment> spec = PredicateSpecification.allOf(
-                AppointmentSpecification.hasAppointmentDate(appointmentDate),
+                AppointmentSpecification.hasAppointmentDate(date),
+                AppointmentSpecification.hasAppointmentDateBetween(dateFrom, dateTo),
                 AppointmentSpecification.hasReason(reason),
                 AppointmentSpecification.hasStatus(status),
                 AppointmentSpecification.hasPetExternalId(petExternalId),
