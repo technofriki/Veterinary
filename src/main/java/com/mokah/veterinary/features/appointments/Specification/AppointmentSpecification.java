@@ -4,6 +4,7 @@ import com.mokah.veterinary.features.appointments.model.Appointment;
 import com.mokah.veterinary.features.appointments.model.AppointmentStatus;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -67,5 +68,29 @@ public class AppointmentSpecification {
                 : petExternalIds.isEmpty()
                 ? cb.disjunction()
                 : from.get("pet").get("externalId").in(petExternalIds);
+    }
+
+    public static PredicateSpecification<Appointment> hasAppointmentDateBetween(
+            LocalDate dateFrom,
+            LocalDate dateTo) {
+        return (from, cb) -> {
+            if (dateFrom == null && dateTo == null) {
+                return cb.conjunction();
+            }
+            if (dateFrom != null && dateTo != null) {
+                LocalDateTime fromDateTime = dateFrom.atStartOfDay();
+                LocalDateTime toDateTime = dateTo.plusDays(1).atStartOfDay();
+                return cb.and(
+                        cb.greaterThanOrEqualTo(from.get("appointmentDate"), fromDateTime),
+                        cb.lessThan(from.get("appointmentDate"), toDateTime)
+                );
+            }
+            if (dateFrom != null) {
+                LocalDateTime fromDateTime = dateFrom.atStartOfDay();
+                return cb.greaterThanOrEqualTo(from.get("appointmentDate"), fromDateTime);
+            }
+            LocalDateTime toDateTime = dateTo.plusDays(1).atStartOfDay();
+            return cb.lessThan(from.get("appointmentDate"), toDateTime);
+        };
     }
 }

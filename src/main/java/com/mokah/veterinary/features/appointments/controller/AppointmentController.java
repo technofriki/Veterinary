@@ -36,12 +36,14 @@ public class AppointmentController {
     @PreAuthorize("hasAuthority('VIEW_APPOINTMENTS')")
     public List<AppointmentResponse> findAll(
             @RequestParam(required = false) LocalDateTime date,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(required = false) String reason,
             @RequestParam(required = false) AppointmentStatus status,
             @RequestParam(required = false) UUID petExternalId,
             @RequestParam(required = false) UUID veterinarianExternalId) {
 
-        return service.findAll(date, reason, status, petExternalId, veterinarianExternalId);
+        return service.findAll(date, dateFrom, dateTo, reason, status, petExternalId, veterinarianExternalId);
     }
 
     @GetMapping("/{externalId}")
