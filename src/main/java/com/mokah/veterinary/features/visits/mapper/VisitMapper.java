@@ -1,6 +1,7 @@
 package com.mokah.veterinary.features.visits.mapper;
 
 import com.mokah.veterinary.features.appointments.mapper.AppointmentMapper;
+import com.mokah.veterinary.features.pets.mapper.PetMapper;
 import com.mokah.veterinary.features.veterinarians.mapper.VeterinarianMapper;
 import com.mokah.veterinary.features.visits.dto.VisitRequest;
 import com.mokah.veterinary.features.visits.dto.VisitResponse;
@@ -14,7 +15,7 @@ import org.mapstruct.MappingTarget;
 import java.util.List;
 
 @Mapper(componentModel = "spring",
-        uses = {VeterinarianMapper.class, AppointmentMapper.class})
+        uses = {VeterinarianMapper.class, AppointmentMapper.class, PetMapper.class})
 public interface VisitMapper {
 
     @Mapping(target = "id", ignore = true)
