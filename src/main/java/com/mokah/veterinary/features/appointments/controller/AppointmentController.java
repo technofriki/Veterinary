@@ -69,7 +69,7 @@ public class AppointmentController {
     }
 
     @PatchMapping("/{externalId}/confirm")
-    @PreAuthorize("hasRole('VETERINARIAN')")
+    @PreAuthorize("hasAnyRole('VETERINARIAN', 'RECEPTIONIST')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void confirmAppointment(@PathVariable UUID externalId) {
         service.confirmAppointment(externalId);

@@ -27,5 +27,6 @@ public interface AppointmentMapper {
     @Mapping(target = "externalId", ignore = true)
     @Mapping(target = "pet", ignore = true)
     @Mapping(target = "veterinarian", ignore = true)
+    @Mapping(target = "status", ignore = true)
     void update(@MappingTarget Appointment entity, AppointmentUpdateDTO dto);
 }
