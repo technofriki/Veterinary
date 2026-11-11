@@ -2,6 +2,7 @@ package com.mokah.veterinary.features.appointments.mapper;
 
 import com.mokah.veterinary.features.adresses.model.Address;
 import com.mokah.veterinary.features.appointments.dto.AppointmentResponse;
+import com.mokah.veterinary.features.appointments.dto.AppointmentUpdateDTO;
 import com.mokah.veterinary.features.appointments.model.Appointment;
 import com.mokah.veterinary.features.appointments.model.AppointmentStatus;
 import com.mokah.veterinary.features.branches.dto.BranchResponse;
@@ -195,5 +196,30 @@ class AppointmentMapperTest {
     void returnsNullWhenEntityIsNull() {
         assertThatCode(() -> assertThat(mapper.toResponse(null)).isNull())
                 .doesNotThrowAnyException();
+    }
+
+    @Test
+    void updateDoesNotModifyStatus() {
+        Branch branch = branch();
+        Veterinarian veterinarian = veterinarian(user(), branch);
+        Pet pet = pet();
+        Appointment appointment = appointment(veterinarian, pet, branch);
+
+        AppointmentUpdateDTO dto = new AppointmentUpdateDTO(
+                LocalDateTime.of(2026, 4, 1, 11, 0),
+                45,
+                "Updated reason",
+                AppointmentStatus.PENDING,
+                pet.getExternalId(),
+                veterinarian.getExternalId(),
+                branch.getExternalId()
+        );
+
+        mapper.update(appointment, dto);
+
+        assertThat(appointment.getStatus()).isEqualTo(AppointmentStatus.CONFIRMED);
+        assertThat(appointment.getAppointmentDate()).isEqualTo(dto.appointmentDate());
+        assertThat(appointment.getDurationMinutes()).isEqualTo(dto.durationMinutes());
+        assertThat(appointment.getReason()).isEqualTo(dto.reason());
     }
 }
