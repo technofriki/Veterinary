@@ -4,12 +4,13 @@ import com.mokah.veterinary.features.appointments.dto.AppointmentCreateDTO;
 import com.mokah.veterinary.features.appointments.dto.AppointmentResponse;
 import com.mokah.veterinary.features.appointments.dto.AppointmentUpdateDTO;
 import com.mokah.veterinary.features.appointments.model.Appointment;
+import com.mokah.veterinary.features.veterinarians.mapper.VeterinarianMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import java.util.List;
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {VeterinarianMapper.class})
 public interface AppointmentMapper {
 
     @Mapping(target = "id", ignore = true)
