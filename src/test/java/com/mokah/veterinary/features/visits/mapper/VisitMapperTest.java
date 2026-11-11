@@ -1,8 +1,11 @@
 package com.mokah.veterinary.features.visits.mapper;
 
+import com.mokah.veterinary.features.animaltypes.mapper.AnimalTypeMapperImpl;
 import com.mokah.veterinary.features.appointments.mapper.AppointmentMapperImpl;
 import com.mokah.veterinary.features.appointments.model.Appointment;
 import com.mokah.veterinary.features.appointments.model.AppointmentStatus;
+import com.mokah.veterinary.features.breed.mapper.BreedMapperImpl;
+import com.mokah.veterinary.features.pets.mapper.PetMapperImpl;
 import com.mokah.veterinary.features.pets.model.Pet;
 import com.mokah.veterinary.features.users.model.User;
 import com.mokah.veterinary.features.veterinarians.mapper.VeterinarianMapperImpl;
@@ -29,9 +32,17 @@ class VisitMapperTest {
         AppointmentMapperImpl appointmentMapper = new AppointmentMapperImpl();
         ReflectionTestUtils.setField(appointmentMapper, "veterinarianMapper", veterinarianMapper);
 
+        AnimalTypeMapperImpl animalTypeMapper = new AnimalTypeMapperImpl();
+        BreedMapperImpl breedMapper = new BreedMapperImpl();
+
+        PetMapperImpl petMapper = new PetMapperImpl();
+        ReflectionTestUtils.setField(petMapper, "animalTypeMapper", animalTypeMapper);
+        ReflectionTestUtils.setField(petMapper, "breedMapper", breedMapper);
+
         mapper = new VisitMapperImpl();
         ReflectionTestUtils.setField(mapper, "veterinarianMapper", veterinarianMapper);
         ReflectionTestUtils.setField(mapper, "appointmentMapper", appointmentMapper);
+        ReflectionTestUtils.setField(mapper, "petMapper", petMapper);
     }
 
     private User user() {
@@ -81,6 +92,8 @@ class VisitMapperTest {
                 .pet(pet)
                 .build();
 
+        LocalDateTime visitDate = LocalDateTime.of(2026, 3, 15, 10, 45);
+
         Visit visit = Visit.builder()
                 .id(1L)
                 .externalId(UUID.randomUUID())
@@ -88,6 +101,7 @@ class VisitMapperTest {
                 .appointment(appointment)
                 .pet(pet)
                 .veterinarian(veterinarian)
+                .visitDate(visitDate)
                 .build();
 
         VisitResponse response = mapper.toResponse(visit);
@@ -102,5 +116,46 @@ class VisitMapperTest {
         assertThat(response.veterinarian().firstName()).isEqualTo("Ana");
         assertThat(response.veterinarian().lastName()).isEqualTo("Lopez");
         assertThat(response.veterinarian().email()).isEqualTo("ana.lopez@veterinary.com");
+
+        assertThat(response.pet()).isNotNull();
+        assertThat(response.pet().externalId()).isEqualTo(pet.getExternalId());
+        assertThat(response.pet().name()).isEqualTo("Rex");
+
+        assertThat(response.visitDate()).isNotNull();
+        assertThat(response.visitDate()).isEqualTo(visitDate);
+    }
+
+    @Test
+    void walkInVisitMapsPetAndVisitDate() {
+        User user = user();
+        Veterinarian veterinarian = veterinarian(user);
+        Pet pet = pet();
+
+        LocalDateTime visitDate = LocalDateTime.of(2026, 3, 15, 14, 30);
+
+        Visit visit = Visit.builder()
+                .id(1L)
+                .externalId(UUID.randomUUID())
+                .observations("Emergency visit")
+                .appointment(null)
+                .pet(pet)
+                .veterinarian(veterinarian)
+                .visitDate(visitDate)
+                .build();
+
+        VisitResponse response = mapper.toResponse(visit);
+
+        assertThat(response.appointment()).isNull();
+
+        assertThat(response.veterinarian()).isNotNull();
+        assertThat(response.veterinarian().firstName()).isEqualTo("Ana");
+        assertThat(response.veterinarian().lastName()).isEqualTo("Lopez");
+
+        assertThat(response.pet()).isNotNull();
+        assertThat(response.pet().externalId()).isEqualTo(pet.getExternalId());
+        assertThat(response.pet().name()).isEqualTo("Rex");
+
+        assertThat(response.visitDate()).isNotNull();
+        assertThat(response.visitDate()).isEqualTo(visitDate);
     }
 }
