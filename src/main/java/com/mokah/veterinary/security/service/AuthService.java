@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Set;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,13 +52,17 @@ public class AuthService {
                 )
         );
 
-        return credentialsRepository
+        Credentials credentials = credentialsRepository
                 .findByUsername(input.username())
                 .orElseThrow(() ->
                         new UsernameNotFoundException(
                                 "Usuario no encontrado"
                         )
                 );
+
+        validateActiveAccount(credentials);
+
+        return credentials;
     }
 
     @Transactional
@@ -79,6 +84,8 @@ public class AuthService {
 
             Credentials user = credentialsRepository.findByUsername(username)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+            validateActiveAccount(user);
 
             if (!user.getRefreshToken().equals(refreshToken)) {
                 throw new IllegalArgumentException("Refresh token does not match");
@@ -154,5 +161,13 @@ public class AuthService {
                 .build();
 
         ownerRepository.save(owner);
+    }
+
+    private void validateActiveAccount(Credentials credentials) {
+        if (!credentials.isEnabled()
+                || credentials.getUser() == null
+                || credentials.getUser().getUserState() != UserState.ACTIVE) {
+            throw new DisabledException("User account is inactive or disabled");
+        }
     }
 }

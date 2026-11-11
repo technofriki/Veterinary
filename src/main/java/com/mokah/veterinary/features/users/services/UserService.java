@@ -7,7 +7,9 @@ import com.mokah.veterinary.features.users.enums.UserState;
 import com.mokah.veterinary.features.users.model.User;
 import com.mokah.veterinary.features.users.mapper.UserMapper;
 import com.mokah.veterinary.features.users.repository.UserRepository;
+import com.mokah.veterinary.security.repository.CredentialsRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,12 +18,19 @@ import java.util.stream.Collectors;
 @Service
 public class UserService implements UserServiceInterface {
 
+    private static final String REVOKED_REFRESH_TOKEN_PREFIX = "REVOKED-";
+
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final CredentialsRepository credentialsRepository;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(
+            UserRepository userRepository,
+            UserMapper userMapper,
+            CredentialsRepository credentialsRepository) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.credentialsRepository = credentialsRepository;
     }
 
     @Override
@@ -44,6 +53,7 @@ public class UserService implements UserServiceInterface {
 
 
     @Override
+    @Transactional
     public void delete(UUID externalId){
         User entity = entityByExternalId(externalId);
         if(entity.getUserState() == UserState.INACTIVE){
@@ -51,6 +61,12 @@ public class UserService implements UserServiceInterface {
         }
         entity.setUserState(UserState.INACTIVE);
         userRepository.save(entity);
+
+        credentialsRepository.findByUser(entity).ifPresent(credentials -> {
+            credentials.setEnabled(false);
+            credentials.setRefreshToken(REVOKED_REFRESH_TOKEN_PREFIX + UUID.randomUUID());
+            credentialsRepository.save(credentials);
+        });
     }
 
 
