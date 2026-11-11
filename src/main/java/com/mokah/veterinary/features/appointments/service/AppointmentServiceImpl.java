@@ -58,6 +58,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Transactional
     public AppointmentResponse create(AppointmentCreateDTO dto) {
 
+        validateClientPetOwnership(dto.petExternalId(), "Pet", dto.petExternalId());
+
         validatePastDate(dto.appointmentDate());
         validateBranchSchedule(dto.branchExternalId(), dto.appointmentDate());
 
@@ -98,15 +100,11 @@ public class AppointmentServiceImpl implements AppointmentService {
     public AppointmentResponse findById(UUID externalId) {
         Appointment appointment = entityByExternalId(externalId);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<UUID> clientPetExternalIds = getClientPetExternalIdsForCurrentUser();
 
-        if (authentication != null && authentication.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals(Roles.ROLE_CLIENT.name()))) {
-            List<UUID> clientPetExternalIds = getClientPetExternalIds(authentication.getName());
-
-            if (!clientPetExternalIds.contains(appointment.getPet().getExternalId())) {
-                throw new ResourceNotFoundException("Appointment", "externalId", externalId);
-            }
+        if (clientPetExternalIds != null
+                && !clientPetExternalIds.contains(appointment.getPet().getExternalId())) {
+            throw new ResourceNotFoundException("Appointment", "externalId", externalId);
         }
 
         return mapper.toResponse(appointment);
@@ -136,13 +134,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new InvalidRequestParameterException("dateFrom must be before or equal to dateTo");
         }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        List<UUID> clientPetExternalIds = null;
-
-        if (authentication != null && authentication.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals(Roles.ROLE_CLIENT.name()))) {
-            clientPetExternalIds = getClientPetExternalIds(authentication.getName());
-        }
+        List<UUID> clientPetExternalIds = getClientPetExternalIdsForCurrentUser();
 
         PredicateSpecification<Appointment> spec = PredicateSpecification.allOf(
                 AppointmentSpecification.hasAppointmentDate(date),
@@ -207,6 +199,11 @@ public class AppointmentServiceImpl implements AppointmentService {
     public void delete(UUID externalId) {
 
         Appointment appointment = entityByExternalId(externalId);
+
+        validateClientPetOwnership(
+                appointment.getPet().getExternalId(),
+                "Appointment",
+                externalId);
 
         if (appointment.getStatus() == AppointmentStatus.COMPLETED) {
             throw new BusinessRuleException("Cannot cancel a COMPLETED appointment.");
@@ -415,6 +412,30 @@ public class AppointmentServiceImpl implements AppointmentService {
         return ownerByPets.stream()
                 .map(ownerByPet -> ownerByPet.getPet().getExternalId())
                 .collect(Collectors.toList());
+    }
+
+    private List<UUID> getClientPetExternalIdsForCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication.getAuthorities().stream()
+                .noneMatch(auth -> auth.getAuthority().equals(Roles.ROLE_CLIENT.name()))) {
+            return null;
+        }
+
+        return getClientPetExternalIds(authentication.getName());
+    }
+
+    private void validateClientPetOwnership(
+            UUID petExternalId,
+            String resourceName,
+            UUID resourceExternalId) {
+
+        List<UUID> clientPetExternalIds = getClientPetExternalIdsForCurrentUser();
+
+        if (clientPetExternalIds != null
+                && !clientPetExternalIds.contains(petExternalId)) {
+            throw new ResourceNotFoundException(resourceName, "externalId", resourceExternalId);
+        }
     }
 
 }
