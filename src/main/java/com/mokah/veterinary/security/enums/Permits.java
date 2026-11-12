@@ -3,6 +3,7 @@ package com.mokah.veterinary.security.enums;
 public enum Permits {
 
     VIEW_USERS,
+    UPDATE_USERS,
     DELETE_USERS,
     VIEW_OWNERS,
     CREATE_OWNERS,

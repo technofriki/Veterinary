@@ -139,6 +139,48 @@ class AuthServiceAccountStateTest {
         verify(credentialsRepository, never()).save(any(Credentials.class));
     }
 
+    @Test
+    void refreshRejectsOldTokenAfterReactivation() {
+        // Simula que UserService.reactivate() ya cambió el refresh token almacenado
+        // a "REVOKED-" + nuevo UUID, invalidando el token anterior
+        String revokedToken = "REVOKED-" + UUID.randomUUID();
+        Credentials credentials = credentials(UserState.ACTIVE, true);
+        credentials.setRefreshToken(revokedToken);
+
+        when(jwtService.extractUsername(OLD_REFRESH_TOKEN)).thenReturn(USERNAME);
+        when(credentialsRepository.findByUsername(USERNAME)).thenReturn(Optional.of(credentials));
+
+        // El token antiguo no coincide con el token almacenado (REVOKED-...)
+        assertThatThrownBy(() -> authService.refreshAccessToken(OLD_REFRESH_TOKEN))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("does not match");
+
+        verify(jwtService, never()).generateToken(any(Credentials.class));
+        verify(jwtService, never()).generateRefreshToken(any(Credentials.class));
+        verify(credentialsRepository, never()).save(any(Credentials.class));
+    }
+
+    @Test
+    void loginSucceedsAfterReactivation() {
+        // Tras reactivar, el usuario está ACTIVE y enabled=true
+        // Login debería funcionar normalmente
+        Credentials credentials = credentials(UserState.ACTIVE, true);
+        String revokedToken = "REVOKED-" + UUID.randomUUID();
+        credentials.setRefreshToken(revokedToken);
+
+        when(credentialsRepository.findByUsername(USERNAME)).thenReturn(Optional.of(credentials));
+        when(jwtService.generateToken(credentials)).thenReturn("access-token");
+        when(jwtService.generateRefreshToken(credentials)).thenReturn("fresh-refresh-token");
+
+        AuthResponse response = authService.login(new AuthRequest(USERNAME, PASSWORD));
+
+        assertThat(response.accessToken()).isEqualTo("access-token");
+        assertThat(response.refreshToken()).isEqualTo("fresh-refresh-token");
+        // El refresh token REVOKED- fue reemplazado por uno nuevo
+        assertThat(credentials.getRefreshToken()).isEqualTo("fresh-refresh-token");
+        verify(credentialsRepository).save(credentials);
+    }
+
     private Credentials credentials(UserState userState, boolean enabled) {
         User user = User.builder()
                 .externalId(UUID.randomUUID())
