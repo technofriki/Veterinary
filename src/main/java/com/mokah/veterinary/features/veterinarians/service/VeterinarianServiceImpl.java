@@ -190,4 +190,17 @@ public class VeterinarianServiceImpl implements VeterinarianService {
         entity.setActive(false);
         repository.save(entity);
     }
+
+    @Override
+    public void validateActive(UUID externalId) {
+        Veterinarian vet = entityByExternalId(externalId);
+
+        if (!Boolean.TRUE.equals(vet.getActive())) {
+            throw new BusinessRuleException("Cannot assign an inactive veterinarian.");
+        }
+
+        if (vet.getUser() == null || vet.getUser().getUserState() != UserState.ACTIVE) {
+            throw new BusinessRuleException("Cannot assign a veterinarian with an inactive user account.");
+        }
+    }
 }

@@ -74,6 +74,8 @@ public class VisitServiceImpl implements VisitService {
 
         appointment.setStatus(AppointmentStatus.COMPLETED);
 
+        veterinarianService.validateActive(dto.veterinarianExternalId());
+
         Visit entity = mapper.toEntity(dto);
 
         entity.setVeterinarian(
@@ -90,6 +92,8 @@ public class VisitServiceImpl implements VisitService {
     @Transactional
     @Override
     public VisitResponse walkInCreate(WalkInVisitRequest dto) {
+
+        veterinarianService.validateActive(dto.veterinarianExternalId());
 
         Visit entity = mapper.toEntity(dto);
 
@@ -143,6 +147,11 @@ public class VisitServiceImpl implements VisitService {
         Visit entity = entityByExternalId(externalId);
 
         entity.setObservations(dto.observations());
+
+        if (entity.getVeterinarian() == null
+                || !entity.getVeterinarian().getExternalId().equals(dto.veterinarianExternalId())) {
+            veterinarianService.validateActive(dto.veterinarianExternalId());
+        }
 
         entity.setVeterinarian(
                 veterinarianService.entityByExternalId(dto.veterinarianExternalId())

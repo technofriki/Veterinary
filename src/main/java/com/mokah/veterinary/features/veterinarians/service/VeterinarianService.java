@@ -21,4 +21,6 @@ public interface VeterinarianService {
     VeterinarianResponse update(UUID externalId, VeterinarianUpdateDTO dto);
 
     void delete(UUID externalId);
+
+    void validateActive(UUID externalId);
 }

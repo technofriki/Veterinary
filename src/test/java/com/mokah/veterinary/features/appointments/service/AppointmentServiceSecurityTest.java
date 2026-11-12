@@ -56,6 +56,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -794,6 +795,151 @@ class AppointmentServiceSecurityTest {
 
         assertThat(appointment.getStatus()).isEqualTo(AppointmentStatus.PENDING);
         verify(repository, never()).save(any());
+    }
+
+    @Test
+    void clientCannotCreateAppointmentWithInactiveVeterinarian() {
+        Pet ownPet = pet();
+        User vetUser = user(1L, UserState.ACTIVE);
+        Branch branch = branch();
+        Veterinarian inactiveVet = veterinarian(vetUser, branch, false);
+
+        authenticateAs(CLIENT_USERNAME, "ROLE_CLIENT");
+        mockClientOwnsPets(ownPet);
+        when(branchService.entityByExternalId(branch.getExternalId())).thenReturn(branch);
+        when(veterinarianService.entityByExternalId(inactiveVet.getExternalId())).thenReturn(inactiveVet);
+        when(repository.findByVeterinarian_ExternalIdAndStatusIn(eq(inactiveVet.getExternalId()), anyList()))
+                .thenReturn(List.of());
+        when(repository.findByPet_ExternalIdAndStatusIn(eq(ownPet.getExternalId()), anyList()))
+                .thenReturn(List.of());
+
+        doThrow(new BusinessRuleException("Cannot assign an inactive veterinarian."))
+                .when(veterinarianService).validateActive(inactiveVet.getExternalId());
+
+        assertThatThrownBy(() -> service.create(createDTO(ownPet, inactiveVet, branch)))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("inactive veterinarian");
+
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void clientCannotCreateAppointmentWithInactiveUser() {
+        Pet ownPet = pet();
+        User inactiveVetUser = user(1L, UserState.INACTIVE);
+        Branch branch = branch();
+        Veterinarian vet = veterinarian(inactiveVetUser, branch, true);
+
+        authenticateAs(CLIENT_USERNAME, "ROLE_CLIENT");
+        mockClientOwnsPets(ownPet);
+        when(branchService.entityByExternalId(branch.getExternalId())).thenReturn(branch);
+        when(veterinarianService.entityByExternalId(vet.getExternalId())).thenReturn(vet);
+        when(repository.findByVeterinarian_ExternalIdAndStatusIn(eq(vet.getExternalId()), anyList()))
+                .thenReturn(List.of());
+        when(repository.findByPet_ExternalIdAndStatusIn(eq(ownPet.getExternalId()), anyList()))
+                .thenReturn(List.of());
+
+        doThrow(new BusinessRuleException("Cannot assign a veterinarian with an inactive user account."))
+                .when(veterinarianService).validateActive(vet.getExternalId());
+
+        assertThatThrownBy(() -> service.create(createDTO(ownPet, vet, branch)))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("inactive user account");
+
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void adminCannotCreateAppointmentWithInactiveVeterinarian() {
+        Pet pet = pet();
+        User vetUser = user(1L, UserState.ACTIVE);
+        Branch branch = branch();
+        Veterinarian inactiveVet = veterinarian(vetUser, branch, false);
+
+        authenticateAs(ADMIN_USERNAME, "ROLE_ADMIN");
+        when(branchService.entityByExternalId(branch.getExternalId())).thenReturn(branch);
+        when(veterinarianService.entityByExternalId(inactiveVet.getExternalId())).thenReturn(inactiveVet);
+        when(repository.findByVeterinarian_ExternalIdAndStatusIn(eq(inactiveVet.getExternalId()), anyList()))
+                .thenReturn(List.of());
+        when(repository.findByPet_ExternalIdAndStatusIn(eq(pet.getExternalId()), anyList()))
+                .thenReturn(List.of());
+
+        doThrow(new BusinessRuleException("Cannot assign an inactive veterinarian."))
+                .when(veterinarianService).validateActive(inactiveVet.getExternalId());
+
+        assertThatThrownBy(() -> service.create(createDTO(pet, inactiveVet, branch)))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("inactive veterinarian");
+
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void updateWithInactiveVeterinarianShouldFail() {
+        Pet pet = pet();
+        User activeVetUser = user(1L, UserState.ACTIVE);
+        User inactiveVetUser = user(2L, UserState.ACTIVE);
+        Branch branch = branch();
+        Veterinarian activeVet = veterinarian(activeVetUser, branch, true);
+        Veterinarian inactiveVet = veterinarian(inactiveVetUser, branch, false);
+        Appointment appointment = appointment(pet, activeVet, branch, AppointmentStatus.PENDING);
+
+        authenticateAs(ADMIN_USERNAME, "ROLE_ADMIN");
+        when(repository.findByExternalId(appointment.getExternalId())).thenReturn(Optional.of(appointment));
+        when(branchService.entityByExternalId(branch.getExternalId())).thenReturn(branch);
+        when(veterinarianService.entityByExternalId(inactiveVet.getExternalId())).thenReturn(inactiveVet);
+        when(repository.findByVeterinarian_ExternalIdAndStatusIn(eq(inactiveVet.getExternalId()), anyList()))
+                .thenReturn(List.of());
+        when(repository.findByPet_ExternalIdAndStatusIn(eq(pet.getExternalId()), anyList()))
+                .thenReturn(List.of());
+
+        doThrow(new BusinessRuleException("Cannot assign an inactive veterinarian."))
+                .when(veterinarianService).validateActive(inactiveVet.getExternalId());
+
+        AppointmentUpdateDTO updateDTO = updateDTO(appointment, AppointmentStatus.PENDING,
+                inactiveVet.getExternalId(), branch.getExternalId());
+
+        assertThatThrownBy(() -> service.update(appointment.getExternalId(), updateDTO))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("inactive veterinarian");
+
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void updateWithSameVeterinarianShouldNotValidateActive() {
+        Pet pet = pet();
+        User vetUser = user(1L, UserState.ACTIVE);
+        Branch branch = branch();
+        Veterinarian vet = veterinarian(vetUser, branch, true);
+        Appointment appointment = appointment(pet, vet, branch, AppointmentStatus.PENDING);
+
+        authenticateAs(ADMIN_USERNAME, "ROLE_ADMIN");
+        when(repository.findByExternalId(appointment.getExternalId())).thenReturn(Optional.of(appointment));
+        when(branchService.entityByExternalId(branch.getExternalId())).thenReturn(branch);
+        when(veterinarianService.entityByExternalId(vet.getExternalId())).thenReturn(vet);
+        when(repository.findByVeterinarian_ExternalIdAndStatusIn(eq(vet.getExternalId()), anyList()))
+                .thenReturn(List.of());
+        when(repository.findByPet_ExternalIdAndStatusIn(eq(pet.getExternalId()), anyList()))
+                .thenReturn(List.of());
+        when(repository.save(any(Appointment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(mapper.toResponse(any(Appointment.class))).thenReturn(new AppointmentResponse(
+                appointment.getExternalId(),
+                appointment.getAppointmentDate(),
+                appointment.getDurationMinutes(),
+                appointment.getReason(),
+                appointment.getStatus(),
+                null,
+                null,
+                null
+        ));
+
+        AppointmentUpdateDTO updateDTO = updateDTO(appointment, AppointmentStatus.PENDING,
+                vet.getExternalId(), branch.getExternalId());
+
+        service.update(appointment.getExternalId(), updateDTO);
+
+        verify(repository).save(any(Appointment.class));
     }
 
     @ParameterizedTest
