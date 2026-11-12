@@ -90,6 +90,8 @@ public class AppointmentServiceImpl implements AppointmentService {
                 dto.veterinarianExternalId(),
                 dto.appointmentDate());
 
+        veterinarianService.validateActive(dto.veterinarianExternalId());
+
         Branch branch = branchService.entityByExternalId(dto.branchExternalId());
 
         Appointment entity = mapper.toEntity(dto);
@@ -200,6 +202,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         validateVeterinarianSchedule(
                 dto.veterinarianExternalId(),
                 dto.appointmentDate());
+
+        if (entity.getVeterinarian() == null
+                || !entity.getVeterinarian().getExternalId().equals(dto.veterinarianExternalId())) {
+            veterinarianService.validateActive(dto.veterinarianExternalId());
+        }
 
         mapper.update(entity, dto);
 
