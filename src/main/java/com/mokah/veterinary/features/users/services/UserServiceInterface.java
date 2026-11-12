@@ -15,4 +15,6 @@ public interface UserServiceInterface {
     UserResponse findByExternalId(UUID externalId);
 
     void delete(UUID externalId);
+
+    void reactivate(UUID externalId);
 }

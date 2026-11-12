@@ -37,4 +37,10 @@ public class UserController {
         userService.delete(externalId);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{externalId}/reactivate")
+    public ResponseEntity<Void> reactivateUser(@PathVariable UUID externalId) {
+        userService.reactivate(externalId);
+        return ResponseEntity.noContent().build();
+    }
 }

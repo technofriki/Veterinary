@@ -8,6 +8,10 @@ import com.mokah.veterinary.features.users.model.User;
 import com.mokah.veterinary.features.users.mapper.UserMapper;
 import com.mokah.veterinary.features.users.repository.UserRepository;
 import com.mokah.veterinary.security.repository.CredentialsRepository;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,6 +68,30 @@ public class UserService implements UserServiceInterface {
 
         credentialsRepository.findByUser(entity).ifPresent(credentials -> {
             credentials.setEnabled(false);
+            credentials.setRefreshToken(REVOKED_REFRESH_TOKEN_PREFIX + UUID.randomUUID());
+            credentialsRepository.save(credentials);
+        });
+    }
+
+    @Override
+    @Transactional
+    public void reactivate(UUID externalId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .noneMatch(auth -> auth.equals("UPDATE_USERS"))) {
+            throw new AccessDeniedException("User does not have UPDATE_USERS permission");
+        }
+
+        User entity = entityByExternalId(externalId);
+        if(entity.getUserState() == UserState.ACTIVE){
+            throw new BusinessRuleException("User with externalId " + externalId + " is already active");
+        }
+        entity.setUserState(UserState.ACTIVE);
+        userRepository.save(entity);
+
+        credentialsRepository.findByUser(entity).ifPresent(credentials -> {
+            credentials.setEnabled(true);
             credentials.setRefreshToken(REVOKED_REFRESH_TOKEN_PREFIX + UUID.randomUUID());
             credentialsRepository.save(credentials);
         });
