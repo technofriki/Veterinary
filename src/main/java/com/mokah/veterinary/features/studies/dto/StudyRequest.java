@@ -5,6 +5,6 @@ import lombok.*;
 
 public record StudyRequest(
         @NotBlank String name,
-        @NotBlank String description
+        String description
 ) {
 }

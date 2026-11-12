@@ -28,6 +28,9 @@ public class StudyByVisit {
     )
     private UUID externalId;
 
+    @Column(name = "description")
+    private String description;
+
     @PrePersist
     public void generateExternalId() {
         if (externalId == null) {

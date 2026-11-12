@@ -9,6 +9,7 @@ public record StudyByVisitResponse(
         UUID externalId,
         StudyResponse study,
         VisitResponse visit,
+        String description,
         Boolean active
 ) {
 }
