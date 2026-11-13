@@ -14,6 +14,7 @@ public record PetResponse(
         String color,
         AnimalTypeResponse animalType,
         BreedResponse breed,
+        String description,
         Long visitsCount,
         LocalDate lastVisitDate,
         Long activeAppointments

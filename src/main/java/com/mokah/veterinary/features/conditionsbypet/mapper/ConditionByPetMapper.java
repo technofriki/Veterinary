@@ -4,13 +4,14 @@ import com.mokah.veterinary.features.conditionsbypet.dto.ConditionByPetDTO;
 import com.mokah.veterinary.features.conditionsbypet.dto.ConditionByPetResponse;
 import com.mokah.veterinary.features.conditionsbypet.dto.ConditionByPetUpdateDTO;
 import com.mokah.veterinary.features.conditionsbypet.model.ConditionByPet;
+import com.mokah.veterinary.features.pets.mapper.PetMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {PetMapper.class})
 public interface ConditionByPetMapper {
 
     @Mapping(target = "id", ignore = true)

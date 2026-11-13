@@ -1,5 +1,6 @@
 package com.mokah.veterinary.features.pets.service;
 
+import com.mokah.veterinary.features.pets.dto.PetDescriptionUpdateDTO;
 import com.mokah.veterinary.features.pets.dto.PetRequest;
 import com.mokah.veterinary.features.pets.dto.PetResponse;
 import com.mokah.veterinary.features.pets.model.Pet;
@@ -23,6 +24,8 @@ public interface PetService {
     PetResponse findByName(String name);
 
     PetResponse update(UUID externalId, PetRequest dto);
+
+    PetResponse updateDescription(UUID externalId, PetDescriptionUpdateDTO dto);
 
     void delete(UUID externalId);
 

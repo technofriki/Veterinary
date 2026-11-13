@@ -51,4 +51,7 @@ public class Pet {
     @JoinColumn(name = "breed_id")
     private Breed breed;
 
+    @Column(name = "description", length = 500)
+    private String description;
+
 }

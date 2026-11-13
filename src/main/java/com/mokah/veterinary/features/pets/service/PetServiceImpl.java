@@ -15,6 +15,7 @@ import com.mokah.veterinary.features.owners.model.Owner;
 import com.mokah.veterinary.features.owners.repository.OwnerRepository;
 import com.mokah.veterinary.features.ownersbypets.model.OwnerByPet;
 import com.mokah.veterinary.features.ownersbypets.repository.OwnerByPetRepository;
+import com.mokah.veterinary.features.pets.dto.PetDescriptionUpdateDTO;
 import com.mokah.veterinary.features.pets.dto.PetRequest;
 import com.mokah.veterinary.features.pets.dto.PetResponse;
 import com.mokah.veterinary.features.pets.mapper.PetMapper;
@@ -82,6 +83,7 @@ public class PetServiceImpl implements PetService {
                 pet.getColor(),
                 animalTypeMapper.toResponse(pet.getAnimalType()),
                 breedMapper.toResponse(pet.getBreed()),
+                pet.getDescription(),
                 visitsCount,
                 lastVisitDate,
                 activeAppointments
@@ -203,7 +205,22 @@ public class PetServiceImpl implements PetService {
         }
         entity.setBreed(breed);
 
+        // Do NOT update description here; it is only updated via updateDescription()
         return mapper.toResponse(repository.save(entity));
+    }
+
+    @Override
+    public PetResponse updateDescription(UUID externalId, PetDescriptionUpdateDTO dto) {
+        Pet entity = entityByExternalId(externalId);
+
+        // null and empty string are both treated as "clear the description"
+        String newDescription = (dto.description() != null && !dto.description().isBlank())
+                ? dto.description().trim()
+                : null;
+
+        entity.setDescription(newDescription);
+
+        return toResponse(repository.save(entity));
     }
 
     @Override

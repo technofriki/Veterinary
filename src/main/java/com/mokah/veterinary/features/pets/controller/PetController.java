@@ -1,5 +1,8 @@
 package com.mokah.veterinary.features.pets.controller;
 
+import com.mokah.veterinary.features.conditionsbypet.dto.ConditionByPetResponse;
+import com.mokah.veterinary.features.conditionsbypet.service.ConditionByPetService;
+import com.mokah.veterinary.features.pets.dto.PetDescriptionUpdateDTO;
 import com.mokah.veterinary.features.pets.dto.PetRequest;
 import com.mokah.veterinary.features.pets.dto.PetResponse;
 import com.mokah.veterinary.features.pets.service.PetService;
@@ -21,6 +24,7 @@ import java.util.UUID;
 public class PetController {
 
     private final PetService service;
+    private final ConditionByPetService conditionByPetService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -76,5 +80,19 @@ public class PetController {
     @PreAuthorize("hasAuthority('VIEW_PETS')")
     public List<VisitResponse> getHistory(@PathVariable UUID externalId){
         return service.getHistory(externalId);
+    }
+
+    @PutMapping("/{externalId}/description")
+    @PreAuthorize("hasAuthority('UPDATE_CLINICAL_RECORDS')")
+    public PetResponse updateDescription(
+            @PathVariable UUID externalId,
+            @Valid @RequestBody PetDescriptionUpdateDTO dto) {
+        return service.updateDescription(externalId, dto);
+    }
+
+    @GetMapping("/{externalId}/conditions")
+    @PreAuthorize("hasAuthority('VIEW_CLINICAL_RECORDS')")
+    public List<ConditionByPetResponse> getConditionsByPet(@PathVariable UUID externalId) {
+        return conditionByPetService.findByPetExternalId(externalId);
     }
 }
