@@ -3,6 +3,7 @@ package com.mokah.veterinary.features.visits.specification;
 import com.mokah.veterinary.features.visits.model.Visit;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 
+import java.util.List;
 import java.util.UUID;
 
 public class VisitSpecification {
@@ -55,6 +56,15 @@ public class VisitSpecification {
             }
 
             return cb.isNotNull(from.get("appointment"));
+        };
+    }
+
+    public static PredicateSpecification<Visit> hasPetExternalIdsIn(List<UUID> petExternalIds) {
+        return (from, cb) -> {
+            if (petExternalIds == null || petExternalIds.isEmpty()) {
+                return cb.conjunction();
+            }
+            return from.get("pet").get("externalId").in(petExternalIds);
         };
     }
 }

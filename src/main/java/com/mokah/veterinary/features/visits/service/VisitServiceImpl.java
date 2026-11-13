@@ -9,6 +9,10 @@ import com.mokah.veterinary.features.appointments.service.AppointmentService;
 import com.mokah.veterinary.features.diagnosis.dto.DiagnosisResponse;
 import com.mokah.veterinary.features.diagnosis.mapper.DiagnosisMapper;
 import com.mokah.veterinary.features.diagnosis.repository.DiagnosisRepository;
+import com.mokah.veterinary.features.owners.model.Owner;
+import com.mokah.veterinary.features.owners.repository.OwnerRepository;
+import com.mokah.veterinary.features.ownersbypets.model.OwnerByPet;
+import com.mokah.veterinary.features.ownersbypets.repository.OwnerByPetRepository;
 import com.mokah.veterinary.features.pets.service.PetService;
 import com.mokah.veterinary.features.prescriptions.dto.PrescriptionResponse;
 import com.mokah.veterinary.features.prescriptions.mapper.PrescriptionMapper;
@@ -27,8 +31,14 @@ import com.mokah.veterinary.features.visits.model.Visit;
 import com.mokah.veterinary.features.visits.mapper.VisitMapper;
 import com.mokah.veterinary.features.visits.repository.VisitRepository;
 import com.mokah.veterinary.features.visits.specification.VisitSpecification;
+import com.mokah.veterinary.security.enums.Roles;
+import com.mokah.veterinary.security.model.Credentials;
+import com.mokah.veterinary.security.repository.CredentialsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +61,10 @@ public class VisitServiceImpl implements VisitService {
     private final DiagnosisMapper diagnosisMapper;
     private final StudyMapper studyMapper;
     private final PrescriptionMapper prescriptionMapper;
+
+    private final CredentialsRepository credentialsRepository;
+    private final OwnerRepository ownerRepository;
+    private final OwnerByPetRepository ownerByPetRepository;
 
     @Transactional
     @Override
@@ -120,7 +134,9 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     public VisitResponse findById(UUID externalId) {
-        return mapper.toResponse(entityByExternalId(externalId));
+        Visit visit = entityByExternalId(externalId);
+        authorizeClientAccess(visit.getPet().getExternalId());
+        return mapper.toResponse(visit);
     }
 
     @Override
@@ -130,11 +146,14 @@ public class VisitServiceImpl implements VisitService {
             String petName,
             Boolean walkIn) {
 
+        List<UUID> clientPetIds = getClientPetExternalIdsForCurrentUser();
+
         PredicateSpecification<Visit> spec = PredicateSpecification.allOf(
                 VisitSpecification.hasExternalId(visitExternalId),
                 VisitSpecification.hasVeterinarianName(veterinarianName),
                 VisitSpecification.hasPetName(petName),
-                VisitSpecification.isWalkIn(walkIn)
+                VisitSpecification.isWalkIn(walkIn),
+                VisitSpecification.hasPetExternalIdsIn(clientPetIds)
         );
 
         return mapper.toResponseList(repository.findAll(spec));
@@ -162,6 +181,7 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     public List<VisitResponse> findMedicalHistory(UUID petExternalId) {
+        authorizeClientAccess(petExternalId);
 
         List<Visit> visits = repository.findAll(
                 (root, query, cb) ->
@@ -174,7 +194,8 @@ public class VisitServiceImpl implements VisitService {
     @Override
     public List<DiagnosisResponse> findDiagnosesByVisit(UUID visitExternalId) {
 
-        entityByExternalId(visitExternalId);
+        Visit visit = entityByExternalId(visitExternalId);
+        authorizeClientAccess(visit.getPet().getExternalId());
 
         return diagnosisMapper.toResponseList(
                 diagnosisRepository.findByVisit_ExternalId(visitExternalId)
@@ -184,7 +205,8 @@ public class VisitServiceImpl implements VisitService {
     @Override
     public List<PrescriptionResponse> findPrescriptionsByVisit(UUID visitExternalId) {
 
-        entityByExternalId(visitExternalId);
+        Visit visit = entityByExternalId(visitExternalId);
+        authorizeClientAccess(visit.getPet().getExternalId());
 
         return prescriptionMapper.toResponseList(
                 prescriptionRepository.findByDiagnosis_Visit_ExternalId(visitExternalId)
@@ -194,7 +216,8 @@ public class VisitServiceImpl implements VisitService {
     @Override
     public List<StudyResponse> findStudiesByVisit(UUID visitExternalId) {
 
-        entityByExternalId(visitExternalId);
+        Visit visit = entityByExternalId(visitExternalId);
+        authorizeClientAccess(visit.getPet().getExternalId());
 
         List<Study> studies =
                 studyByVisitRepository.findByVisit_ExternalId(visitExternalId)
@@ -203,6 +226,35 @@ public class VisitServiceImpl implements VisitService {
                         .toList();
 
         return studyMapper.toResponseList(studies);
+    }
+
+    private List<UUID> getClientPetExternalIdsForCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication.getAuthorities().stream()
+                .noneMatch(auth -> auth.getAuthority().equals(Roles.ROLE_CLIENT.name()))) {
+            return null;
+        }
+
+        Credentials credentials = credentialsRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("Credentials", "username", authentication.getName()));
+
+        Owner owner = ownerRepository.findByUser(credentials.getUser())
+                .orElseThrow(() -> new ResourceNotFoundException("Owner", "user", credentials.getUser().getId()));
+
+        List<OwnerByPet> ownerByPets = ownerByPetRepository.findByOwnerId(owner.getId());
+
+        return ownerByPets.stream()
+                .map(ownerByPet -> ownerByPet.getPet().getExternalId())
+                .toList();
+    }
+
+    private void authorizeClientAccess(UUID petExternalId) {
+        List<UUID> clientPetIds = getClientPetExternalIdsForCurrentUser();
+
+        if (clientPetIds != null && !clientPetIds.contains(petExternalId)) {
+            throw new AccessDeniedException("You do not have access to this visit.");
+        }
     }
 
 
