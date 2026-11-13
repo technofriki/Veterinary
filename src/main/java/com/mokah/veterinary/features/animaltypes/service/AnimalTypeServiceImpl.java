@@ -1,12 +1,12 @@
 package com.mokah.veterinary.features.animaltypes.service;
 
+import com.mokah.veterinary.common.exception.BusinessRuleException;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.animaltypes.dto.AnimalTypeRequest;
 import com.mokah.veterinary.features.animaltypes.dto.AnimalTypeResponse;
 import com.mokah.veterinary.features.animaltypes.model.AnimalType;
 import com.mokah.veterinary.features.animaltypes.mapper.AnimalTypeMapper;
 import com.mokah.veterinary.features.animaltypes.repository.AnimalTypeRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +39,12 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
 
     @Override
     public AnimalTypeResponse create(AnimalTypeRequest dto) {
+        String name = dto.name().trim();
+        if (repository.findByNameIgnoreCase(name).isPresent()) {
+            throw new BusinessRuleException("AnimalType already exists with name: " + name);
+        }
         AnimalType entity = mapper.toEntity(dto);
+        entity.setName(name);
         return mapper.toResponse(repository.save(entity));
     }
 
@@ -48,7 +53,13 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
 
         AnimalType entity = entityByExternalId(externalId);
 
-        entity.setName(dto.name());
+        String name = dto.name().trim();
+        if (!entity.getName().equalsIgnoreCase(name)
+                && repository.existsByNameIgnoreCaseAndIdNot(name, entity.getId())) {
+            throw new BusinessRuleException("AnimalType already exists with name: " + name);
+        }
+
+        entity.setName(name);
 
         return mapper.toResponse(repository.save(entity));
     }
@@ -56,19 +67,5 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
     @Override
     public void delete(UUID externalId) {
         repository.delete(entityByExternalId(externalId));
-    }
-
-    @Override
-    @Transactional
-    public AnimalType findOrCreate(AnimalTypeRequest dto) {
-
-        String name = dto.name().trim();
-
-        return repository.findByNameIgnoreCase(name)
-                .orElseGet(() -> repository.save(
-                        AnimalType.builder()
-                                .name(name)
-                                .build()
-                ));
     }
 }

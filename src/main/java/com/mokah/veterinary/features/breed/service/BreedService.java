@@ -1,5 +1,6 @@
 package com.mokah.veterinary.features.breed.service;
 
+import com.mokah.veterinary.features.animaltypes.model.AnimalType;
 import com.mokah.veterinary.features.breed.dto.BreedRequest;
 import com.mokah.veterinary.features.breed.dto.BreedResponse;
 import com.mokah.veterinary.features.breed.model.Breed;
@@ -21,5 +22,5 @@ public interface BreedService {
 
     void delete(UUID externalId);
 
-    Breed findOrCreate(BreedRequest dto);
+    List<BreedResponse> findByAnimalType(UUID animalTypeId);
 }
