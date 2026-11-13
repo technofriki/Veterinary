@@ -22,6 +22,7 @@ import com.mokah.veterinary.features.receptionists.repository.ReceptionistReposi
 import com.mokah.veterinary.features.users.enums.UserState;
 import com.mokah.veterinary.features.users.model.User;
 import com.mokah.veterinary.features.veterinarians.model.Veterinarian;
+import com.mokah.veterinary.features.veterinarians.repository.VeterinarianRepository;
 import com.mokah.veterinary.features.veterinarians.service.VeterinarianService;
 import com.mokah.veterinary.security.model.Credentials;
 import com.mokah.veterinary.security.repository.CredentialsRepository;
@@ -81,6 +82,9 @@ class AppointmentServiceSecurityTest {
 
     @Mock
     private VeterinarianService veterinarianService;
+
+    @Mock
+    private VeterinarianRepository veterinarianRepository;
 
     @Mock
     private BranchService branchService;
@@ -847,6 +851,86 @@ class AppointmentServiceSecurityTest {
                 .hasMessageContaining("inactive user account");
 
         verify(repository, never()).save(any());
+    }
+
+    @Test
+    void veterinarianFindAllFiltersByOwnAppointments() {
+        User vetUser = user(1L, UserState.ACTIVE);
+        Branch branch = branch();
+        Veterinarian veterinarian = veterinarian(vetUser, branch, true);
+        UUID vetExternalId = veterinarian.getExternalId();
+
+        authenticateAs(VETERINARIAN_USERNAME, "ROLE_VETERINARIAN");
+        mockCurrentCredentials(VETERINARIAN_USERNAME, vetUser, true);
+        when(veterinarianRepository.findByUser(vetUser)).thenReturn(Optional.of(veterinarian));
+        when(repository.findAll(any(PredicateSpecification.class))).thenReturn(List.of());
+        when(mapper.toResponseList(anyList())).thenReturn(List.of());
+
+        List<AppointmentResponse> result = service.findAll(null, null, null, null, null, null, null);
+
+        assertThat(result).isEmpty();
+        verify(veterinarianRepository).findByUser(vetUser);
+        verify(repository).findAll(any(PredicateSpecification.class));
+    }
+
+    @Test
+    void veterinarianFindAllIgnoresVeterinarianExternalIdParameter() {
+        User vetUser = user(1L, UserState.ACTIVE);
+        Branch branch = branch();
+        Veterinarian veterinarian = veterinarian(vetUser, branch, true);
+        UUID vetExternalId = veterinarian.getExternalId();
+        UUID otherVetExternalId = UUID.randomUUID();
+
+        authenticateAs(VETERINARIAN_USERNAME, "ROLE_VETERINARIAN");
+        mockCurrentCredentials(VETERINARIAN_USERNAME, vetUser, true);
+        when(veterinarianRepository.findByUser(vetUser)).thenReturn(Optional.of(veterinarian));
+        when(repository.findAll(any(PredicateSpecification.class))).thenReturn(List.of());
+        when(mapper.toResponseList(anyList())).thenReturn(List.of());
+
+        List<AppointmentResponse> result = service.findAll(null, null, null, null, null, null, otherVetExternalId);
+
+        assertThat(result).isEmpty();
+        verify(veterinarianRepository).findByUser(vetUser);
+    }
+
+    @Test
+    void veterinarianWithoutProfileFindAllReturnsEmpty() {
+        User vetUser = user(1L, UserState.ACTIVE);
+
+        authenticateAs(VETERINARIAN_USERNAME, "ROLE_VETERINARIAN");
+        mockCurrentCredentials(VETERINARIAN_USERNAME, vetUser, true);
+        when(veterinarianRepository.findByUser(vetUser)).thenReturn(Optional.empty());
+        when(repository.findAll(any(PredicateSpecification.class))).thenReturn(List.of());
+        when(mapper.toResponseList(anyList())).thenReturn(List.of());
+
+        List<AppointmentResponse> result = service.findAll(null, null, null, null, null, null, null);
+
+        assertThat(result).isEmpty();
+        verify(veterinarianRepository).findByUser(vetUser);
+    }
+
+    @Test
+    void adminFindAllDoesNotFilterByVeterinarian() {
+        authenticateAs(ADMIN_USERNAME, "ROLE_ADMIN");
+        when(repository.findAll(any(PredicateSpecification.class))).thenReturn(List.of());
+        when(mapper.toResponseList(anyList())).thenReturn(List.of());
+
+        List<AppointmentResponse> result = service.findAll(null, null, null, null, null, null, null);
+
+        assertThat(result).isEmpty();
+        verify(veterinarianRepository, never()).findByUser(any());
+    }
+
+    @Test
+    void receptionistFindAllDoesNotFilterByVeterinarian() {
+        authenticateAs(RECEPTIONIST_USERNAME, "ROLE_RECEPTIONIST");
+        when(repository.findAll(any(PredicateSpecification.class))).thenReturn(List.of());
+        when(mapper.toResponseList(anyList())).thenReturn(List.of());
+
+        List<AppointmentResponse> result = service.findAll(null, null, null, null, null, null, null);
+
+        assertThat(result).isEmpty();
+        verify(veterinarianRepository, never()).findByUser(any());
     }
 
     @Test

@@ -26,7 +26,10 @@ import com.mokah.veterinary.features.visits.dto.VisitResponse;
 import com.mokah.veterinary.features.visits.mapper.VisitMapper;
 import com.mokah.veterinary.features.visits.model.Visit;
 import com.mokah.veterinary.features.visits.repository.VisitRepository;
+import com.mokah.veterinary.security.enums.Roles;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -113,6 +116,14 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public List<PetResponse> findAll() {
+        List<UUID> clientPetExternalIds = getClientPetExternalIdsForCurrentUser();
+
+        if (clientPetExternalIds != null) {
+            return mapper.toResponseList(repository.findAll().stream()
+                    .filter(pet -> clientPetExternalIds.contains(pet.getExternalId()))
+                    .collect(Collectors.toList()));
+        }
+
         return mapper.toResponseList(repository.findAll());
     }
 
@@ -124,13 +135,25 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public PetResponse findByExternalId(UUID externalId) {
-        return mapper.toResponse(entityByExternalId(externalId));
+        Pet pet = entityByExternalId(externalId);
+
+        List<UUID> clientPetExternalIds = getClientPetExternalIdsForCurrentUser();
+        if (clientPetExternalIds != null && !clientPetExternalIds.contains(pet.getExternalId())) {
+            throw new ResourceNotFoundException("Pet", "externalId", externalId);
+        }
+
+        return mapper.toResponse(pet);
     }
 
     @Override
     public PetResponse findByName(String name) {
         Pet entity = repository.findByNameIgnoreCase(name)
                 .orElseThrow(() -> new ResourceNotFoundException("Pet", "name", name));
+
+        List<UUID> clientPetExternalIds = getClientPetExternalIdsForCurrentUser();
+        if (clientPetExternalIds != null && !clientPetExternalIds.contains(entity.getExternalId())) {
+            throw new ResourceNotFoundException("Pet", "name", name);
+        }
 
         return mapper.toResponse(entity);
     }
@@ -197,5 +220,26 @@ public class PetServiceImpl implements PetService {
         return visitMapper.toResponseList(
                 visitRepository.findByPet_ExternalIdOrderByVisitDateDesc(petExternalId)
         );
+    }
+
+    private List<UUID> getClientPetExternalIdsForCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication.getAuthorities().stream()
+                .noneMatch(auth -> auth.getAuthority().equals(Roles.ROLE_CLIENT.name()))) {
+            return null;
+        }
+
+        User user = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", authentication.getName()));
+
+        Owner owner = ownerRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Owner", "user", user.getId()));
+
+        List<OwnerByPet> ownerByPets = ownerByPetRepository.findByOwnerId(owner.getId());
+
+        return ownerByPets.stream()
+                .map(ownerByPet -> ownerByPet.getPet().getExternalId())
+                .collect(Collectors.toList());
     }
 }

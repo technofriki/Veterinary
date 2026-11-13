@@ -61,8 +61,11 @@ public class VisitSpecification {
 
     public static PredicateSpecification<Visit> hasPetExternalIdsIn(List<UUID> petExternalIds) {
         return (from, cb) -> {
-            if (petExternalIds == null || petExternalIds.isEmpty()) {
+            if (petExternalIds == null) {
                 return cb.conjunction();
+            }
+            if (petExternalIds.isEmpty()) {
+                return cb.disjunction();
             }
             return from.get("pet").get("externalId").in(petExternalIds);
         };
