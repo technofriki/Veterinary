@@ -4,6 +4,7 @@ import com.mokah.veterinary.features.conditionsbypet.model.ConditionByPet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,4 +17,8 @@ public interface ConditionByPetRepository extends JpaRepository<ConditionByPet, 
             Long conditionId,
             Long petId
     );
+
+    List<ConditionByPet> findByPet_ExternalIdAndActiveTrue(UUID petExternalId);
+
+    List<ConditionByPet> findByPet_ExternalIdInAndActiveTrue(List<UUID> petExternalIds);
 }

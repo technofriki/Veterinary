@@ -18,6 +18,8 @@ public interface ConditionByPetService {
 
     List<ConditionByPetResponse> findAll();
 
+    List<ConditionByPetResponse> findByPetExternalId(UUID petExternalId);
+
     ConditionByPetResponse update(
             UUID externalId,
             ConditionByPetUpdateDTO dto

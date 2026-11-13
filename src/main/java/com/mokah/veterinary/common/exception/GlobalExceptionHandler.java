@@ -2,6 +2,7 @@ package com.mokah.veterinary.common.exception;
 
 import com.mokah.veterinary.common.dto.ApiErrorResponse;
 import com.mokah.veterinary.features.conditionsbypet.exception.ConditionByPetExistsException;
+import org.springframework.dao.DataIntegrityViolationException;
 import com.mokah.veterinary.features.diagnosisbystudies.exception.DiagnosisByStudyExistsException;
 import com.mokah.veterinary.features.medication.exception.MedicationExistsException;
 import com.mokah.veterinary.features.studiesbyvisit.exception.StudyByVisitExistsException;
@@ -109,6 +110,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({IllegalArgumentException.class, BadCredentialsException.class}) ///manejar 500 que pasaba con el refresh token
     public ResponseEntity<ApiErrorResponse> handleInvalidCredentials(RuntimeException ex) {
         return buildResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        String message = ex.getMessage();
+        // Specifically detect the unique constraint violation on condition_id + pet_id columns.
+        // Hibernate/MySQL messages contain the column names or constraint name.
+        // We check for both the table AND the specific columns to avoid false positives
+        // from other constraints on the same table (e.g., external_id unique constraint).
+        if (message != null && message.contains("condition_by_pet")
+                && (message.contains("condition_id") && message.contains("pet_id"))) {
+            return buildResponse(HttpStatus.CONFLICT, "Pet with that condition already exists");
+        }
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Database integrity constraint violated");
     }
 
     private ResponseEntity<ApiErrorResponse> buildResponse(HttpStatus status, String message) {
