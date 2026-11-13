@@ -1,10 +1,16 @@
 package com.mokah.veterinary.features.pets.service;
 
+import com.mokah.veterinary.common.exception.BusinessRuleException;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
+import com.mokah.veterinary.features.animaltypes.model.AnimalType;
+import com.mokah.veterinary.features.animaltypes.service.AnimalTypeService;
+import com.mokah.veterinary.features.breed.model.Breed;
+import com.mokah.veterinary.features.breed.service.BreedService;
 import com.mokah.veterinary.features.owners.model.Owner;
 import com.mokah.veterinary.features.owners.repository.OwnerRepository;
 import com.mokah.veterinary.features.ownersbypets.model.OwnerByPet;
 import com.mokah.veterinary.features.ownersbypets.repository.OwnerByPetRepository;
+import com.mokah.veterinary.features.pets.dto.PetRequest;
 import com.mokah.veterinary.features.pets.mapper.PetMapper;
 import com.mokah.veterinary.features.pets.model.Pet;
 import com.mokah.veterinary.features.pets.repository.PetRepository;
@@ -57,6 +63,12 @@ class PetServiceSecurityTest {
     @Mock
     private OwnerByPetRepository ownerByPetRepository;
 
+    @Mock
+    private AnimalTypeService animalTypeService;
+
+    @Mock
+    private BreedService breedService;
+
     @InjectMocks
     private PetServiceImpl service;
 
@@ -99,6 +111,157 @@ class PetServiceSecurityTest {
                 .active(true)
                 .color("Brown")
                 .build();
+    }
+
+    private PetRequest petRequest(UUID animalTypeId, UUID breedId) {
+        return new PetRequest("Rex", LocalDate.of(2020, 1, 1), "Brown", animalTypeId, breedId);
+    }
+
+    private AnimalType animalType(UUID externalId) {
+        return AnimalType.builder()
+                .id(1L)
+                .externalId(externalId)
+                .name("Perro")
+                .build();
+    }
+
+    private Breed breed(UUID externalId, AnimalType animalType) {
+        return Breed.builder()
+                .id(1L)
+                .externalId(externalId)
+                .name("Labrador")
+                .animalType(animalType)
+                .build();
+    }
+
+    // --- create tests for CLIENT ---
+
+    @Test
+    void clientCreatesPetAndAssociatesToOwnOwner() {
+        UUID animalTypeId = UUID.randomUUID();
+        UUID breedId = UUID.randomUUID();
+        AnimalType animalType = animalType(animalTypeId);
+        Breed breed = breed(breedId, animalType);
+        Pet savedPet = pet(UUID.randomUUID());
+
+        User user = User.builder().id(1L).externalId(UUID.randomUUID()).build();
+        Owner owner = Owner.builder().id(10L).externalId(UUID.randomUUID()).user(user).build();
+
+        authenticateAs(CLIENT_USERNAME, "ROLE_CLIENT");
+        when(userRepository.findByEmail(CLIENT_USERNAME)).thenReturn(Optional.of(user));
+        when(ownerRepository.findByUser(user)).thenReturn(Optional.of(owner));
+        when(animalTypeService.entityByExternalId(animalTypeId)).thenReturn(animalType);
+        when(breedService.entityByExternalId(breedId)).thenReturn(breed);
+        when(repository.save(any())).thenReturn(savedPet);
+        when(mapper.toResponse(savedPet)).thenReturn(null);
+
+        service.create(petRequest(animalTypeId, breedId));
+
+        verify(ownerByPetRepository).save(argThat(ownerByPet ->
+                ownerByPet.getOwner().equals(owner) && ownerByPet.getPet().equals(savedPet)
+        ));
+    }
+
+    @Test
+    void clientWithoutOwnerCannotCreatePet() {
+        UUID animalTypeId = UUID.randomUUID();
+        UUID breedId = UUID.randomUUID();
+        AnimalType animalType = animalType(animalTypeId);
+        Breed breed = breed(breedId, animalType);
+
+        User user = User.builder().id(1L).externalId(UUID.randomUUID()).build();
+
+        authenticateAs(CLIENT_USERNAME, "ROLE_CLIENT");
+        when(userRepository.findByEmail(CLIENT_USERNAME)).thenReturn(Optional.of(user));
+        when(ownerRepository.findByUser(user)).thenReturn(Optional.empty());
+        when(animalTypeService.entityByExternalId(animalTypeId)).thenReturn(animalType);
+        when(breedService.entityByExternalId(breedId)).thenReturn(breed);
+        when(repository.save(any())).thenReturn(pet(UUID.randomUUID()));
+
+        assertThatThrownBy(() -> service.create(petRequest(animalTypeId, breedId)))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Owner");
+
+        verify(ownerByPetRepository, never()).save(any());
+    }
+
+    @Test
+    void adminCreatesPetWithoutOwnerAssociation() {
+        UUID animalTypeId = UUID.randomUUID();
+        UUID breedId = UUID.randomUUID();
+        AnimalType animalType = animalType(animalTypeId);
+        Breed breed = breed(breedId, animalType);
+        Pet savedPet = pet(UUID.randomUUID());
+
+        authenticateAs(ADMIN_USERNAME, "ROLE_ADMIN");
+        when(animalTypeService.entityByExternalId(animalTypeId)).thenReturn(animalType);
+        when(breedService.entityByExternalId(breedId)).thenReturn(breed);
+        when(repository.save(any())).thenReturn(savedPet);
+        when(mapper.toResponse(savedPet)).thenReturn(null);
+
+        service.create(petRequest(animalTypeId, breedId));
+
+        verify(ownerByPetRepository, never()).save(any());
+        verify(userRepository, never()).findByEmail(any());
+    }
+
+    @Test
+    void receptionistCreatesPetWithoutOwnerAssociation() {
+        UUID animalTypeId = UUID.randomUUID();
+        UUID breedId = UUID.randomUUID();
+        AnimalType animalType = animalType(animalTypeId);
+        Breed breed = breed(breedId, animalType);
+        Pet savedPet = pet(UUID.randomUUID());
+
+        authenticateAs(RECEPTIONIST_USERNAME, "ROLE_RECEPTIONIST");
+        when(animalTypeService.entityByExternalId(animalTypeId)).thenReturn(animalType);
+        when(breedService.entityByExternalId(breedId)).thenReturn(breed);
+        when(repository.save(any())).thenReturn(savedPet);
+        when(mapper.toResponse(savedPet)).thenReturn(null);
+
+        service.create(petRequest(animalTypeId, breedId));
+
+        verify(ownerByPetRepository, never()).save(any());
+        verify(userRepository, never()).findByEmail(any());
+    }
+
+    @Test
+    void clientCreatePetWithInvalidAnimalTypeThrowsException() {
+        UUID animalTypeId = UUID.randomUUID();
+        UUID breedId = UUID.randomUUID();
+
+        authenticateAs(CLIENT_USERNAME, "ROLE_CLIENT");
+        when(animalTypeService.entityByExternalId(animalTypeId))
+                .thenThrow(new ResourceNotFoundException("AnimalType", "externalId", animalTypeId));
+
+        assertThatThrownBy(() -> service.create(petRequest(animalTypeId, breedId)))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("AnimalType");
+
+        verify(repository, never()).save(any());
+        verify(ownerByPetRepository, never()).save(any());
+    }
+
+    @Test
+    void clientCreatePetWithBreedMismatchThrowsException() {
+        UUID animalTypeId = UUID.randomUUID();
+        UUID otherAnimalTypeId = UUID.randomUUID();
+        UUID breedId = UUID.randomUUID();
+
+        AnimalType animalType = animalType(animalTypeId);
+        AnimalType otherAnimalType = animalType(otherAnimalTypeId);
+        Breed breed = breed(breedId, otherAnimalType);
+
+        authenticateAs(CLIENT_USERNAME, "ROLE_CLIENT");
+        when(animalTypeService.entityByExternalId(animalTypeId)).thenReturn(animalType);
+        when(breedService.entityByExternalId(breedId)).thenReturn(breed);
+
+        assertThatThrownBy(() -> service.create(petRequest(animalTypeId, breedId)))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("Breed does not match");
+
+        verify(repository, never()).save(any());
+        verify(ownerByPetRepository, never()).save(any());
     }
 
     // --- findAll tests ---
