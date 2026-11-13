@@ -19,5 +19,5 @@ public record VeterinarianResponse(
         Set<DayOfWeek> workDays,
         Boolean active,
         BranchResponse branch
-) {
+) implements VeterinarianView {
 }

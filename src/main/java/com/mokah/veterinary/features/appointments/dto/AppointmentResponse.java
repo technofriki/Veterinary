@@ -3,7 +3,7 @@ package com.mokah.veterinary.features.appointments.dto;
 import com.mokah.veterinary.features.appointments.model.AppointmentStatus;
 import com.mokah.veterinary.features.branches.dto.BranchResponse;
 import com.mokah.veterinary.features.pets.dto.PetResponse;
-import com.mokah.veterinary.features.veterinarians.dto.VeterinarianResponse;
+import com.mokah.veterinary.features.veterinarians.dto.VeterinarianView;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,7 +15,7 @@ public record AppointmentResponse(
         String reason,
         AppointmentStatus status,
         PetResponse pet,
-        VeterinarianResponse veterinarian,
+        VeterinarianView veterinarian,
         BranchResponse branch
 ) {
 }

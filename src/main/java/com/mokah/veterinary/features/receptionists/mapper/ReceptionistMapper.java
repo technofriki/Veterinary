@@ -2,6 +2,7 @@ package com.mokah.veterinary.features.receptionists.mapper;
 
 import com.mokah.veterinary.features.receptionists.dto.ReceptionistCreateDTO;
 import com.mokah.veterinary.features.receptionists.dto.ReceptionistResponse;
+import com.mokah.veterinary.features.receptionists.dto.ReceptionistPublicResponse;
 import com.mokah.veterinary.features.receptionists.dto.ReceptionistUpdateDTO;
 import com.mokah.veterinary.features.receptionists.model.Receptionist;
 import org.mapstruct.Mapper;
@@ -18,6 +19,10 @@ public interface ReceptionistMapper {
     @Mapping(source = "user.email", target = "email")
     ReceptionistResponse toResponse(Receptionist entity);
     List<ReceptionistResponse> toResponseList(List<Receptionist> entities);
+
+    @Mapping(source = "user.firstName", target = "firstName")
+    @Mapping(source = "user.lastName", target = "lastName")
+    ReceptionistPublicResponse toPublicResponse(Receptionist entity);
 
     Receptionist toEntity(ReceptionistCreateDTO dto);
 

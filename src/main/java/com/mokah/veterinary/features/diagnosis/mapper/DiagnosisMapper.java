@@ -9,7 +9,7 @@ import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {com.mokah.veterinary.features.visits.mapper.VisitMapper.class})
 public interface DiagnosisMapper {
 
     DiagnosisResponse toResponse(Diagnosis entity);

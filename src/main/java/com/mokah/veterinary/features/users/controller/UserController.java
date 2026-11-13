@@ -1,6 +1,8 @@
 package com.mokah.veterinary.features.users.controller;
 
 import com.mokah.veterinary.features.users.dto.UserResponse;
+import com.mokah.veterinary.features.users.dto.UserPublicResponse;
+import com.mokah.veterinary.security.ProfessionalVisibility;
 import com.mokah.veterinary.features.users.services.UserServiceInterface;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,16 +20,22 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('VIEW_USERS')")
-    public ResponseEntity<List<UserResponse>> findAllUsers() {
+    public ResponseEntity<List<?>> findAllUsers() {
         List<UserResponse> responseList = userService.findAll();
-        return ResponseEntity.ok(responseList);
+        if (ProfessionalVisibility.isAdmin()) return ResponseEntity.ok(responseList);
+        return ResponseEntity.ok(responseList.stream().map(this::visibleUser).toList());
     }
 
     @GetMapping("/{externalId}")
     @PreAuthorize("hasAuthority('VIEW_USERS')")
-    public ResponseEntity<UserResponse> getUserByExternalId(@PathVariable UUID externalId) {
+    public ResponseEntity<?> getUserByExternalId(@PathVariable UUID externalId) {
         UserResponse response = userService.findByExternalId(externalId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(visibleUser(response));
+    }
+
+    private Object visibleUser(UserResponse user) {
+        if (ProfessionalVisibility.isAdmin() || ProfessionalVisibility.isOwnUser(user.getExternalId(), user.getEmail())) return user;
+        return new UserPublicResponse(user.getExternalId(), user.getFirstName(), user.getLastName());
     }
 
 

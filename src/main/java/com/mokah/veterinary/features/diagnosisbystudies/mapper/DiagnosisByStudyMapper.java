@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {com.mokah.veterinary.features.visits.mapper.VisitMapper.class})
 public interface DiagnosisByStudyMapper {
 
     @Mapping(target = "diagnosis", ignore = true)
