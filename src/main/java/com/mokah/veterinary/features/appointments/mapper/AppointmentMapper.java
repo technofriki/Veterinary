@@ -19,6 +19,7 @@ public interface AppointmentMapper {
     @Mapping(target = "veterinarian", ignore = true)
     Appointment toEntity(AppointmentCreateDTO dto);
 
+    @Mapping(target = "veterinarian", source = "veterinarian", qualifiedByName = "visibleVet")
     AppointmentResponse toResponse(Appointment entity);
 
     List<AppointmentResponse> toResponseList(List<Appointment> entities);

@@ -30,6 +30,7 @@ public interface VisitMapper {
     @Mapping(target = "pet", ignore = true)
     Visit toEntity(WalkInVisitRequest request);
 
+    @Mapping(target = "veterinarian", source = "veterinarian", qualifiedByName = "visibleVet")
     VisitResponse toResponse(Visit entity);
 
     List<VisitResponse> toResponseList(List<Visit> entities);

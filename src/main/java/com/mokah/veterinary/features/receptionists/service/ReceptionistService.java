@@ -2,6 +2,7 @@ package com.mokah.veterinary.features.receptionists.service;
 
 import com.mokah.veterinary.features.receptionists.dto.ReceptionistCreateDTO;
 import com.mokah.veterinary.features.receptionists.dto.ReceptionistResponse;
+import com.mokah.veterinary.features.receptionists.dto.ReceptionistPublicResponse;
 import com.mokah.veterinary.features.receptionists.dto.ReceptionistUpdateDTO;
 import com.mokah.veterinary.features.receptionists.model.Receptionist;
 
@@ -14,6 +15,8 @@ public interface ReceptionistService {
     Receptionist entityByExternalId(UUID externalId);
 
     ReceptionistResponse findById(UUID externalId);
+    ReceptionistPublicResponse findPublicById(UUID externalId);
+    List<ReceptionistPublicResponse> findAllPublic(String firstName, String lastName, UUID branchExternalId);
 
     List<ReceptionistResponse> findAll(
             String firstName, String lastName, UUID branchExternalId);

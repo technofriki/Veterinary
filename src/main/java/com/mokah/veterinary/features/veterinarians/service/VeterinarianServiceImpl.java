@@ -9,6 +9,8 @@ import com.mokah.veterinary.features.users.model.User;
 import com.mokah.veterinary.features.users.repository.UserRepository;
 import com.mokah.veterinary.features.veterinarians.dto.VeterinarianCreateDTO;
 import com.mokah.veterinary.features.veterinarians.dto.VeterinarianResponse;
+import com.mokah.veterinary.features.veterinarians.dto.VeterinarianPublicResponse;
+import com.mokah.veterinary.features.veterinarians.dto.VeterinarianMeResponse;
 import com.mokah.veterinary.features.veterinarians.dto.VeterinarianUpdateDTO;
 import com.mokah.veterinary.features.veterinarians.exception.VeterinarianEmailExistsException;
 import com.mokah.veterinary.features.veterinarians.exception.VeterinarianLicenseExistsException;
@@ -26,6 +28,9 @@ import com.mokah.veterinary.security.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -119,20 +124,49 @@ public class VeterinarianServiceImpl implements VeterinarianService {
     }
 
     @Override
+    @PreAuthorize("hasRole('VETERINARIAN')")
+    public VeterinarianMeResponse findMe() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AuthenticationCredentialsNotFoundException("Authentication required");
+        }
+        User user = credentialsRepository.findByUsername(authentication.getName())
+                .map(Credentials::getUser)
+                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Authenticated user not found"));
+        Veterinarian veterinarian = repository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Veterinarian associated with authenticated user not found"));
+        return new VeterinarianMeResponse(veterinarian.getExternalId());
+    }
+
+    @Override
+    public VeterinarianPublicResponse findPublicById(UUID externalId) {
+        return mapper.toPublicResponse(entityByExternalId(externalId));
+    }
+
+    @Override
+    public List<VeterinarianPublicResponse> findAllPublic(String firstName, String lastName,
+                                                          String licenseNumber, UUID branchExternalId) {
+        return repository.findAll(searchSpec(firstName, lastName, licenseNumber, branchExternalId))
+                .stream().map(mapper::toPublicResponse).toList();
+    }
+
+    private PredicateSpecification<Veterinarian> searchSpec(String firstName, String lastName,
+                                                            String licenseNumber, UUID branchExternalId) {
+        return PredicateSpecification.allOf(
+                VeterinarianSpecification.hasFirstName(firstName),
+                VeterinarianSpecification.hasLastName(lastName),
+                VeterinarianSpecification.hasLicenseNumber(licenseNumber),
+                VeterinarianSpecification.hasBranchExternalId(branchExternalId));
+    }
+
+    @Override
     public List<VeterinarianResponse> findAll(
             String firstName,
             String lastName,
             String licenseNumber,
             UUID branchExternalId) {
 
-        PredicateSpecification<Veterinarian> spec = PredicateSpecification.allOf(
-                VeterinarianSpecification.hasFirstName(firstName),
-                VeterinarianSpecification.hasLastName(lastName),
-                VeterinarianSpecification.hasLicenseNumber(licenseNumber),
-                VeterinarianSpecification.hasBranchExternalId(branchExternalId)
-        );
-
-        return mapper.toResponseList(repository.findAll(spec));
+        return mapper.toResponseList(repository.findAll(searchSpec(firstName, lastName, licenseNumber, branchExternalId)));
     }
 
     @Override

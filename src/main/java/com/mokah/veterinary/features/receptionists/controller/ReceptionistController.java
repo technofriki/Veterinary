@@ -4,6 +4,8 @@ import com.mokah.veterinary.features.receptionists.dto.ReceptionistCreateDTO;
 import com.mokah.veterinary.features.receptionists.dto.ReceptionistResponse;
 import com.mokah.veterinary.features.receptionists.dto.ReceptionistUpdateDTO;
 import com.mokah.veterinary.features.receptionists.service.ReceptionistService;
+import com.mokah.veterinary.features.receptionists.repository.ReceptionistRepository;
+import com.mokah.veterinary.security.ProfessionalVisibility;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import java.util.UUID;
 public class ReceptionistController {
 
     private final ReceptionistService receptionistService;
+    private final ReceptionistRepository receptionistRepository;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -29,18 +32,24 @@ public class ReceptionistController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'CLIENT', 'VETERINARIAN')")
-    public List<ReceptionistResponse> findAll(
+    public List<?> findAll(
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) UUID branchExternalId) {
 
-        return receptionistService.findAll(firstName, lastName, branchExternalId);
+        return ProfessionalVisibility.isAdmin()
+                ? receptionistService.findAll(firstName, lastName, branchExternalId)
+                : receptionistService.findAllPublic(firstName, lastName, branchExternalId);
     }
 
     @GetMapping("/{externalId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'CLIENT', 'VETERINARIAN')")
-    public ReceptionistResponse findById(@PathVariable UUID externalId) {
-        return receptionistService.findById(externalId);
+    public Object findById(@PathVariable UUID externalId) {
+        if (ProfessionalVisibility.isAdmin() || receptionistRepository.findByExternalId(externalId)
+                .map(receptionist -> ProfessionalVisibility.isOwnUser(receptionist.getUser().getExternalId(), receptionist.getUser().getEmail())).orElse(false)) {
+            return receptionistService.findById(externalId);
+        }
+        return receptionistService.findPublicById(externalId);
     }
 
     @PutMapping("/{externalId}")

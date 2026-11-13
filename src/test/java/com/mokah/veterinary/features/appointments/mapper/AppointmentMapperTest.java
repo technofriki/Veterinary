@@ -109,7 +109,7 @@ class AppointmentMapperTest {
     }
 
     @Test
-    void mapsVeterinarianNamesAndEmailFromUser() {
+    void mapsPublicVeterinarianNamesFromUser() {
         User user = user();
         Veterinarian veterinarian = veterinarian(user, branch());
 
@@ -119,7 +119,7 @@ class AppointmentMapperTest {
         assertThat(response.veterinarian()).isNotNull();
         assertThat(response.veterinarian().firstName()).isEqualTo("Ana");
         assertThat(response.veterinarian().lastName()).isEqualTo("Lopez");
-        assertThat(response.veterinarian().email()).isEqualTo("ana.lopez@veterinary.com");
+        assertThat(response.veterinarian()).hasNoNullFieldsOrPropertiesExcept("workDays");
     }
 
     @Test
@@ -144,11 +144,8 @@ class AppointmentMapperTest {
         assertThat(petResponse.color()).isEqualTo("Brown");
         assertThat(petResponse.active()).isTrue();
 
-        VeterinarianResponse vetResponse = response.veterinarian();
+        var vetResponse = response.veterinarian();
         assertThat(vetResponse.externalId()).isEqualTo(veterinarian.getExternalId());
-        assertThat(vetResponse.licenseNumber()).isEqualTo("LIC-001");
-        assertThat(vetResponse.phone()).isEqualTo("555-2000");
-        assertThat(vetResponse.active()).isTrue();
         assertThat(vetResponse.workStartTime()).isEqualTo(LocalTime.of(9, 0));
         assertThat(vetResponse.workEndTime()).isEqualTo(LocalTime.of(17, 0));
         assertThat(vetResponse.workDays())
@@ -164,8 +161,6 @@ class AppointmentMapperTest {
         assertThat(branchResponse.address()).isNotNull();
         assertThat(branchResponse.address().city()).isEqualTo("Springfield");
 
-        assertThat(vetResponse.branch()).isNotNull();
-        assertThat(vetResponse.branch().name()).isEqualTo("Central");
     }
 
     @Test
@@ -187,8 +182,6 @@ class AppointmentMapperTest {
         assertThat(response.veterinarian()).isNotNull();
         assertThat(response.veterinarian().firstName()).isNull();
         assertThat(response.veterinarian().lastName()).isNull();
-        assertThat(response.veterinarian().email()).isNull();
-        assertThat(response.veterinarian().licenseNumber()).isEqualTo("LIC-001");
         assertThat(response.veterinarian().externalId()).isEqualTo(veterinarian.getExternalId());
     }
 

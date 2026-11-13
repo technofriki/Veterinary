@@ -3,11 +3,15 @@ package com.mokah.veterinary.features.veterinarians.controller; // Ajustá el pa
 import com.mokah.veterinary.features.veterinarians.dto.VeterinarianCreateDTO;
 import com.mokah.veterinary.features.veterinarians.dto.VeterinarianResponse;
 import com.mokah.veterinary.features.veterinarians.dto.VeterinarianUpdateDTO;
+import com.mokah.veterinary.features.veterinarians.dto.VeterinarianMeResponse;
 import com.mokah.veterinary.features.veterinarians.service.VeterinarianService;
+import com.mokah.veterinary.features.veterinarians.repository.VeterinarianRepository;
+import com.mokah.veterinary.security.ProfessionalVisibility;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize; // <-- IMPORTANTE
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +23,7 @@ import java.util.UUID;
 public class VeterinarianController {
 
     private final VeterinarianService veterinarianService;
+    private final VeterinarianRepository veterinarianRepository;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -29,19 +34,34 @@ public class VeterinarianController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'CLIENT', 'VETERINARIAN')") // Cualquiera puede ver la lista
-    public List<VeterinarianResponse> findAll(
+    public List<?> findAll(
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) String licenseNumber,
             @RequestParam(required = false) UUID branchExternalId) {
 
-        return veterinarianService.findAll(firstName, lastName, licenseNumber, branchExternalId);
+        if (!ProfessionalVisibility.isAdmin() && licenseNumber != null) {
+            throw new AccessDeniedException("License search is reserved for administrators");
+        }
+        return ProfessionalVisibility.isAdmin()
+                ? veterinarianService.findAll(firstName, lastName, licenseNumber, branchExternalId)
+                : veterinarianService.findAllPublic(firstName, lastName, licenseNumber, branchExternalId);
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('VETERINARIAN')")
+    public VeterinarianMeResponse findMe() {
+        return veterinarianService.findMe();
     }
 
     @GetMapping("/{externalId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'CLIENT', 'VETERINARIAN')") // Cualquiera puede ver el detalle
-    public VeterinarianResponse findById(@PathVariable UUID externalId) {
-        return veterinarianService.findById(externalId);
+    public Object findById(@PathVariable UUID externalId) {
+        if (ProfessionalVisibility.isAdmin() || veterinarianRepository.findByExternalId(externalId)
+                .map(vet -> ProfessionalVisibility.isOwnUser(vet.getUser().getExternalId(), vet.getUser().getEmail())).orElse(false)) {
+            return veterinarianService.findById(externalId);
+        }
+        return veterinarianService.findPublicById(externalId);
     }
 
     @PutMapping("/{externalId}")

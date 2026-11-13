@@ -62,8 +62,8 @@ class ProfessionalReactivationAuthorizationTest {
                 RoleRepository roles, PasswordEncoder encoder, JwtService jwt) {
             return new ReceptionistServiceImpl(repo, mapper, branches, users, credentials, roles, encoder, jwt);
         }
-        @Bean VeterinarianController vetController(VeterinarianService service) { return new VeterinarianController(service); }
-        @Bean ReceptionistController receptionistController(ReceptionistService service) { return new ReceptionistController(service); }
+        @Bean VeterinarianController vetController(VeterinarianService service, VeterinarianRepository repo) { return new VeterinarianController(service, repo); }
+        @Bean ReceptionistController receptionistController(ReceptionistService service, ReceptionistRepository repo) { return new ReceptionistController(service, repo); }
     }
 
     @Autowired VeterinarianController vetController;

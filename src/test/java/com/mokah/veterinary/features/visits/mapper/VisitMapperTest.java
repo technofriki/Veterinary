@@ -110,12 +110,12 @@ class VisitMapperTest {
         assertThat(response.appointment().veterinarian()).isNotNull();
         assertThat(response.appointment().veterinarian().firstName()).isEqualTo("Ana");
         assertThat(response.appointment().veterinarian().lastName()).isEqualTo("Lopez");
-        assertThat(response.appointment().veterinarian().email()).isEqualTo("ana.lopez@veterinary.com");
+        assertThat(response.appointment().veterinarian().externalId()).isEqualTo(veterinarian.getExternalId());
 
         assertThat(response.veterinarian()).isNotNull();
         assertThat(response.veterinarian().firstName()).isEqualTo("Ana");
         assertThat(response.veterinarian().lastName()).isEqualTo("Lopez");
-        assertThat(response.veterinarian().email()).isEqualTo("ana.lopez@veterinary.com");
+        assertThat(response.veterinarian().externalId()).isEqualTo(veterinarian.getExternalId());
 
         assertThat(response.pet()).isNotNull();
         assertThat(response.pet().externalId()).isEqualTo(pet.getExternalId());

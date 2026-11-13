@@ -9,6 +9,7 @@ import com.mokah.veterinary.features.users.model.User;
 import com.mokah.veterinary.features.users.repository.UserRepository;
 import com.mokah.veterinary.features.receptionists.dto.ReceptionistCreateDTO;
 import com.mokah.veterinary.features.receptionists.dto.ReceptionistResponse;
+import com.mokah.veterinary.features.receptionists.dto.ReceptionistPublicResponse;
 import com.mokah.veterinary.features.receptionists.dto.ReceptionistUpdateDTO;
 import com.mokah.veterinary.features.receptionists.exception.ReceptionistEmailExistsException;
 import com.mokah.veterinary.features.receptionists.exception.ReceptionistPhoneExistsException;
@@ -114,18 +115,30 @@ public class ReceptionistServiceImpl implements ReceptionistService {
     }
 
     @Override
+    public ReceptionistPublicResponse findPublicById(UUID externalId) {
+        return mapper.toPublicResponse(entityByExternalId(externalId));
+    }
+
+    @Override
+    public List<ReceptionistPublicResponse> findAllPublic(String firstName, String lastName, UUID branchExternalId) {
+        return repository.findAll(searchSpec(firstName, lastName, branchExternalId))
+                .stream().map(mapper::toPublicResponse).toList();
+    }
+
+    private PredicateSpecification<Receptionist> searchSpec(String firstName, String lastName, UUID branchExternalId) {
+        return PredicateSpecification.allOf(
+                ReceptionistSpecification.hasFirstName(firstName),
+                ReceptionistSpecification.hasLastName(lastName),
+                ReceptionistSpecification.hasBranchExternalId(branchExternalId));
+    }
+
+    @Override
     public List<ReceptionistResponse> findAll(
             String firstName,
             String lastName,
             UUID branchExternalId) {
 
-        PredicateSpecification<Receptionist> spec = PredicateSpecification.allOf(
-                ReceptionistSpecification.hasFirstName(firstName),
-                ReceptionistSpecification.hasLastName(lastName),
-                ReceptionistSpecification.hasBranchExternalId(branchExternalId)
-        );
-
-        return mapper.toResponseList(repository.findAll(spec));
+        return mapper.toResponseList(repository.findAll(searchSpec(firstName, lastName, branchExternalId)));
     }
 
     @Override
