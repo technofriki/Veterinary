@@ -4,10 +4,12 @@ import com.mokah.veterinary.common.exception.BusinessRuleException;
 import com.mokah.veterinary.common.exception.InvalidDateException;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.animaltypes.mapper.AnimalTypeMapper;
+import com.mokah.veterinary.features.animaltypes.model.AnimalType;
 import com.mokah.veterinary.features.animaltypes.service.AnimalTypeService;
 import com.mokah.veterinary.features.appointments.model.AppointmentStatus;
 import com.mokah.veterinary.features.appointments.repository.AppointmentRepository;
 import com.mokah.veterinary.features.breed.mapper.BreedMapper;
+import com.mokah.veterinary.features.breed.model.Breed;
 import com.mokah.veterinary.features.breed.service.BreedService;
 import com.mokah.veterinary.features.owners.model.Owner;
 import com.mokah.veterinary.features.owners.repository.OwnerRepository;
@@ -90,16 +92,21 @@ public class PetServiceImpl implements PetService {
             throw new InvalidDateException("Birth date can not be after now");
         }
 
+        AnimalType animalType = animalTypeService.entityByExternalId(dto.animalTypeId());
+
+        Breed breed = breedService.entityByExternalId(dto.breedId());
+        if (!breed.getAnimalType().getExternalId().equals(animalType.getExternalId())) {
+            throw new BusinessRuleException("Breed does not match the selected AnimalType");
+        }
+
         Pet entity = Pet.builder()
                 .name(dto.name())
                 .birthDate(dto.birthDate())
                 .active(true)
                 .color(dto.color())
+                .animalType(animalType)
+                .breed(breed)
                 .build();
-
-        entity.setAnimalType(animalTypeService.findOrCreate(dto.animalType()));
-
-        entity.setBreed(breedService.findOrCreate(dto.breed()));
 
         return mapper.toResponse(repository.save(entity));
     }
@@ -144,8 +151,15 @@ public class PetServiceImpl implements PetService {
 
         entity.setColor(dto.color());
         entity.setName(dto.name());
-        entity.setAnimalType(animalTypeService.findOrCreate(dto.animalType()));
-        entity.setBreed(breedService.findOrCreate(dto.breed()));
+
+        AnimalType animalType = animalTypeService.entityByExternalId(dto.animalTypeId());
+        entity.setAnimalType(animalType);
+
+        Breed breed = breedService.entityByExternalId(dto.breedId());
+        if (!breed.getAnimalType().getExternalId().equals(animalType.getExternalId())) {
+            throw new BusinessRuleException("Breed does not match the selected AnimalType");
+        }
+        entity.setBreed(breed);
 
         return mapper.toResponse(repository.save(entity));
     }

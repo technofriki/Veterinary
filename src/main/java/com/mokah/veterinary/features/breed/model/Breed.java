@@ -1,12 +1,15 @@
 package com.mokah.veterinary.features.breed.model;
 
+import com.mokah.veterinary.features.animaltypes.model.AnimalType;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.UUID;
 
 @Entity
-@Table(name = "breeds")
+@Table(name = "breeds", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"name", "animal_type_id"})
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,5 +32,9 @@ public class Breed {
 
     @Column(name = "name", nullable = false, length = 50)
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "animal_type_id")
+    private AnimalType animalType;
 
 }

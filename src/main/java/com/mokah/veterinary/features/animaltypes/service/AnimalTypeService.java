@@ -20,6 +20,4 @@ public interface AnimalTypeService {
     AnimalTypeResponse update(UUID externalId, AnimalTypeRequest request);
 
     void delete(UUID externalId);
-
-    AnimalType findOrCreate(AnimalTypeRequest dto);
 }

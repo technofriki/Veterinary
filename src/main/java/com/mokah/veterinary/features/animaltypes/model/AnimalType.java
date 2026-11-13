@@ -28,6 +28,6 @@ public class AnimalType {
         }
     }
 
-    @Column(name = "name", nullable = false, length = 50)
+    @Column(name = "name", nullable = false, unique = true, length = 50)
     private String name;
 }

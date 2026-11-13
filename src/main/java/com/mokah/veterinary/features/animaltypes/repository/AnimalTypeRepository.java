@@ -11,4 +11,6 @@ import java.util.UUID;
 public interface AnimalTypeRepository extends JpaRepository<AnimalType, Long> {
     Optional<AnimalType> findByExternalId(UUID externalId);
     Optional<AnimalType> findByNameIgnoreCase(String name);
+
+    boolean existsByNameIgnoreCaseAndIdNot(String name, Long excludeId);
 }

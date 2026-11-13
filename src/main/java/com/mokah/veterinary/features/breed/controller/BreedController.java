@@ -53,4 +53,10 @@ public class BreedController {
     public void delete(@PathVariable UUID externalId) {
         service.delete(externalId);
     }
+
+    @GetMapping("/animal-type/{animalTypeId}")
+    @PreAuthorize("hasAuthority('VIEW_PETS')")
+    public List<BreedResponse> findByAnimalType(@PathVariable UUID animalTypeId) {
+        return service.findByAnimalType(animalTypeId);
+    }
 }
