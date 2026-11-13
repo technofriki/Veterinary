@@ -170,4 +170,29 @@ public class AuthService {
             throw new DisabledException("User account is inactive or disabled");
         }
     }
+
+    @Transactional
+    public Credentials createCredentialsForUser(User user, String password, Set<Role> roles) {
+        if (credentialsRepository.findByUsername(user.getEmail()).isPresent()) {
+            throw new ResourceAlreadyExistsException("Username already exists");
+        }
+
+        Role clientRole = roleRepository.findByRole(Roles.ROLE_CLIENT)
+                .orElseThrow(() -> new IllegalStateException("ROLE_CLIENT not found"));
+
+        String encodedPassword = passwordEncoder.encode(password);
+
+        Credentials credentials = Credentials.builder()
+                .username(user.getEmail())
+                .password(encodedPassword)
+                .enabled(true)
+                .user(user)
+                .roles(roles != null ? roles : Set.of(clientRole))
+                .build();
+
+        String refreshToken = jwtService.generateRefreshToken(credentials);
+        credentials.setRefreshToken(refreshToken);
+
+        return credentialsRepository.save(credentials);
+    }
 }

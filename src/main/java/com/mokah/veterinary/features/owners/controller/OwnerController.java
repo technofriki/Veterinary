@@ -2,6 +2,7 @@ package com.mokah.veterinary.features.owners.controller;
 
 import com.mokah.veterinary.features.owners.dto.OwnerRequest;
 import com.mokah.veterinary.features.owners.dto.OwnerResponse;
+import com.mokah.veterinary.features.owners.dto.OwnerWithCredentialsRequest;
 import com.mokah.veterinary.features.owners.service.OwnerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,13 @@ public class OwnerController {
     @ResponseStatus(HttpStatus.CREATED)
     public OwnerResponse create(@Valid @RequestBody OwnerRequest request) {
         return ownerService.create(request);
+    }
+
+    @PostMapping("/with-credentials")
+    @PreAuthorize("hasAuthority('CREATE_OWNERS')")
+    @ResponseStatus(HttpStatus.CREATED)
+    public OwnerResponse createWithCredentials(@Valid @RequestBody OwnerWithCredentialsRequest request) {
+        return ownerService.createWithCredentials(request);
     }
 
     @PutMapping("/{externalId}")
