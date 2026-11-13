@@ -93,4 +93,17 @@ public class AppointmentSpecification {
             return cb.lessThan(from.get("appointmentDate"), toDateTime);
         };
     }
+
+    public static PredicateSpecification<Appointment> hasVeterinarianExternalIdIn(
+            List<UUID> veterinarianExternalIds) {
+        return (from, cb) -> {
+            if (veterinarianExternalIds == null) {
+                return cb.conjunction();
+            }
+            if (veterinarianExternalIds.isEmpty()) {
+                return cb.disjunction();
+            }
+            return from.get("veterinarian").get("externalId").in(veterinarianExternalIds);
+        };
+    }
 }

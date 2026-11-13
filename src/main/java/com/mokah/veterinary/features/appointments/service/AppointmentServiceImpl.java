@@ -25,6 +25,7 @@ import com.mokah.veterinary.features.receptionists.repository.ReceptionistReposi
 import com.mokah.veterinary.features.users.enums.UserState;
 import com.mokah.veterinary.features.users.model.User;
 import com.mokah.veterinary.features.veterinarians.model.Veterinarian;
+import com.mokah.veterinary.features.veterinarians.repository.VeterinarianRepository;
 import com.mokah.veterinary.security.model.Credentials;
 import com.mokah.veterinary.security.repository.CredentialsRepository;
 import com.mokah.veterinary.features.veterinarians.service.VeterinarianService;
@@ -60,6 +61,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final ReceptionistRepository receptionistRepository;
     private final OwnerRepository ownerRepository;
     private final OwnerByPetRepository ownerByPetRepository;
+    private final VeterinarianRepository veterinarianRepository;
 
     @Override
     @Transactional
@@ -144,6 +146,14 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
 
         List<UUID> clientPetExternalIds = getClientPetExternalIdsForCurrentUser();
+        UUID authenticatedVeterinarianExternalId = getVeterinarianExternalIdForCurrentUser();
+
+        List<UUID> veterinarianExternalIds = null;
+        if (authenticatedVeterinarianExternalId != null) {
+            veterinarianExternalIds = List.of(authenticatedVeterinarianExternalId);
+        } else if (veterinarianExternalId != null) {
+            veterinarianExternalIds = List.of(veterinarianExternalId);
+        }
 
         PredicateSpecification<Appointment> spec = PredicateSpecification.allOf(
                 AppointmentSpecification.hasAppointmentDate(date),
@@ -151,7 +161,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 AppointmentSpecification.hasReason(reason),
                 AppointmentSpecification.hasStatus(status),
                 AppointmentSpecification.hasPetExternalId(petExternalId),
-                AppointmentSpecification.hasVeterinarianExternalId(veterinarianExternalId),
+                AppointmentSpecification.hasVeterinarianExternalIdIn(veterinarianExternalIds),
                 AppointmentSpecification.hasPetExternalIdIn(clientPetExternalIds)
         );
 
@@ -555,6 +565,27 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
 
         return getClientPetExternalIds(authentication.getName());
+    }
+
+    private UUID getVeterinarianExternalIdForCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication.getAuthorities().stream()
+                .noneMatch(auth -> auth.getAuthority().equals(Roles.ROLE_VETERINARIAN.name()))) {
+            return null;
+        }
+
+        Credentials credentials = credentialsRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Credentials",
+                        "username",
+                        authentication.getName()
+                ));
+
+        Veterinarian veterinarian = veterinarianRepository.findByUser(credentials.getUser())
+                .orElse(null);
+
+        return veterinarian != null ? veterinarian.getExternalId() : null;
     }
 
     private void validateClientPetOwnership(

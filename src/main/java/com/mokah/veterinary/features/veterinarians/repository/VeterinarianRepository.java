@@ -1,6 +1,7 @@
 package com.mokah.veterinary.features.veterinarians.repository;
 
 import com.mokah.veterinary.features.veterinarians.model.Veterinarian;
+import com.mokah.veterinary.features.users.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -13,4 +14,5 @@ public interface VeterinarianRepository extends JpaRepository<Veterinarian, Long
     Boolean existsByPhone(String phone);
     Boolean existsByLicenseNumber(String licenseNumber);
     Optional<Veterinarian> findByExternalId(UUID externalId);
+    Optional<Veterinarian> findByUser(User user);
 }
