@@ -58,4 +58,10 @@ public class ReceptionistController {
     public void delete(@PathVariable UUID externalId) {
         receptionistService.delete(externalId);
     }
+
+    @PatchMapping("/{externalId}/reactivate")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ReceptionistResponse reactivate(@PathVariable UUID externalId) {
+        return receptionistService.reactivate(externalId);
+    }
 }

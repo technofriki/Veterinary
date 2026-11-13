@@ -56,6 +56,38 @@ La aplicación permite gestionar propietarios, mascotas, veterinarios, sucursale
 - Roles y permisos
 - Protección de endpoints mediante Spring Security
 
+### Reactivación de perfiles profesionales (contrato Angular)
+
+| Método | Ruta | Respuesta 200 |
+|--------|------|---------------|
+| `PATCH` | `/api/veterinarians/{externalId}/reactivate` | `VeterinarianResponse`, con `active: true` |
+| `PATCH` | `/api/receptionists/{externalId}/reactivate` | `ReceptionistResponse`, con `active: true` |
+
+Sin body; enviar `Authorization: Bearer <accessToken>` de un usuario con `ROLE_ADMIN`.
+Los UUID son los del perfil (no los del usuario). Se reutilizan los DTO existentes: los
+listados siguen incluyendo perfiles activos e inactivos y exponen `active`.
+
+Errores de negocio (`ApiErrorResponse`: `timestamp`, `status`, `error`, `message`):
+
+| HTTP | `message` (según perfil) |
+|------|----------------------------|
+| 404 | `Veterinarian not found with externalId: <uuid>` / `Receptionist not found with externalId: <uuid>` |
+| 409 | `Veterinarian is already active.` / `Receptionist is already active.` |
+| 409 | `Cannot reactivate veterinarian: associated user is inactive.` / `Cannot reactivate receptionist: associated user is inactive.` |
+| 409 | `Cannot reactivate veterinarian: credentials are disabled.` / `Cannot reactivate receptionist: credentials are disabled.` |
+| 409 | `Veterinarian has no associated user.` / `Receptionist has no associated user.` |
+| 409 | `Veterinarian has no associated credentials.` / `Receptionist has no associated credentials.` |
+| 409 | `Required role ROLE_VETERINARIAN is missing.` / `Required role ROLE_RECEPTIONIST is missing.` |
+| 409 | `Veterinarian credentials have no roles collection.` / `Receptionist credentials have no roles collection.` |
+
+Sin autenticación: **401**; autenticado sin `ROLE_ADMIN` (aunque tenga `UPDATE_USERS`):
+**403**. Los errores originados en el filtro de seguridad tienen cuerpo `{error, status, path}`
+en lugar de `ApiErrorResponse`. Una baja profesional solo retira el rol profesional y no
+deshabilita al usuario. En cada request con JWT se comprueba el estado vigente de cuenta y
+credenciales y se calculan los permisos desde los roles actuales: un token anterior a la
+baja ya no concede el rol retirado; conserva permisos compartidos con otros roles. Un token
+anterior a la reactivación puede volver a reflejar el rol restaurado si sigue vigente.
+
 ## ⚙️ Configuración del Entorno
 
 ### Requisitos Previos

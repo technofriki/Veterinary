@@ -21,4 +21,6 @@ public interface ReceptionistService {
     ReceptionistResponse update(UUID externalId, ReceptionistUpdateDTO dto);
 
     void delete(UUID externalId);
+
+    ReceptionistResponse reactivate(UUID externalId);
 }

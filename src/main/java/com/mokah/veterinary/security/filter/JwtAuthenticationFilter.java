@@ -1,5 +1,9 @@
 package com.mokah.veterinary.security.filter;
 
+import com.mokah.veterinary.features.users.enums.UserState;
+import com.mokah.veterinary.security.config.RestAuthenticationEntryPoint;
+import com.mokah.veterinary.security.model.Credentials;
+import com.mokah.veterinary.security.repository.CredentialsRepository;
 import com.mokah.veterinary.security.service.JwtService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -8,21 +12,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final CredentialsRepository credentialsRepository;
+    private final RestAuthenticationEntryPoint authenticationEntryPoint;
 
     @Override
     protected void doFilterInternal(
@@ -51,23 +55,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (username != null && authentication == null) {
 
-                List<GrantedAuthority> authorities =
-                        jwtService.extractAuthorities(jwt);
+                Credentials credentials = credentialsRepository.findByUsername(username).orElse(null);
+                boolean active = credentials != null
+                        && credentials.getUser() != null
+                        && credentials.getUser().getUserState() == UserState.ACTIVE
+                        && credentials.isEnabled()
+                        && jwtService.isTokenValid(jwt, credentials);
 
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                username,
-                                null,
-                                authorities
-                        );
-
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource()
-                                .buildDetails(request)
-                );
-
-                SecurityContextHolder.getContext()
-                        .setAuthentication(authToken);
+                if (!active) {
+                    // Public endpoints (login, refresh and documentation) must remain accessible
+                    // even when a client sends a previously valid token for a disabled account.
+                    String path = request.getServletPath();
+                    boolean publicEndpoint = path.startsWith("/api/auth/")
+                            || path.startsWith("/swagger-ui/")
+                            || path.equals("/swagger-ui.html")
+                            || path.startsWith("/v3/api-docs/")
+                            || path.equals("/v3/api-docs");
+                    if (!publicEndpoint) {
+                        authenticationEntryPoint.commence(request, response,
+                                new BadCredentialsException("Account inactive, credentials disabled or token invalid"));
+                        return;
+                    }
+                } else {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(username, null, credentials.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
 
         } catch (JwtException e) {

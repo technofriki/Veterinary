@@ -22,5 +22,7 @@ public interface VeterinarianService {
 
     void delete(UUID externalId);
 
+    VeterinarianResponse reactivate(UUID externalId);
+
     void validateActive(UUID externalId);
 }
