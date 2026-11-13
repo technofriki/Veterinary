@@ -5,14 +5,20 @@ import com.mokah.veterinary.common.exception.ResourceAlreadyExistsException;
 import com.mokah.veterinary.common.exception.ResourceNotFoundException;
 import com.mokah.veterinary.features.owners.dto.OwnerRequest;
 import com.mokah.veterinary.features.owners.dto.OwnerResponse;
+import com.mokah.veterinary.features.owners.dto.OwnerWithCredentialsRequest;
 import com.mokah.veterinary.features.owners.model.Owner;
 import com.mokah.veterinary.features.owners.mapper.OwnerMapper;
 import com.mokah.veterinary.features.owners.repository.OwnerRepository;
+import com.mokah.veterinary.features.adresses.mapper.AddressMapper;
+import com.mokah.veterinary.features.adresses.model.Address;
+import com.mokah.veterinary.features.adresses.repository.AddressRepository;
 import com.mokah.veterinary.features.users.enums.UserState;
 import com.mokah.veterinary.features.users.model.User;
 import com.mokah.veterinary.features.users.repository.UserRepository;
+import com.mokah.veterinary.security.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +30,9 @@ public class OwnerServiceImpl implements OwnerService {
     private final OwnerRepository repository;
     private final OwnerMapper mapper;
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
+    private final AddressMapper addressMapper;
+    private final AuthService authService;
 
     @Override
     public OwnerResponse create(OwnerRequest dto) {
@@ -46,6 +55,40 @@ public class OwnerServiceImpl implements OwnerService {
 
         Owner owner = mapper.toEntity(dto);
         owner.setUser(user);
+
+        return mapper.toResponse(repository.save(owner));
+    }
+
+    @Override
+    @Transactional
+    public OwnerResponse createWithCredentials(OwnerWithCredentialsRequest dto) {
+        if (repository.existsByDni(dto.dni())) {
+            throw new OwnerDniExistsException("Owner with DNI " + dto.dni() + " already exists");
+        }
+
+        if (userRepository.existsByEmail(dto.email())) {
+            throw new ResourceAlreadyExistsException("User with email " + dto.email() + " already exists");
+        }
+
+        User user = User.builder()
+                .firstName(dto.firstName())
+                .lastName(dto.lastName())
+                .email(dto.email())
+                .userState(UserState.ACTIVE)
+                .build();
+        user = userRepository.save(user);
+
+        authService.createCredentialsForUser(user, dto.password(), null);
+
+        Address address = addressMapper.toEntity(dto.address());
+        address = addressRepository.save(address);
+
+        Owner owner = Owner.builder()
+                .phone(dto.phone())
+                .dni(dto.dni())
+                .address(address)
+                .user(user)
+                .build();
 
         return mapper.toResponse(repository.save(owner));
     }
