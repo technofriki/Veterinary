@@ -111,7 +111,26 @@ public class PetServiceImpl implements PetService {
                 .breed(breed)
                 .build();
 
-        return mapper.toResponse(repository.save(entity));
+        Pet savedPet = repository.save(entity);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals(Roles.ROLE_CLIENT.name()))) {
+            User user = userRepository.findByEmail(authentication.getName())
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "email", authentication.getName()));
+
+            Owner owner = ownerRepository.findByUser(user)
+                    .orElseThrow(() -> new ResourceNotFoundException("Owner", "user", user.getId()));
+
+            OwnerByPet ownerByPet = OwnerByPet.builder()
+                    .owner(owner)
+                    .pet(savedPet)
+                    .build();
+
+            ownerByPetRepository.save(ownerByPet);
+        }
+
+        return mapper.toResponse(savedPet);
     }
 
     @Override
