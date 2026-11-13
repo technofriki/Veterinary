@@ -25,9 +25,12 @@ import com.mokah.veterinary.security.repository.RoleRepository;
 import com.mokah.veterinary.security.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -182,13 +185,59 @@ public class VeterinarianServiceImpl implements VeterinarianService {
     }
 
     @Override
+    @Transactional
     public void delete(UUID externalId) {
         Veterinarian entity = entityByExternalId(externalId);
-        if(!entity.getActive()){
+        if (!Boolean.TRUE.equals(entity.getActive())) {
             throw new BusinessRuleException("The selected veterinarian is no longer active in the system.");
+        }
+        if (entity.getUser() != null) {
+            credentialsRepository.findByUser(entity.getUser()).ifPresent(credentials -> {
+                Set<Role> roles = new HashSet<>(credentials.getRoles() == null ? Set.of() : credentials.getRoles());
+                if (roles.removeIf(role -> role.getRole() == Roles.ROLE_VETERINARIAN)) {
+                    credentials.setRoles(roles);
+                    credentialsRepository.save(credentials);
+                }
+            });
         }
         entity.setActive(false);
         repository.save(entity);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public VeterinarianResponse reactivate(UUID externalId) {
+        Veterinarian entity = entityByExternalId(externalId);
+        if (Boolean.TRUE.equals(entity.getActive())) {
+            throw new BusinessRuleException("Veterinarian is already active.");
+        }
+        User user = entity.getUser();
+        if (user == null) {
+            throw new BusinessRuleException("Veterinarian has no associated user.");
+        }
+        if (user.getUserState() != UserState.ACTIVE) {
+            throw new BusinessRuleException("Cannot reactivate veterinarian: associated user is inactive.");
+        }
+        Credentials credentials = credentialsRepository.findByUser(user)
+                .orElseThrow(() -> new BusinessRuleException("Veterinarian has no associated credentials."));
+        if (!credentials.isEnabled()) {
+            throw new BusinessRuleException("Cannot reactivate veterinarian: credentials are disabled.");
+        }
+        Role role = roleRepository.findByRole(Roles.ROLE_VETERINARIAN)
+                .orElseThrow(() -> new BusinessRuleException("Required role ROLE_VETERINARIAN is missing."));
+
+        if (credentials.getRoles() == null) {
+            throw new BusinessRuleException("Veterinarian credentials have no roles collection.");
+        }
+        Set<Role> roles = new HashSet<>(credentials.getRoles());
+        if (roles.stream().noneMatch(current -> current.getRole() == Roles.ROLE_VETERINARIAN)) {
+            roles.add(role);
+            credentials.setRoles(roles);
+            credentialsRepository.save(credentials);
+        }
+        entity.setActive(true);
+        return mapper.toResponse(repository.save(entity));
     }
 
     @Override

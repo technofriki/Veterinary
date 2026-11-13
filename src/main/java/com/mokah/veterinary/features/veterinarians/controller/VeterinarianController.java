@@ -59,4 +59,10 @@ public class VeterinarianController {
     public void delete(@PathVariable UUID externalId) {
         veterinarianService.delete(externalId);
     }
+
+    @PatchMapping("/{externalId}/reactivate")
+    @PreAuthorize("hasRole('ADMIN')")
+    public VeterinarianResponse reactivate(@PathVariable UUID externalId) {
+        return veterinarianService.reactivate(externalId);
+    }
 }
